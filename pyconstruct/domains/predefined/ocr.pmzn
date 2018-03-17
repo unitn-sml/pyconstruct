@@ -1,0 +1,117 @@
+{# ocr.pmzn
+
+Domain for Optical Character Recognition [taskar2004max].
+
+PARAMETERS
+----------
+y_true : dict
+   The true label for computing the hamming loss in loss_augmented_map
+   problems.
+
+INPUT x
+-------
+length : int
+    The length of the sequence of characters.
+images : array3d(1 .. length, 1 .. 16, 1 .. 8)
+    The sequence of images as a 3D matrix. The images are assumed to be 16x8
+    pixels.
+
+OUTPUT y
+--------
+sequence : array[1 .. length], 1 .. 26
+    The sequence of letters, encoded as integers 1 .. 26.
+
+FEATURES phi
+------------
+emission : 26 * 16 * 8, int 0 .. length
+    For each letter s and pixel (i, j), count the number of letters in the
+    sequence that have been assigned label s and have pixel (i, j) active.
+transition : 26 * 26, int 0 .. length
+    For each pair of letters s1, s2, count the number of times in the sequence
+    s1 precedes s2.
+bias : 26 * 2, int {0, 1}
+    Whether symbol s is at the beginning or at the end of the sequence.
+
+REFERENCES
+----------
+   .. [taskar2004max] Taskar, Ben, Carlos Guestrin, and Daphne Koller.
+      "Max-margin Markov networks." NIPS (2004).
+
+LINKS
+-----
+Dataset
+    http://ai.stanford.edu/~btaskar/ocr/
+#}
+
+{% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
+
+int: N_SYMBOLS = 26;
+int: MAX_HEIGHT = 16;
+int: MAX_WIDTH = 8;
+set of int: SYMBOLS = 1 .. N_SYMBOLS;
+set of int: HEIGHT = 1 .. MAX_HEIGHT;
+set of int: WIDTH = 1 .. MAX_WIDTH;
+
+int: N_EMISSION_FEATURES = MAX_HEIGHT * MAX_WIDTH * N_SYMBOLS;
+set of int: EMISSION_FEATURES = 1 .. N_EMISSION_FEATURES;
+
+int: N_TRANSITION_FEATURES = N_SYMBOLS * N_SYMBOLS;
+set of int: TRANSITION_FEATURES = 1 .. N_TRANSITION_FEATURES;
+
+int: N_BIAS_FEATURES = N_SYMBOLS * 2;
+set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
+
+{% call n_features() %}
+    N_EMISSION_FEATURES + N_TRANSITION_FEATURES + N_BIAS_FEATURES
+{% endcall %}
+
+{% call domain(problem) %}
+    %%
+    % DOMAIN
+    %
+    % x = { 'length': int, 'images': [np.ndarray] }
+    % y = { 'sequence': [int] }
+    %
+    % len(y['sequence']) = len(x['images']) = x['length']
+    %%
+
+    int: length;
+    set of int: SEQUENCE = 1 .. length;
+    array[SEQUENCE, HEIGHT, WIDTH] of var {0, 1}: images;
+
+    array[SEQUENCE] of var SYMBOLS: sequence;
+
+    {% if problem == 'loss_augmented_map' %}
+        array[SEQUENCE] of var SYMBOLS: true_sequence = {{ y_true['sequence']|dzn }};
+    {% endif %}
+
+
+    %
+    % FEATURES
+    %
+
+    array[EMISSION_FEATURES] of var int: emission_features = [
+            sum(e in SEQUENCE)(images[e, i, j] * (sequence[e] == s))
+        | i in HEIGHT, j in WIDTH, s in SYMBOLS
+    ];
+
+    array[TRANSITION_FEATURES] of var int: transition_features = [
+            sum(e in 1 .. length - 1)(sequence[e] == l1 /\ sequence[e + 1] == l2)
+        | l1, l2 in SYMBOLS
+    ];
+
+    array[BIAS_FEATURES] of var int: bias_features =
+        [sequence[1] == l | l in SYMBOLS] ++ [sequence[length] == l | l in SYMBOLS];
+
+    {% call features(feature_type='int') %}
+        emission_features ++ transition_features ++ bias_features
+    {% endcall %}
+
+{% endset %}
+
+{% set loss %}
+    sum(e in SEQUENCE)(sequence[e] != true_sequence[e])
+{% endset %}
+
+{{ solve(problem, model, discretize=True, loss=loss) }}
+
