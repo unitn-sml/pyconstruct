@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyconstruct.learners.EG &mdash; Pyconstruct 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Learners" href="../index.html"/>
+        <link rel="next" title="pyconstruct.learners.EG.decision_function" href="pyconstruct.learners.EG.decision_function.html"/>
+        <link rel="prev" title="pyconstruct.learners.SSG.set_params" href="pyconstruct.learners.SSG.set_params.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Pyconstruct
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BaseLearner.html">pyconstruct.learners.BaseLearner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BaseSSG.html">pyconstruct.learners.BaseSSG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.SSG.html">pyconstruct.learners.SSG</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.learners.EG</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.decision_function.html">pyconstruct.learners.EG.decision_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.fit.html">pyconstruct.learners.EG.fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.get_params.html">pyconstruct.learners.EG.get_params</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.loss.html">pyconstruct.learners.EG.loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.partial_fit.html">pyconstruct.learners.EG.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.predict.html">pyconstruct.learners.EG.predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.score.html">pyconstruct.learners.EG.score</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.EG.set_params.html">pyconstruct.learners.EG.set_params</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.StructuredPerceptron.html">pyconstruct.learners.StructuredPerceptron</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.html">pyconstruct.learners.BlockCoordinateFrankWolfe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Pyconstruct</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Manual</a> &raquo;</li>
+        
+          <li><a href="../index.html">Learners</a> &raquo;</li>
+        
+      <li>pyconstruct.learners.EG</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/reference/learners/generated/pyconstruct.learners.EG.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyconstruct-learners-eg">
+<h1>pyconstruct.learners.EG<a class="headerlink" href="#pyconstruct-learners-eg" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyconstruct.learners.EG">
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">EG</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>alpha=0.0001</em>, <em>train_loss='hinge'</em>, <em>radius=1000.0</em>, <em>eta0=1.0</em>, <em>power_t=0.5</em>, <em>learning_rate='optimal'</em>, <em>structured_loss=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.EG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponentiated gradient algorithm.</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.EG.decision_function.html#pyconstruct.learners.EG.decision_function" title="pyconstruct.learners.EG.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.EG.fit.html#pyconstruct.learners.EG.fit" title="pyconstruct.learners.EG.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
+<td>Updates the current model with data (X, Y).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.EG.get_params.html#pyconstruct.learners.EG.get_params" title="pyconstruct.learners.EG.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.EG.loss.html#pyconstruct.learners.EG.loss" title="pyconstruct.learners.EG.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.EG.partial_fit.html#pyconstruct.learners.EG.partial_fit" title="pyconstruct.learners.EG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
+<td>Updates the current model with data (X, Y).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.EG.predict.html#pyconstruct.learners.EG.predict" title="pyconstruct.learners.EG.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;**kwargs)</td>
+<td>Computes the prediction of the current model for the given input.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.EG.score.html#pyconstruct.learners.EG.score" title="pyconstruct.learners.EG.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y_true[,&nbsp;Y_pred])</td>
+<td>Compute the score as the average loss over the examples.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.EG.set_params.html#pyconstruct.learners.EG.set_params" title="pyconstruct.learners.EG.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></td>
+<td>The predictive model the algorithm has learned.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyconstruct.learners.EG.decision_function.html" class="btn btn-neutral float-right" title="pyconstruct.learners.EG.decision_function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyconstruct.learners.SSG.set_params.html" class="btn btn-neutral" title="pyconstruct.learners.SSG.set_params" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Paolo Dragone (MIT Licence).
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

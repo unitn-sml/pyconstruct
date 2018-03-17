@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quick Start &mdash; Pyconstruct 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="index.html"/>
+        <link rel="next" title="Manual" href="reference/index.html"/>
+        <link rel="prev" title="Install" href="install.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Pyconstruct
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Manual</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyconstruct</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Quick Start</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quick_start.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>In the following example we will implement a simple OCR (Optical Character
+Recognition) model in few lines of MiniZinc.</p>
+<p>First of all, lets fetch the data. Pyconstruct has a utility for getting some
+standard datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">datasets</span>
+<span class="n">ocr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;ocr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first time the dataset is loaded it will actually be fetched from the web
+and stored locally. You can now see the description of the dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">descr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, structured objects are represented as Python dictionaries in
+Pyconstruct. Each objects as several “attributes”, identified with some string.
+Each attribute value may be any basic Python data type: strings, integers,
+floats, list or other dictionaries. In OCR, for instance, inputs <em class="xref py py-obj">X</em> are
+represented as dictionaries containing two attributes: an integer containing the
+<em class="xref py py-obj">length</em> of the word; a list of <em class="xref py py-obj">16x8</em> matrices (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) containing the
+bitmap images of each character in the word. The targets (labels) are also
+structured objects containig a single attribute <em class="xref py py-obj">sequence</em>, a list of integers
+representing the letters associated to each image in the word. For instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>After getting the data, we can start coding our problem. First of all, in
+Pyconstruct there are three main kinds of objects to interact with: Domains,
+Models and Learners. At a high level: a Domain defines the attributes and the
+constraints of the structured objects; a Model is an object contaning some
+parameters that can be used to make inference over a Domain; a Learner is an
+algorithm that can learn a Model from data. A Domain is also responsible of
+solving inference problems with respect to some Model, so the two classes are
+interdependent, but in general a Domain can be made working for different
+Models.</p>
+<p>Several Models and Learners are already defined by Pyconstruct. All that is
+required for start training a model, apart from the data, is a Domain encoded in
+MiniZinc which defines how the attributes of the objects interact, which are the
+constraints and the features of the objects. To do so, we need to create a
+<em class="xref py py-obj">ocr.pmzn</em> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;pyconstruct.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">n_features</span><span class="o">,</span> <span class="nn">features</span><span class="o">,</span> <span class="nn">domain</span><span class="o">,</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{{</span> <span class="n">n_features</span><span class="p">(</span><span class="s1">&#39;16 * 8 * 26&#39;</span><span class="p">)</span> <span class="p">}}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">domain</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+
+    <span class="nb">int</span><span class="p">:</span> <span class="n">length</span><span class="p">;</span>
+    <span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}:</span> <span class="n">images</span><span class="p">;</span>
+
+    <span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span><span class="p">:</span> <span class="n">sequence</span><span class="p">;</span>
+
+
+    <span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">features</span><span class="p">(</span><span class="n">feature_type</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">[</span>
+        <span class="nb">sum</span><span class="p">(</span><span class="n">e</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">)(</span><span class="n">images</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">))</span>
+        <span class="o">|</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span>
+    <span class="p">]</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">endset</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>That’s it! Now we can instantiate a <em class="xref py py-obj">Domain</em> with our new <em class="xref py py-obj">ocr.pmzn</em> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">Domain</span>
+<span class="n">ocr_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;ocr.pmzn&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you know MiniZinc, the above code will probably look a bit odd. That is
+because Pyconstruct by default uses a superset of MiniZinc defined by the PyMzn
+library.  Essentially, that is MiniZinc with some tempating provided by the
+Jinja2 library. Check out PyMzn for an explanation on how to use fully it. Here
+we’ll explain the basics.</p>
+<p>The first line
+<em class="xref py py-obj">{% from ‘pyconstruct.pmzn’ import n_features, features, domain, solve %}</em>
+imports few useful macros from the <em class="xref py py-obj">pyconstruct.pmzn</em> file.</p>
+<p>The second line <em class="xref py py-obj">{{ n_features(‘16 * 8 * 26’) }}</em> calls the <em class="xref py py-obj">n_features</em> macro,
+which compiles into:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="p">:</span> <span class="n">N_FEATURES</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">26</span><span class="p">;</span>
+<span class="nb">set</span> <span class="n">of</span> <span class="nb">int</span><span class="p">:</span> <span class="n">FEATURES</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">N_FEATURES</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The MiniZinc code enclosed in the tags
+<em class="xref py py-obj">{% call domain(problem) %} … {% endcall %}</em> is processed on the basis of the
+value of <em class="xref py py-obj">problem</em> the domain is called with. The variable <em class="xref py py-obj">problem</em> is usually
+passed to the domain by an internal call of Pyconstruct through PyMzn. In this
+block goes the domain definition, including the variables and parameters of the
+objects, the constraints and the features. Notice that we have two MiniZinc
+parameters <em class="xref py py-obj">length</em> and <em class="xref py py-obj">images</em>, which match the attributes of the input
+objects of the OCR dataset, and one optimization variable <em class="xref py py-obj">sequence</em> which
+matches the attribute of the output objects of the OCR dataset. This is valid
+for any problem: the examples are the inputs that are provided as dzn data,
+whereas the targets are the outputs of the model, which translate into
+optimization variables when solving inference.</p>
+<p>Inside the domain call we also call the <em class="xref py py-obj">features</em> macro, which compiles into:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="nb">int</span><span class="p">:</span> <span class="n">phi</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">e</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">)(</span><span class="n">images</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">))</span>
+    <span class="o">|</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span>
+<span class="p">];</span>
+</pre></div>
+</div>
+<p>These are typical features used in OCR, for each symbol <em class="xref py py-obj">s</em> and each pixel <em class="xref py py-obj">(i,
+j)</em> in the images containing the number of times in the sequence the <em class="xref py py-obj">(i, j)</em>
+pixel is active for characters labeled with symbol <em class="xref py py-obj">s</em>.</p>
+<p>The last line calls the <em class="xref py py-obj">solve</em> macro, which compiles to a different solve
+statement depending on the <em class="xref py py-obj">problem</em> and <em class="xref py py-obj">model</em>. Possible values for <em class="xref py py-obj">problem</em>
+are, for instance, <em class="xref py py-obj">map</em> to find the object with highest score (dot product
+between weights and features) or <em class="xref py py-obj">phi</em> to compute the feature vector given an
+input and an output object. The <em class="xref py py-obj">model</em> is a dictionary containing the model’s
+parameters, such as the weights <em class="xref py py-obj">w</em> for a <em class="xref py py-obj">LinearModel</em>. Also this object is
+usually passed to the domain by Pyconstruct.</p>
+<p>The above model is actually a partial example of the complete <em class="xref py py-obj">ocr</em> domain
+available in Pyconstruct out-of-the-box. You can load the domain by simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ocr_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;ocr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After defining the domain, using the predefined one or the <em class="xref py py-obj">ocr.pmzn</em> file, we
+can start learning by instantiating a learner, say a <em class="xref py py-obj">StructuredPerceptron</em>, and
+fitting the data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">StructuredPerceptron</span>
+<span class="n">sp</span> <span class="o">=</span> <span class="n">StructuredPerceptron</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">ocr_dom</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will take a while… If you need a quick benchmark, Pyconstruct contains
+pretrained models for many domains and learners (link).</p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference/index.html" class="btn btn-neutral float-right" title="Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Paolo Dragone (MIT Licence).
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
