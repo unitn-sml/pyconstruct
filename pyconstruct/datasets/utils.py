@@ -162,6 +162,6 @@ def is_gzip(file_name):
 
 def unpack_gzip(file_name, out_name):
     import gzip
-    with gzip.open(file_name, 'rb') as tmp, open(out_name, 'w+') as out:
+    with gzip.open(file_name, 'rt') as tmp, open(out_name, 'w+') as out:
         shutil.copyfileobj(tmp, out)
 
