@@ -86,7 +86,7 @@ constraints and the features of the objects. To do so, we need to create a
         ]
         {% endcall %}
 
-    {% endset %}
+    {% endcall %}
 
     {{ solve(problem, model, discretize=True) }}
 ```
