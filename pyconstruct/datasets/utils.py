@@ -90,7 +90,7 @@ def fetch(source, base=None, verbose=True):
     for i in range(len(source_info['urls'])):
         out_name = os.path.join(out_dir, source_info['names'][i])
         chk = source_info['checksums'][i]
-        if not os.exist(outname) or checksum(out_name) != chk:
+        if not os.path.isfile(out_name) or checksum(out_name) != chk:
             url = source_info['urls'][i]
             if verbose:
                 print('Downloading file: {}'.format(url))
