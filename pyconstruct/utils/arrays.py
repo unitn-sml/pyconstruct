@@ -40,8 +40,6 @@ def _batch_sizes(data_size, n_batches):
 
 
 def batches(*args, n_batches=None, batch_size=None):
-    if not check_iterables(*args):
-        args = [[arg] for arg in args]
     data_size = len(args[0])
     if n_batches is not None:
         batch_sizes = _batch_sizes(data_size, n_batches)
