@@ -35,7 +35,7 @@ def train(args):
 
     sp = StructuredPerceptron(domain=dom)
 
-    for i, (X_b, Y_b) in enumarate(batches(X_train, Y_train, batch_size=50)):
+    for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=50)):
 
         # Learning
         t0 = time()
@@ -47,7 +47,7 @@ def train(args):
         Y_pred = sp.predict(X_test)
         infer_time = time() - t0
 
-        print('Batch {}'.format())
+        print('Batch {}'.format(i))
         print('Loss = {}'.format(loss(Y_pred, Y_test, parallel=args.parallel)))
         print('Learn time = {}'.format(learn_time))
         print('Infer time = {}'.format(infer_time))
