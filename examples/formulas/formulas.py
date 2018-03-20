@@ -22,7 +22,7 @@ def loss(Y_pred, Y_true, parallel=4):
 
 def train(args):
 
-    dom = Domain(args.pmzn_file, n_jobs=args.parallel)
+    dom = Domain(args.domain_file, n_jobs=args.parallel)
 
     X, Y = load(args.data_file)
     X_train, X_test, Y_train, Y_test = train_test_split(
