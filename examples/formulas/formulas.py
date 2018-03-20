@@ -47,7 +47,7 @@ def train(args):
         Y_pred = sp.predict(X_test)
         infer_time = time() - t0
 
-        print('Batch {}'.format(i))
+        print('Batch {}'.format(i + 1))
         print('Loss = {}'.format(loss(Y_pred, Y_test, parallel=args.parallel)))
         print('Learn time = {}'.format(learn_time))
         print('Infer time = {}'.format(infer_time))
