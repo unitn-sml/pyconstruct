@@ -32,7 +32,5 @@ def hamming(Y_true, Y_pred, key=None, n_jobs=1):
     hamming : float or [float]
         The hamming distance(s)
     """
-    return broadcast(
-        _hamming, Y_true, Y_pred, key=key, n_jobs=n_jobs
-    )
+    return broadcast(_hamming, Y_true, Y_pred, key=key, n_jobs=n_jobs)
 
