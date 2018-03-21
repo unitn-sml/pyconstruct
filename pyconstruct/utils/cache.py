@@ -20,7 +20,7 @@ class HashableArgs:
 
     def __hash__(self):
         if self._hashvalue is None:
-            self._hashvalue = joblib.hash(self._hashkey)
+            self._hashvalue = int(joblib.hash(self._hashkey), 16)
         return self._hashvalue
 
 
