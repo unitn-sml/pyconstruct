@@ -16,8 +16,12 @@ def broadcast(f, *args, n_jobs=1, **kwargs):
     ))
 
 
+def isarray(x):
+    return isinstance(x, np.ndarray) and len(x.shape) > 0
+
+
 def asarrays(*args):
-    return tuple([np.array([x]) for x in args])
+    return tuple([np.array([x]) if not isarray(x) else x for x in args])
 
 
 def array2str(array):
