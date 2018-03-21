@@ -9,13 +9,13 @@ __all__ = ['BlockCoordinateFrankWolfe']
 class BlockCoordinateFrankWolfe(BaseLearner):
 
     def __init__(
-        self, *, domain=None, inference='loss_augmented_map',
+        self, *, domain=None, inference='loss_augmented_map', dataset_size=1,
         structured_loss=None
     ):
         super().__init__(domain=domain)
         self.inference = inference
         self.structured_loss = structured_loss
-        self.n_samples = n_samples
+        self.dataset_size = dataset_size
 
     @property
     def dual_gap(self):
@@ -26,7 +26,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
     def _init_w(self, shape):
         return np.zeros(shape, dtype=np.float64)
 
-    def _step(self, w, w_mat, l, l_mat, idx, x, y_true, y_pred, n_samples=1):
+    def _step(self, w, w_mat, l, l_mat, idx, x, y_true, y_pred):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
@@ -51,11 +51,11 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             w_mat = np.vstack((w_mat, self._init_w(d).reshape(1, -1)))
             l_mat = np.append(l_mat, 0.0)
 
-        n_samples = max([n_samples, w_mat.shape[0]])
+        dataset_size = max([self.dataset_size, w_mat.shape[0]])
 
-        ws = ((self.alpha * n_samples) ** -1) * psi
+        ws = ((self.alpha * dataset_size) ** -1) * psi
         ls = self.loss(np.array([x]), np.array([y_true]), np.array([y_pred]))[0]
-        ls /= n_samples
+        ls /= dataset_size
 
         w_diff = w_mat[idx[i]] - ws
         dual_gap = self.alpha * (w_diff).dot(w) - l_mat[idx[i]] + ls
