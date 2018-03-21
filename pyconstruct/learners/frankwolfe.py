@@ -15,12 +15,13 @@ class BlockCoordinateFrankWolfe(BaseLearner):
 
     def __init__(
         self, *, domain=None, inference='loss_augmented_map', dataset_size=1,
-        structured_loss=None
+        structured_loss=None, alpha=0.0001
     ):
         super().__init__(domain=domain)
         self.inference = inference
         self.structured_loss = structured_loss
         self.dataset_size = dataset_size
+        self.alpha = alpha
 
     @property
     def dual_gap(self):
