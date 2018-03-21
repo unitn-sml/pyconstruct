@@ -37,8 +37,8 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             self.t_ = 0
         self.t_ += 1
 
-        phi_y_pred = self.domain.phi(np.array([x]), np.array([y_pred]))[0]
-        phi_y_true = self.domain.phi(np.array([x]), np.array([y_true]))[0]
+        phi_y_pred = self.domain.phi(*asarrays(x, y_pred))[0]
+        phi_y_true = self.domain.phi(*asarrays(x, y_true))[0]
         psi = phi_y_true - phi_y_pred
 
         d = psi.shape[0]
@@ -60,7 +60,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         dataset_size = max([self.dataset_size, w_mat.shape[0]])
 
         ws = ((self.alpha * dataset_size) ** -1) * psi
-        ls = self.loss(np.array([x]), np.array([y_true]), np.array([y_pred]))[0]
+        ls = self.loss(*asarrays(x, y_true, y_pred))
         ls /= dataset_size
 
         w_diff = w_mat[idx[i]] - ws
@@ -123,7 +123,9 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             # Inference
             start = _time()
             if Y_pred is None:
-                y_pred = model.predict(np.array([x]), problem=self.inference)
+                y_pred = model.predict(
+                    *asarrays(x, y_true), problem=self.inference
+                )
             else:
                 y_pred = Y_pred[i]
             infer_time = _time() - start
