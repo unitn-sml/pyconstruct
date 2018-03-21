@@ -54,7 +54,10 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         i = hashkey(x, y_true)
         if i not in idx:
             idx[i] = w_mat.shape[0]
-            w_mat = np.vstack((w_mat, self._init_w(d).reshape(1, -1)))
+            if w_mat.shape[0] > 0:
+                w_mat = np.vstack((w_mat, self._init_w(d).reshape(1, -1)))
+            else:
+                w_mat = self._init_w(d).reshape(1, -1)
             l_mat = np.append(l_mat, 0.0)
 
         dataset_size = max([self.dataset_size, w_mat.shape[0]])
