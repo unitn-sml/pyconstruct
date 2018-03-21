@@ -26,9 +26,9 @@ class BaseModel:
     def phi(self, X, Y):
         return self.domain.phi(X, Y, model=self)
 
-    def predict(self, X, **kwargs):
+    def predict(self, X, *args, **kwargs):
         """Makes a prediction based on the current model."""
-        return self.domain.infer(X, model=self, **kwargs)
+        return self.domain.infer(X, *args, model=self, **kwargs)
 
     def decision_function(self, X, Y):
         """Computes the score assigned to the (x, y) by the model."""
