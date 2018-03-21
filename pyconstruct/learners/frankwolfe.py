@@ -1,6 +1,6 @@
 
 from .base import BaseLearner
-from ..utils import get_logger
+from ..utils import get_logger, hashkey
 
 
 __all__ = ['BlockCoordinateFrankWolfe']
@@ -10,14 +10,11 @@ class BlockCoordinateFrankWolfe(BaseLearner):
 
     def __init__(
         self, *, domain=None, inference='loss_augmented_map',
-        structured_loss=None, hashify=None
+        structured_loss=None
     ):
         super().__init__(domain=domain)
-        if hashify is None:
-            raise ValueError('Need an hashify function')
         self.inference = inference
         self.structured_loss = structured_loss
-        self.hashify = hashify
         self.n_samples = n_samples
 
     @property
@@ -48,7 +45,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         if l_mat is None:
             l_mat = np.array([])
 
-        i = self.hashify(x, y)
+        i = hashkey(x, y)
         if i not in idx:
             idx[i] = w_mat.shape[0]
             w_mat = np.vstack((w_mat, self._init_w(d).reshape(1, -1)))
