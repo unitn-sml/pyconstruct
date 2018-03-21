@@ -51,7 +51,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         if l_mat is None:
             l_mat = np.array([])
 
-        i = hashkey(x, y)
+        i = hashkey(x, y_true)
         if i not in idx:
             idx[i] = w_mat.shape[0]
             w_mat = np.vstack((w_mat, self._init_w(d).reshape(1, -1)))
@@ -129,7 +129,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             else:
                 y_pred = Y_pred[i]
             infer_time = _time() - start
-            learn_times.append(learn_time)
+            infer_times.append(infer_time)
 
             # Weight update
             start = _time()
