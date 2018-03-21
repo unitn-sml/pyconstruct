@@ -121,6 +121,8 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         infer_times = []
         learn_times = []
 
+        log = get_logger(__name__)
+
         for i, (x, y_true) in enumerate(zip(X, Y)):
 
             # Inference
