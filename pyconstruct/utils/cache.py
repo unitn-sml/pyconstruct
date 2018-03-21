@@ -33,7 +33,7 @@ class TypedHashableArgs:
 
 
 def hashkey(*args, **kwargs):
-    return HashbleArgs(*args, **kwargs)
+    return HashableArgs(*args, **kwargs)
 
 
 def typedkey(*args, **kwargs):
