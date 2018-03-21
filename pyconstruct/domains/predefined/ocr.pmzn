@@ -107,7 +107,7 @@ set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
         emission_features ++ transition_features ++ bias_features
     {% endcall %}
 
-{% endset %}
+{% endcall %}
 
 {% set loss %}
     sum(e in SEQUENCE)(sequence[e] != true_sequence[e])
