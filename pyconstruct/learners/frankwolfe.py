@@ -2,7 +2,8 @@
 import numpy as np
 
 from .base import BaseLearner
-from ..utils import get_logger, hashkey
+from ..models import LinearModel
+from ..utils import get_logger, hashkey, asarrays
 
 from time import monotonic as _time
 
