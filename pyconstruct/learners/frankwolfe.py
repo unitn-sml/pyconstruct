@@ -1,6 +1,10 @@
 
+import numpy as np
+
 from .base import BaseLearner
 from ..utils import get_logger, hashkey
+
+from time import monotonic as _time
 
 
 __all__ = ['BlockCoordinateFrankWolfe']
