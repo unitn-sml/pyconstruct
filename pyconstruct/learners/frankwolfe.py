@@ -13,7 +13,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         structured_loss=None, hashify=None
     ):
         super().__init__(domain=domain)
-        if self.hashify is None:
+        if hashify is None:
             raise ValueError('Need an hashify function')
         self.inference = inference
         self.structured_loss = structured_loss
@@ -60,18 +60,18 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         ls = self.loss(np.array([x]), np.array([y_true]), np.array([y_pred]))[0]
         ls /= n_samples
 
-        w_diff = w_mat[i] - ws
-        dual_gap = self.alpha * (w_diff).dot(w) - l_mat[i] + ls
+        w_diff = w_mat[idx[i]] - ws
+        dual_gap = self.alpha * (w_diff).dot(w) - l_mat[idx[i]] + ls
         gamma = dual_gap / (self.alpha * np.linalg.norm(w_diff) ** 2)
         gamma = np.max([0, np.min([1, gamma])])
 
-        w_i = np.copy(w_mat[i])
-        l_i = l_mat[i]
-        w_mat[i] = (1 - gamma) * w_mat[i] + gamma * ws
-        l_mat[i] = (1 - gamma) * l_mat[i] + gamma * ls
+        w_i = np.copy(w_mat[idx[i]])
+        l_i = l_mat[idx[i]]
+        w_mat[idx[i]] = (1 - gamma) * w_mat[idx[i]] + gamma * ws
+        l_mat[idx[i]] = (1 - gamma) * l_mat[idx[i]] + gamma * ls
 
-        w = w + w_mat[i] - w_i
-        l = l + l_mat[i] - l_i
+        w = w + w_mat[idx[i]] - w_i
+        l = l + l_mat[idx[i]] - l_i
         return w, w_mat, l, l_mat, idx, dual_gap
 
     def partial_fit(self, X, Y, Y_pred=None):
@@ -105,6 +105,10 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         l_mat = None
         if self.l_mat_ is not None:
             l_mat = np.copy(self.l_mat_)
+
+        idx = None
+        if self.idx_ is not None:
+            idx = self.idx_
 
         model = self.model
 
