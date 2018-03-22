@@ -14,11 +14,11 @@ __all__ = ['BlockCoordinateFrankWolfe']
 class BlockCoordinateFrankWolfe(BaseLearner):
 
     def __init__(
-        self, *, domain=None, inference='loss_augmented_map', dataset_size=1,
-        structured_loss=None, alpha=0.0001
+        self, *, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
     ):
         super().__init__(domain=domain)
-        self.inference = inference
+        if structured_loss is None:
+            raise ValueError('Need a structured loss')
         self.structured_loss = structured_loss
         self.dataset_size = dataset_size
         self.alpha = alpha
@@ -63,12 +63,12 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         dataset_size = max([self.dataset_size, w_mat.shape[0]])
 
         ws = ((self.alpha * dataset_size) ** -1) * psi
-        ls = self.loss(*asarrays(x, y_true, y_pred))
+        ls = self.structured_loss(*asarrays(y_true, y_pred))
         ls /= dataset_size
 
         w_diff = w_mat[idx[i]] - ws
         dual_gap = self.alpha * (w_diff).dot(w) - l_mat[idx[i]] + ls
-        gamma = dual_gap / (self.alpha * np.linalg.norm(w_diff) ** 2)
+        gamma = dual_gap / (self.alpha * np.power(np.linalg.norm(w_diff), 2))
         gamma = np.max([0, np.min([1, gamma])])
 
         w_i = np.copy(w_mat[idx[i]])
@@ -129,7 +129,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             start = _time()
             if Y_pred is None:
                 y_pred = model.predict(
-                    *asarrays(x, y_true), problem=self.inference
+                    *asarrays(x, y_true), problem='loss_augmented_map'
                 )
             else:
                 y_pred = Y_pred[i]
