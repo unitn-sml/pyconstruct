@@ -68,8 +68,12 @@ class BlockCoordinateFrankWolfe(BaseLearner):
 
         w_diff = w_mat[idx[i]] - ws
         dual_gap = self.alpha * (w_diff).dot(w) - l_mat[idx[i]] + ls
-        gamma = dual_gap / (self.alpha * np.power(np.linalg.norm(w_diff), 2))
-        gamma = np.max([0, np.min([1, gamma])])
+        norm_squared = np.power(np.linalg.norm(w_diff), 2)
+        if norm_squared == 0:
+            gamma = 1.0
+        else:
+            gamma = dual_gap / (self.alpha * norm_squared)
+            gamma = np.max([0.0, np.min([1.0, gamma])])
 
         w_i = np.copy(w_mat[idx[i]])
         l_i = l_mat[idx[i]]
