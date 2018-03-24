@@ -1,9 +1,10 @@
 
-from . import domains
 from .domains import Domain
-from . import learners
-from .learners import *
 from . import datasets
+from . import models
+from .learners import *
+from . import metrics
+from . import utils
 
 
 __all__ = (
