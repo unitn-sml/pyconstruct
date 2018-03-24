@@ -1,16 +1,10 @@
 """Utility package."""
 
-from . import others
 from .others import *
-from . import pickle
 from .pickle import *
-from . import dicts
 from .dicts import *
-from . import arrays
 from .arrays import *
-from . import cache
 from .cache import *
-from . import logging
 from .logging import *
 
 __all__ = (
