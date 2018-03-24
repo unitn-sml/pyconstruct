@@ -6,10 +6,6 @@ Domains
 .. autosummary::
    :toctree: generated/
 
-   get_path
-   get_source
-   get_info
-   print_info
    BaseDomain
    MiniZincDomain
 
