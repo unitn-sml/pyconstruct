@@ -8,13 +8,13 @@ __all__ = ['StructuredPerceptron']
 
 
 class StructuredPerceptron(SSG):
-    """A simple structured perceptron algorithm.
+    """A simple structured perceptron algorithm [1]_.
 
     References
     ----------
-    .. [collins2002discriminative] Collins, Michael. "Discriminative training
-        methods for hidden markov models: Theory and experiments with perceptron
-        algorithms." EMNLP (2002).
+    .. [1] Collins, Michael. "Discriminative training methods for hidden markov
+        models: Theory and experiments with perceptron algorithms." EMNLP
+        (2002).
     """
     def __init__(self, *, domain=None):
         super().__init__(
