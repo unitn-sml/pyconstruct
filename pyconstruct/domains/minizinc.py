@@ -61,7 +61,7 @@ class MiniZincDomain(BaseDomain):
     using `Jinja2 <http://jinja.pocoo.org/>`_. With Jinja2, it is possible to
     reuse the same domain (attributes, constraints and features) to solve
     different inference problems. The most basic PyMzn domain would look like
-    this:
+    this::
 
         {% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
 
