@@ -1,7 +1,5 @@
 
-from . import base
 from .base import *
-from . import minizinc
 from .minizinc import *
 
 
