@@ -2,9 +2,9 @@
 Pyconstruct provides methods for loading a number of datasets for standard tasks
 in structured-output prediction. The current list of available datasets
 includes:
-  - ocr: Ben Taskar's ORC dataset
-  - conll00: CoNLL 2000 Text Chunking dataset
-  - horseseg: HorseSeg dataset (coming soon)
+  - `ocr`: Ben Taskar's ORC dataset
+  - `conll00`: CoNLL 2000 Text Chunking dataset
+  - `horseseg`: HorseSeg dataset (coming soon)
 
 Datasets can be loaded using the `load` function provided by this module. In
 most cases, the dataset is downloaded upon first loading and stored in a local
