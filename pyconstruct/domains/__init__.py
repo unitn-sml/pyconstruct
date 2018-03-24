@@ -13,7 +13,7 @@ Pyconstruct are built to be agnostic to the type of objects they are dealing
 with. The only things the learners care about are the feature vectors, which
 should be returned as Numpy arrays by the method `phi`.
 
-The default type of Domains that Pyconstruct deals with are `MiniZincDomain`s,
+The default type of Domains that Pyconstruct deals with are `MiniZincDomains`,
 i.e. domains encoded with the MiniZinc constraint programming language. When a
 domain is encoded in MiniZinc, it can be imported into Pyconstruct as easily
 as::
@@ -105,13 +105,15 @@ Standard inference problems
 
 These are the basic inference problems that Pyconstruct expects the Domains to
 be able to solve:
-  - `n_features` : Returns the number of features in the feature vector;
-  - `phi` : Given a `x` and `y`, returns the feature vector `phi(x, y)`;
-  - `map` : Given a `x` and a `model`, returns the `y` that maximizes the score
-    according to the given `model` and input `x`;
-  - `loss_augmented_map` : Given a `x`, a `model` and a `y_true`, find `y` that
-    maximizes the score + loss, according to the given `model`, input `x` and
-    true output `y_true`.
+
+ - **n_features** : Returns the number of features in the feature vector;
+ - **phi** : Given a `x` and `y`, returns the feature vector `phi(x, y)`;
+ - **map** : Given a `x` and a `model`, returns the `y` that maximizes the score
+   according to the given `model` and input `x`;
+ - **loss_augmented_map** : Given a `x`, a `model` and a `y_true`, find `y` that
+   maximizes the score + loss, according to the given `model`, input `x` and true
+   output `y_true`.
+
 """
 
 from .base import *
