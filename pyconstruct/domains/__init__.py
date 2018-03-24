@@ -100,15 +100,20 @@ we want to make inference with. For instance, a `LinearModel` contains just one
 parameter `w`, which is an array of weights (see section Models for details).
 
 
-## Standard inference problems
+Standard inference problems
+---------------------------
 
 These are the basic inference problems that Pyconstruct expects the Domains to
 be able to solve:
-  - `n_features`: Returns the number of features in the feature vector;
-  - `phi`: Given a `x` and `y`, returns the feature vector `phi(x, y)`;
-  - `map`: Given a `x` and a `model`, returns the `y` that maximizes the score
+  - `n_features`:
+    Returns the number of features in the feature vector;
+  - `phi`:
+    Given a `x` and `y`, returns the feature vector `phi(x, y)`;
+  - `map`:
+    Given a `x` and a `model`, returns the `y` that maximizes the score
     according to the given `model` and input `x`;
-  - `loss_augmented_map`: Given a `x`, a `model` and a `y_true`, find `y` that
+  - `loss_augmented_map`:
+    Given a `x`, a `model` and a `y_true`, find `y` that
     maximizes the score + loss, according to the given `model`, input `x` and
     true output `y_true`.
 """
