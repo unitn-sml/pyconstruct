@@ -1,5 +1,5 @@
 
-from .hamming import *
+from .losses import *
 
-__all__ = hamming.__all__
+__all__ = losses.__all__
 
