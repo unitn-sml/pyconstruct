@@ -46,10 +46,10 @@ class BaseModel:
 
 
 class LinearModel(BaseModel):
-    """A linear model.
+    r"""A linear model.
 
     Represents a linear model of the type:
-    .. math:: \langle \boldsymbol{w}, \boldsymbol{\phi}(x, y) \rangle
+    :math:`F(x, y) = \langle \boldsymbol{w}, \boldsymbol{\phi}(x, y) \rangle`.
 
     The only parameter it needs is the weight vector :math:`\boldsymbol{w}`.
 
