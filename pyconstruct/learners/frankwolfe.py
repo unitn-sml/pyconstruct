@@ -12,6 +12,33 @@ __all__ = ['BlockCoordinateFrankWolfe']
 
 
 class BlockCoordinateFrankWolfe(BaseLearner):
+    """Learner using the Block-Coordinate Frank-Wolfe algorithm [1]_.
+
+    This implementation is still a bit experimental. Should work fine but still
+    has not been made parallel, so it will take much more than necessary on most
+    datasets. Coming soon also improvements from [2]_.
+
+    Parameters
+    ----------
+    domain : BaseDomain
+        The domain of the data.
+    structured_loss : function (y, y) -> float
+        The structured loss to compute on the objects.
+    dataset_size : int
+        A hint on the size of the dataset. May improve performance.
+    alpha : float
+        The regularization coefficient.
+
+    References
+    ----------
+    .. [1] Lacoste-Julien, Simon, et al. "Block-Coordinate Frank-Wolfe
+        Optimization for Structural SVMs." ICML 2013 International Conference
+        on Machine Learning. 2013.
+    .. [2] Osokin, Anton, et al. "Minding the Gaps for Block Frank-Wolfe
+        Optimization of Structured SVMs." Proceedings of Machine Learning
+        Research. Proceedings of the International Conference on Machine
+        Learning (ICML 2016). 2016.
+    """
 
     def __init__(
         self, *, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
