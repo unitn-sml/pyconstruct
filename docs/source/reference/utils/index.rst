@@ -1,5 +1,5 @@
-Utils
------
+Utilities
+---------
 
 .. currentmodule:: pyconstruct.utils
 
