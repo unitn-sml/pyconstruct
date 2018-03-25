@@ -9,7 +9,7 @@ This is the reference manual of Weaver.
    datasets/index
    domains/index
    learners/index
-   metrics
+   metrics/index
    models/index
    utils/index
 
