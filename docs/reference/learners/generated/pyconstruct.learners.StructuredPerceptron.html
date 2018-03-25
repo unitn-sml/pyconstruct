@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.StructuredPerceptron &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>pyconstruct.learners.StructuredPerceptron &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.StructuredPerceptron.decision_function" href="pyconstruct.learners.StructuredPerceptron.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.EG.set_params" href="pyconstruct.learners.EG.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -116,9 +116,9 @@
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.html">pyconstruct.learners.BlockCoordinateFrankWolfe</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -193,14 +193,22 @@
 <dl class="class">
 <dt id="pyconstruct.learners.StructuredPerceptron">
 <em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">StructuredPerceptron</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.StructuredPerceptron" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple structured perceptron algorithm.</p>
+<dd><p>A simple structured perceptron algorithm from <a class="footnote-reference" href="#id2" id="id1">[1]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="collins2002discriminative" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[collins2002discriminative]</td><td>Collins, Michael. “Discriminative training
-methods for hidden markov models: Theory and experiments with perceptron
-algorithms.” EMNLP (2002).</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Collins, Michael. “Discriminative training methods for hidden markov
+models: Theory and experiments with perceptron algorithms.” EMNLP
+(2002).</td></tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -296,7 +304,7 @@ algorithms.” EMNLP (2002).</td></tr>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

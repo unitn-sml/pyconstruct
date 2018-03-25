@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.EG &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>pyconstruct.learners.EG &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.EG.decision_function" href="pyconstruct.learners.EG.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.SSG.set_params" href="pyconstruct.learners.SSG.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -116,9 +116,9 @@
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.html">pyconstruct.learners.BlockCoordinateFrankWolfe</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -193,7 +193,43 @@
 <dl class="class">
 <dt id="pyconstruct.learners.EG">
 <em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">EG</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>alpha=0.0001</em>, <em>train_loss='hinge'</em>, <em>radius=1000.0</em>, <em>eta0=1.0</em>, <em>power_t=0.5</em>, <em>learning_rate='optimal'</em>, <em>structured_loss=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.EG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exponentiated gradient algorithm.</p>
+<dd><p>Learner implementing the Exponentiate Gradient algorithm.</p>
+<p>This learner uses multiplicative weight updates as in <a class="footnote-reference" href="#id2" id="id1">[1]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</li>
+<li><strong>inference</strong> (<em>str in</em><em> [</em><em>'map'</em><em>, </em><em>'loss_augmented_map'</em><em>]</em>) – Which type of inference to perform when learning.</li>
+<li><strong>alpha</strong> (<em>float</em>) – The regularization coefficient.</li>
+<li><strong>train_loss</strong> (<em>str in</em><em> [</em><em>'hinge'</em><em>, </em><em>'logistic'</em><em>, </em><em>'exponential'</em><em>]</em>) – The training loss. The derivative of this loss is used to rescale the
+margin of the examples when making an update.</li>
+<li><strong>radius</strong> (<em>float</em>) – This property is only used here to decide when to clip the exponential
+training loss.</li>
+<li><strong>eta0</strong> (<em>float</em>) – The initial value of the learning rate.</li>
+<li><strong>power_t</strong> (<em>float</em>) – The power of the iteration index when using an <em class="xref py py-obj">invscaling</em>
+learning_rate.</li>
+<li><strong>learning_rate</strong> (<em>str in</em><em> [</em><em>'constant'</em><em>, </em><em>'optimal'</em><em>, </em><em>'invscaling'</em><em>]</em>) – The learning rate strategy. The <em class="xref py py-obj">constant</em> learning multiplies the
+updates for <em class="xref py py-obj">eta0</em>; the <em class="xref py py-obj">invscaling</em> divides the updates by the
+iteration number raised to the <em class="xref py py-obj">power_t</em>; the <em class="xref py py-obj">optimal</em> strategy finds
+the best rate depending on <em class="xref py py-obj">alpha</em> and <em class="xref py py-obj">train_loss</em> (similar to
+Scikit-learn’s SGDRegressor <em class="xref py py-obj">optimal</em> learning rate).</li>
+<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Collins, Michael, et al. “Exponentiated gradient algorithms for
+conditional random fields and max-margin markov networks.” Journal of
+Machine Learning Research 9.Aug (2008): 1775-1822.</td></tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -287,7 +323,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

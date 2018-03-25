@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Models &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>Models &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Manual" href="../index.html"/>
-        <link rel="next" title="Utils" href="../utils/index.html"/>
-        <link rel="prev" title="pyconstruct.metrics.hamming" href="../generated/pyconstruct.metrics.hamming.html"/> 
+        <link rel="next" title="pyconstruct.models.BaseModel" href="generated/pyconstruct.models.BaseModel.html"/>
+        <link rel="prev" title="pyconstruct.metrics.hamming" href="../metrics/generated/pyconstruct.metrics.hamming.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -98,11 +98,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../learners/index.html">Learners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metrics.html">Metrics</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.models.BaseModel.html">pyconstruct.models.BaseModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.models.LinearModel.html">pyconstruct.models.LinearModel</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -178,9 +180,34 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.models.BaseModel.html#pyconstruct.models.BaseModel" title="pyconstruct.models.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseModel</span></code></a>(domain)</td>
+<td>Base model.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.models.LinearModel.html#pyconstruct.models.LinearModel" title="pyconstruct.models.LinearModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinearModel</span></code></a>(domain,&nbsp;w)</td>
+<td>A linear model.</td>
+</tr>
 </tbody>
 </table>
-<span class="target" id="module-pyconstruct.models"></span></div>
+<span class="target" id="module-pyconstruct.models"></span><p>Pyconstructi abstracts predictive models using a <em class="xref py py-obj">Model</em> class. A <em class="xref py py-obj">Model</em> is an
+object that holds some kind of parameters that can be used to make inference.</p>
+<p>When making inference, the model’s parameters are passed to the Domain, which
+needs to be able to interpret the semantics of the parameters. For instance, the
+standard model provided by Pyconstruct is a <a class="reference internal" href="generated/pyconstruct.models.LinearModel.html#pyconstruct.models.LinearModel" title="pyconstruct.models.LinearModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinearModel</span></code></a>, whose parameters
+consist in just a weight vector. Domains using the <em class="xref py py-obj">solve</em> macro from the
+<em class="xref py py-obj">pyconstruct.pmzn</em> file (see the <em class="xref py py-obj">MiniZincDomain</em> class documentation for
+details) are readily capable of interpreting this weight vector and use it to
+compute the dot product with the feature vector.</p>
+<p>While linear models cover many of the cases in structured-output prediction, one
+can easily think of cases in which an ad-hoc <em class="xref py py-obj">Model</em> may be beneficial, e.g.
+when the model has some hyper-paramenters or when performing some sort of
+feature learning. That said, in most cases you should not need to manipulate
+<em class="xref py py-obj">Models</em> directly.</p>
+<p>The <em class="xref py py-obj">Model</em> is the middle-men between a <em class="xref py py-obj">Learner</em> and a <em class="xref py py-obj">Domain</em>. The learner
+fits a <em class="xref py py-obj">Model</em>, which is in turn then passed to the <em class="xref py py-obj">Domain</em> to perform
+inference. Usually a <em class="xref py py-obj">Learner</em> is only capable of learning one type of models,
+while a <em class="xref py py-obj">Domain</em> may usually be used with different <em class="xref py py-obj">Models</em> (if properly
+configured).</p>
+</div>
 
 
            </div>
@@ -192,10 +219,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../utils/index.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/pyconstruct.models.BaseModel.html" class="btn btn-neutral float-right" title="pyconstruct.models.BaseModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../generated/pyconstruct.metrics.hamming.html" class="btn btn-neutral" title="pyconstruct.metrics.hamming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../metrics/generated/pyconstruct.metrics.hamming.html" class="btn btn-neutral" title="pyconstruct.metrics.hamming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -226,7 +253,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

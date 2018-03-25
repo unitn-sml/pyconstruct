@@ -63,7 +63,7 @@ constraints and the features of the objects. To do so, we need to create a
         ]
         {% endcall %}
 
-    {% endset %}
+    {% endcall %}
 
     {{ solve(problem, model, discretize=True) }}
 
@@ -126,13 +126,51 @@ available in Pyconstruct out-of-the-box. You can load the domain by simply::
     ocr_dom = Domain('ocr')
 
 After defining the domain, using the predefined one or the `ocr.pmzn` file, we
-can start learning by instantiating a learner, say a `StructuredPerceptron`, and
-fitting the data::
+can start learning. We first need to instantiate a learner, say a
+`StructuredPerceptron`::
 
     from pyconstruct import StructuredPerceptron
     sp = StructuredPerceptron(domain=ocr_dom)
-    sp.fit(ocr.data, ocr.targets)
 
-This will take a while... If you need a quick benchmark, Pyconstruct contains
-pretrained models for many domains and learners (link).
+Pyconstruct is built to be compatible with most of the available utilities in
+Scikit-learn. One thing one would like to do at this point is to shuffle and
+split the data into training and test set. We can use Scikit-learn like this::
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, Y_train, Y_test = train_test_split(ocr.data, ocr.target, test_size=0.05)
+
+Pyconstruct has also its own utilities to deal with structured data. In order
+to use train the `StructuredPerceptron` we will need to divide the data in
+mini-batches and use its `partial_fit` method.::
+
+    from pyconstruct.utils import batches
+
+    for X_batch, Y_batch in batches(X_train, Y_train, batch_size=50):
+        sp.partial_fit(X_batch, Y_batch)
+
+To evaluate the learner we will need a suitable metric. What it usually done
+used with OCR is the normalized Hamming loss. Pyconstruct has a Hamming loss
+function already available::
+
+    from pyconstruct.metrics import hamming
+
+    def loss(Y_pred, Y_true):
+        return hamming(Y_pred, Y_true, key='sequence', normalize=True).mean()
+
+The `hamming` function returns the Hamming distance between each pair of
+elements in the input arrays, so we take the mean. We can then compute the loss
+over the test set while training::
+
+    for X_batch, Y_batch in batches(X_train, Y_train, batch_size=50):
+        sp.partial_fit(X_batch, Y_batch)
+        Y_pred = sp.predict(X_test)
+        print('Loss = {}'.format(loss(Y_pred, Y_test)))
+
+This will take a while, depending on the computational resources you have. You
+can parallelize inference by passing `n_jobs` to the `Domain` constructor, as
+well as to the `hamming` function. Additionally, if you need a quick benchmark,
+Pyconstruct also contains pretrained models for many domains and learners
+(link).
+
+
 

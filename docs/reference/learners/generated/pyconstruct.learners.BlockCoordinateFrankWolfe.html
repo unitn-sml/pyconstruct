@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.BlockCoordinateFrankWolfe &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>pyconstruct.learners.BlockCoordinateFrankWolfe &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.StructuredPerceptron.set_params" href="pyconstruct.learners.StructuredPerceptron.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -116,9 +116,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -192,8 +192,44 @@
 <h1>pyconstruct.learners.BlockCoordinateFrankWolfe<a class="headerlink" href="#pyconstruct-learners-blockcoordinatefrankwolfe" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.learners.BlockCoordinateFrankWolfe">
-<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BlockCoordinateFrankWolfe</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>structured_loss=None</em>, <em>hashify=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Methods</p>
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BlockCoordinateFrankWolfe</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>structured_loss=None</em>, <em>dataset_size=1</em>, <em>alpha=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learner using the Block-Coordinate Frank-Wolfe algorithm <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
+<p>This implementation is still a bit experimental. Should work fine but still
+has not been made parallel, so it will take much more than necessary on most
+datasets. Coming soon also improvements from <a class="footnote-reference" href="#id4" id="id2">[2]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</li>
+<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+<li><strong>dataset_size</strong> (<em>int</em>) – A hint on the size of the dataset. May improve performance.</li>
+<li><strong>alpha</strong> (<em>float</em>) – The regularization coefficient.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Lacoste-Julien, Simon, et al. “Block-Coordinate Frank-Wolfe
+Optimization for Structural SVMs.” ICML 2013 International Conference
+on Machine Learning. 2013.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Osokin, Anton, et al. “Minding the Gaps for Block Frank-Wolfe
+Optimization of Structured SVMs.” Proceedings of Machine Learning
+Research. Proceedings of the International Conference on Machine
+Learning (ICML 2016). 2016.</td></tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -289,7 +325,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

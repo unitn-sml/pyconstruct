@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Datasets &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>Datasets &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Manual" href="../index.html"/>
         <link rel="next" title="pyconstruct.datasets.load" href="generated/pyconstruct.datasets.load.html"/>
         <link rel="prev" title="Manual" href="../index.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -99,16 +99,13 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.load.html">pyconstruct.datasets.load</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.load_ocr.html">pyconstruct.datasets.load_ocr</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.load_conll00.html">pyconstruct.datasets.load_conll00</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.ocr.html">pyconstruct.datasets.ocr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.conll00.html">pyconstruct.datasets.conll00</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.datasets.utils.html">pyconstruct.datasets.utils</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../learners/index.html">Learners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -193,18 +190,25 @@
 <tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.datasets.load_conll00.html#pyconstruct.datasets.load_conll00" title="pyconstruct.datasets.load_conll00"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_conll00</span></code></a>(**kwargs)</td>
 <td>Convenience function for loading the CoNLL00 dataset.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.datasets.ocr.html#module-pyconstruct.datasets.ocr" title="pyconstruct.datasets.ocr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ocr</span></code></a></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.datasets.conll00.html#module-pyconstruct.datasets.conll00" title="pyconstruct.datasets.conll00"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conll00</span></code></a></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.datasets.utils.html#module-pyconstruct.datasets.utils" title="pyconstruct.datasets.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></td>
-<td></td>
-</tr>
 </tbody>
 </table>
-<span class="target" id="module-pyconstruct.datasets"></span></div>
+<span class="target" id="module-pyconstruct.datasets"></span><p>Pyconstruct provides methods for loading a number of datasets for standard tasks
+in structured-output prediction. The current list of available datasets
+includes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ocr</strong> : Ben Taskar’s ORC dataset</li>
+<li><strong>conll00</strong> : CoNLL 2000 Text Chunking dataset</li>
+<li><strong>horseseg</strong> : HorseSeg dataset (coming soon)</li>
+</ul>
+</div></blockquote>
+<p>Datasets can be loaded using the <a class="reference internal" href="generated/pyconstruct.datasets.load.html#pyconstruct.datasets.load" title="pyconstruct.datasets.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a> function provided by this module. In
+most cases, the dataset is downloaded upon first loading and stored in a local
+directory on your computer for faster retrieval from the second loading onwards
+(the actual directory depends on the operating system). The data is preprocessed
+and made available in a format that can be already used for learning with any
+algorithm provided by Pyconstruct.</p>
+</div>
 
 
            </div>
@@ -250,7 +254,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

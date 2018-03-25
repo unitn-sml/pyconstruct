@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.BaseSSG &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>pyconstruct.learners.BaseSSG &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.BaseSSG.decision_function" href="pyconstruct.learners.BaseSSG.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.BaseLearner.set_params" href="pyconstruct.learners.BaseLearner.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -116,9 +116,9 @@
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.html">pyconstruct.learners.BlockCoordinateFrankWolfe</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -193,7 +193,35 @@
 <dl class="class">
 <dt id="pyconstruct.learners.BaseSSG">
 <em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BaseSSG</code><span class="sig-paren">(</span><em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>structured_loss=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BaseSSG" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Methods</p>
+<dd><p>Base implementation of a learner with the subgradient algorithm.</p>
+<p>This class implements the backbone of a learner that uses the Stochastic
+Subgradient descent method <a class="footnote-reference" href="#id2" id="id1">[1]</a> for updating the weights of a linear model.
+The <a class="reference internal" href="pyconstruct.learners.BaseSSG.partial_fit.html#pyconstruct.learners.BaseSSG.partial_fit" title="pyconstruct.learners.BaseSSG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a> method takes care of making inference and calling a
+gradient step for each example in the batch. Implementations may use
+different methods for making a gradient step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</li>
+<li><strong>inference</strong> (<em>str in</em><em> [</em><em>'map'</em><em>, </em><em>'loss_augmented_map'</em><em>]</em>) – Which type of inference to perform when learning.</li>
+<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Ratliff, Nathan D., J. Andrew Bagnell, and Martin A. Zinkevich.
+“(Online) Subgradient Methods for Structured Prediction.” Artificial
+Intelligence and Statistics. 2007.</td></tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -286,7 +314,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

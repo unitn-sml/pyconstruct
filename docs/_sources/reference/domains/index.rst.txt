@@ -3,13 +3,14 @@ Domains
 
 .. currentmodule:: pyconstruct.domains
 
+.. toctree::
+   :maxdepth: 2
+
+   predefined
+
 .. autosummary::
    :toctree: generated/
 
-   get_path
-   get_source
-   get_info
-   print_info
    BaseDomain
    MiniZincDomain
 

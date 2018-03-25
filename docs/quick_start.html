@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Start &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>Quick Start &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="Manual" href="reference/index.html"/>
         <link rel="prev" title="Install" href="install.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -218,7 +218,7 @@ constraints and the features of the objects. To do so, we need to create a
     <span class="p">]</span>
     <span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
 
-<span class="p">{</span><span class="o">%</span> <span class="n">endset</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
 
 <span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">}}</span>
 </pre></div>
@@ -277,15 +277,51 @@ available in Pyconstruct out-of-the-box. You can load the domain by simply:</p>
 </pre></div>
 </div>
 <p>After defining the domain, using the predefined one or the <em class="xref py py-obj">ocr.pmzn</em> file, we
-can start learning by instantiating a learner, say a <em class="xref py py-obj">StructuredPerceptron</em>, and
-fitting the data:</p>
+can start learning. We first need to instantiate a learner, say a
+<em class="xref py py-obj">StructuredPerceptron</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">StructuredPerceptron</span>
 <span class="n">sp</span> <span class="o">=</span> <span class="n">StructuredPerceptron</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">ocr_dom</span><span class="p">)</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will take a while… If you need a quick benchmark, Pyconstruct contains
-pretrained models for many domains and learners (link).</p>
+<p>Pyconstruct is built to be compatible with most of the available utilities in
+Scikit-learn. One thing one would like to do at this point is to shuffle and
+split the data into training and test set. We can use Scikit-learn like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pyconstruct has also its own utilities to deal with structured data. In order
+to use train the <em class="xref py py-obj">StructuredPerceptron</em> we will need to divide the data in
+mini-batches and use its <em class="xref py py-obj">partial_fit</em> method.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.utils</span> <span class="k">import</span> <span class="n">batches</span>
+
+<span class="k">for</span> <span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To evaluate the learner we will need a suitable metric. What it usually done
+used with OCR is the normalized Hamming loss. Pyconstruct has a Hamming loss
+function already available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.metrics</span> <span class="k">import</span> <span class="n">hamming</span>
+
+<span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_true</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">hamming</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_true</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <em class="xref py py-obj">hamming</em> function returns the Hamming distance between each pair of
+elements in the input arrays, so we take the mean. We can then compute the loss
+over the test set while training:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span><span class="p">)</span>
+    <span class="n">Y_pred</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loss = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loss</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>This will take a while, depending on the computational resources you have. You
+can parallelize inference by passing <em class="xref py py-obj">n_jobs</em> to the <em class="xref py py-obj">Domain</em> constructor, as
+well as to the <em class="xref py py-obj">hamming</em> function. Additionally, if you need a quick benchmark,
+Pyconstruct also contains pretrained models for many domains and learners
+(link).</p>
 </div>
 
 
@@ -332,7 +368,7 @@ pretrained models for many domains and learners (link).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

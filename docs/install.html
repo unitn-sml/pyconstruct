@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Install &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>Install &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="Quick Start" href="quick_start.html"/>
         <link rel="prev" title="Pyconstruct" href="index.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -159,7 +159,7 @@
             
   <div class="section" id="install">
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
-<p>Weaver can be installed via Pip:</p>
+<p>Pyconstruct can be installed via Pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyconstruct</span>
 </pre></div>
 </div>
@@ -168,12 +168,14 @@ on <a class="reference external" href="https://github.com/unitn-sml/pyconstruct/
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
-<p>Currently, Pyconstruct is developed and maintained in Python 3.5 with a
-porting to Python 2.7 at every major release (the python2 branch does not always
-contain the most recent changes).</p>
 <p>Pyconstruct requires PyMzn to be installed on your machine, together with
-MiniZinc and at least one solver (e.g. <a class="reference external" href="http://www.gecode.org/">Gecode</a>,
-<a class="reference external" href="http://www.gurobi.com/">Gurobi</a>). Check-out <a class="reference external" href="http://paolodragone.com/pymzn/install.html">PyMzn installation guide</a> for details.</p>
+<em class="xref py py-obj">MiniZinc</em>. Check-out
+<a class="reference external" href="http://paolodragone.com/pymzn/install.html">PyMzn installation guide</a> for
+details.</p>
+<p>Alongside MiniZinc, you will need a constraint solver. PyMzn supports many
+open-source solvers such as <em class="xref py py-obj">Gecode</em> and <em class="xref py py-obj">Chuffed</em>. However, we recommend you give <a class="reference external" href="http://www.gurobi.com/">Gurobi</a> a try, it’s blazingly fast for the kind of problems
+we usually solve in structured-output prediction, even more so when adding
+constraints to them. If you are in academia, they provide <em class="xref py py-obj">free licenses</em> for research purpose.</p>
 </div>
 
 
@@ -220,7 +222,7 @@ MiniZinc and at least one solver (e.g. <a class="reference external" href="http:
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

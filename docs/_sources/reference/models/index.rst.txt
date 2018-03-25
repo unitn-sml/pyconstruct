@@ -6,5 +6,8 @@ Models
 .. autosummary::
    :toctree: generated/
 
+   BaseModel
+   LinearModel
 
 .. automodule:: pyconstruct.models
+

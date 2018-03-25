@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Domains" href="../index.html"/>
         <link rel="next" title="pyconstruct.domains.MiniZincDomain.infer" href="pyconstruct.domains.MiniZincDomain.infer.html"/>
         <link rel="prev" title="pyconstruct.domains.BaseDomain.phi" href="pyconstruct.domains.BaseDomain.phi.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -97,10 +97,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Domains</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.get_path.html">pyconstruct.domains.get_path</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.get_source.html">pyconstruct.domains.get_source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.get_info.html">pyconstruct.domains.get_info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.print_info.html">pyconstruct.domains.print_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../predefined.html">Predefined domains</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.BaseDomain.html">pyconstruct.domains.BaseDomain</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.domains.MiniZincDomain</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.infer.html">pyconstruct.domains.MiniZincDomain.infer</a></li>
@@ -108,12 +105,13 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.phi.html">pyconstruct.domains.MiniZincDomain.phi</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#standard-inference-problems">Standard inference problems</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../learners/index.html">Learners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -204,31 +202,29 @@ using <a class="reference external" href="http://jinja.pocoo.org/">Jinja2</a>. W
 reuse the same domain (attributes, constraints and features) to solve
 different inference problems. The most basic PyMzn domain would look like
 this:</p>
-<blockquote>
-<div><p>{% from ‘pyconstruct.pmzn’ import n_features, features, domain, solve %}</p>
-<p>{% call n_features(10) %}</p>
-<dl class="docutils">
-<dt>{% call domain(problem) %}</dt>
-<dd>% Your domain definition, e.g.
-int: x;
-var 0 .. 10: y;
-constraint x + y &lt;= 10;</dd>
-</dl>
-<p>{% endcall %}</p>
-<dl class="docutils">
-<dt>{% call features(problem) %}</dt>
-<dd><p class="first">% Your features definition, e.g.
-[</p>
-<blockquote>
-<div>x + y,
-x - y
-% …</div></blockquote>
-<p class="last">]</p>
-</dd>
-</dl>
-<p>{% endcall %}</p>
-<p>{{ solve(problem, model, discretize=True) }}</p>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;pyconstruct.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">n_features</span><span class="o">,</span> <span class="nn">features</span><span class="o">,</span> <span class="nn">domain</span><span class="o">,</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">n_features</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">domain</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">%</span> <span class="n">Your</span> <span class="n">domain</span> <span class="n">definition</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
+    <span class="nb">int</span><span class="p">:</span> <span class="n">x</span><span class="p">;</span>
+    <span class="n">var</span> <span class="mi">0</span> <span class="o">..</span> <span class="mi">10</span><span class="p">:</span> <span class="n">y</span><span class="p">;</span>
+    <span class="n">constraint</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">features</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">%</span> <span class="n">Your</span> <span class="n">features</span> <span class="n">definition</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
+    <span class="p">[</span>
+        <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span>
+        <span class="n">x</span> <span class="o">-</span> <span class="n">y</span>
+        <span class="o">%</span> <span class="o">...</span>
+    <span class="p">]</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">}}</span>
+</pre></div>
+</div>
 <p>This is a MiniZinc file containing bits of templating in Jinja2. All the
 logic for handling several standard inference problems are hidden inside the
 various calls to the macros imported from ‘pyconstruct.pmzn’.  A user of the
@@ -324,7 +320,7 @@ all inference problems solved by this domain.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

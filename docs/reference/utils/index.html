@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utils &mdash; Pyconstruct 0.0.1 documentation</title>
+  <title>Utilities &mdash; Pyconstruct 0.1.0 documentation</title>
   
 
   
@@ -35,9 +35,10 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.0.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Manual" href="../index.html"/>
-        <link rel="prev" title="Models" href="../models/index.html"/> 
+        <link rel="next" title="pyconstruct.utils.array2str" href="generated/pyconstruct.utils.array2str.html"/>
+        <link rel="prev" title="pyconstruct.models.LinearModel.predict" href="../models/generated/pyconstruct.models.LinearModel.predict.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -66,7 +67,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -97,9 +98,23 @@
 <li class="toctree-l2"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../learners/index.html">Learners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Utils</a><ul class="simple">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.array2str.html">pyconstruct.utils.array2str</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.asarrays.html">pyconstruct.utils.asarrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.broadcast.html">pyconstruct.utils.broadcast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.batches.html">pyconstruct.utils.batches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.dictsplit.html">pyconstruct.utils.dictsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.dict2str.html">pyconstruct.utils.dict2str</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.get_logger.html">pyconstruct.utils.get_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.get_class.html">pyconstruct.utils.get_class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.get_defaults.html">pyconstruct.utils.get_defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.hashkey.html">pyconstruct.utils.hashkey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.load.html">pyconstruct.utils.load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.save.html">pyconstruct.utils.save</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.subdict.html">pyconstruct.utils.subdict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyconstruct.utils.typedkey.html">pyconstruct.utils.typedkey</a></li>
 </ul>
 </li>
 </ul>
@@ -150,7 +165,7 @@
         
           <li><a href="../index.html">Manual</a> &raquo;</li>
         
-      <li>Utils</li>
+      <li>Utilities</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -169,17 +184,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="utils">
-<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.array2str.html#pyconstruct.utils.array2str" title="pyconstruct.utils.array2str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array2str</span></code></a>(array)</td>
+<td>Pretty formatter of a numpy array for one-line logging.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.asarrays.html#pyconstruct.utils.asarrays" title="pyconstruct.utils.asarrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarrays</span></code></a>(*args)</td>
+<td>Returns the input objects as one-element arrays</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.broadcast.html#pyconstruct.utils.broadcast" title="pyconstruct.utils.broadcast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast</span></code></a>(f,&nbsp;*args[,&nbsp;n_jobs])</td>
+<td>Applies f to each element of the input vectors.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.batches.html#pyconstruct.utils.batches" title="pyconstruct.utils.batches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batches</span></code></a>(*args[,&nbsp;n_batches,&nbsp;batch_size])</td>
+<td>Returns a generator of batches.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.dictsplit.html#pyconstruct.utils.dictsplit" title="pyconstruct.utils.dictsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dictsplit</span></code></a>(d,&nbsp;keys)</td>
+<td>Split a dictionary in two given a set of keys.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.dict2str.html#pyconstruct.utils.dict2str" title="pyconstruct.utils.dict2str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict2str</span></code></a>(d)</td>
+<td>Pretty formatter of a dictionary for one-line logging.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.get_logger.html#pyconstruct.utils.get_logger" title="pyconstruct.utils.get_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logger</span></code></a>(name)</td>
+<td>Utility to get a logger with a BracesAdapter</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.get_class.html#pyconstruct.utils.get_class" title="pyconstruct.utils.get_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class</span></code></a>(name[,&nbsp;defmod])</td>
+<td>Finds a class.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.get_defaults.html#pyconstruct.utils.get_defaults" title="pyconstruct.utils.get_defaults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_defaults</span></code></a>(func)</td>
+<td>Gets the default values of the keyword arguments a function.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.hashkey.html#pyconstruct.utils.hashkey" title="pyconstruct.utils.hashkey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hashkey</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Return an hasable object out of the input parameters.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.load.html#pyconstruct.utils.load" title="pyconstruct.utils.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path)</td>
+<td>Loads a Python object from a Pickle file at the given path.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.save.html#pyconstruct.utils.save" title="pyconstruct.utils.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(obj,&nbsp;path)</td>
+<td>Save a Python object into a Pickle file at the given path.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.utils.subdict.html#pyconstruct.utils.subdict" title="pyconstruct.utils.subdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subdict</span></code></a>(d[,&nbsp;keys,&nbsp;nokeys])</td>
+<td>Returns a subdictionary.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.utils.typedkey.html#pyconstruct.utils.typedkey" title="pyconstruct.utils.typedkey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typedkey</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Return an hasable object out of the input parameters.</td>
+</tr>
 </tbody>
 </table>
-<span class="target" id="module-pyconstruct.utils"></span><p>Utility package.</p>
+<span class="target" id="module-pyconstruct.utils"></span><p>Utilities to deal with structured objects, training, parallelizing, caching.</p>
 </div>
 
 
@@ -192,8 +249,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="generated/pyconstruct.utils.array2str.html" class="btn btn-neutral float-right" title="pyconstruct.utils.array2str" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="../models/index.html" class="btn btn-neutral" title="Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="../models/generated/pyconstruct.models.LinearModel.predict.html" class="btn btn-neutral" title="pyconstruct.models.LinearModel.predict" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -224,7 +283,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
