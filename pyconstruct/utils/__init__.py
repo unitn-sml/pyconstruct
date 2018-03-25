@@ -1,4 +1,6 @@
-"""Utility package."""
+"""\
+Utilities to deal with structured objects, training, parallelizing, caching.
+"""
 
 from .others import *
 from .pickle import *
