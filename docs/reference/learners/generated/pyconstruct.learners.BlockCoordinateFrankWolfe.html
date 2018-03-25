@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyconstruct.learners.BlockCoordinateFrankWolfe &mdash; Pyconstruct 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Learners" href="../index.html"/>
+        <link rel="next" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html"/>
+        <link rel="prev" title="pyconstruct.learners.StructuredPerceptron.set_params" href="pyconstruct.learners.StructuredPerceptron.set_params.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Pyconstruct
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BaseLearner.html">pyconstruct.learners.BaseLearner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.BaseSSG.html">pyconstruct.learners.BaseSSG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.SSG.html">pyconstruct.learners.SSG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.EG.html">pyconstruct.learners.EG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.learners.StructuredPerceptron.html">pyconstruct.learners.StructuredPerceptron</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.learners.BlockCoordinateFrankWolfe</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html">pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.fit.html">pyconstruct.learners.BlockCoordinateFrankWolfe.fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.get_params</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.loss.html">pyconstruct.learners.BlockCoordinateFrankWolfe.loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit.html">pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html">pyconstruct.learners.BlockCoordinateFrankWolfe.predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html">pyconstruct.learners.BlockCoordinateFrankWolfe.score</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.set_params</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Pyconstruct</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Manual</a> &raquo;</li>
+        
+          <li><a href="../index.html">Learners</a> &raquo;</li>
+        
+      <li>pyconstruct.learners.BlockCoordinateFrankWolfe</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/reference/learners/generated/pyconstruct.learners.BlockCoordinateFrankWolfe.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyconstruct-learners-blockcoordinatefrankwolfe">
+<h1>pyconstruct.learners.BlockCoordinateFrankWolfe<a class="headerlink" href="#pyconstruct-learners-blockcoordinatefrankwolfe" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyconstruct.learners.BlockCoordinateFrankWolfe">
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BlockCoordinateFrankWolfe</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>structured_loss=None</em>, <em>dataset_size=1</em>, <em>alpha=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learner using the Block-Coordinate Frank-Wolfe algorithm <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
+<p>This implementation is still a bit experimental. Should work fine but still
+has not been made parallel, so it will take much more than necessary on most
+datasets. Coming soon also improvements from <a class="footnote-reference" href="#id4" id="id2">[2]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</li>
+<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+<li><strong>dataset_size</strong> (<em>int</em>) – A hint on the size of the dataset. May improve performance.</li>
+<li><strong>alpha</strong> (<em>float</em>) – The regularization coefficient.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Lacoste-Julien, Simon, et al. “Block-Coordinate Frank-Wolfe
+Optimization for Structural SVMs.” ICML 2013 International Conference
+on Machine Learning. 2013.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Osokin, Anton, et al. “Minding the Gaps for Block Frank-Wolfe
+Optimization of Structured SVMs.” Proceedings of Machine Learning
+Research. Proceedings of the International Conference on Machine
+Learning (ICML 2016). 2016.</td></tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html#pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.fit.html#pyconstruct.learners.BlockCoordinateFrankWolfe.fit" title="pyconstruct.learners.BlockCoordinateFrankWolfe.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
+<td>Updates the current model with data (X, Y).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html#pyconstruct.learners.BlockCoordinateFrankWolfe.get_params" title="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.loss.html#pyconstruct.learners.BlockCoordinateFrankWolfe.loss" title="pyconstruct.learners.BlockCoordinateFrankWolfe.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit.html#pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit" title="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
+<td>Updates the current model with data (X, Y).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html#pyconstruct.learners.BlockCoordinateFrankWolfe.predict" title="pyconstruct.learners.BlockCoordinateFrankWolfe.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;**kwargs)</td>
+<td>Computes the prediction of the current model for the given input.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html#pyconstruct.learners.BlockCoordinateFrankWolfe.score" title="pyconstruct.learners.BlockCoordinateFrankWolfe.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y_true[,&nbsp;Y_pred])</td>
+<td>Compute the score as the average loss over the examples.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html#pyconstruct.learners.BlockCoordinateFrankWolfe.set_params" title="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">dual_gap</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></td>
+<td>The predictive model the algorithm has learned.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html" class="btn btn-neutral float-right" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyconstruct.learners.StructuredPerceptron.set_params.html" class="btn btn-neutral" title="pyconstruct.learners.StructuredPerceptron.set_params" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Paolo Dragone (MIT Licence).
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

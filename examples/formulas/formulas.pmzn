@@ -1,0 +1,125 @@
+{# formulas.pmzn
+
+Domain for a simple handwritten formula recognition task.
+
+INPUT x
+-------
+length : int
+    The length of the sequence of characters.
+images : array3d(1 .. length, 1 .. MAX_HEIGHT, 1 .. MAX_WIDTH)
+    The sequence of images as a 3D matrix.
+
+OUTPUT y
+--------
+sequence : array[1 .. length], 1 .. 26
+    The sequence of symbols, encoded as integers 1 .. 11.
+
+FEATURES phi
+------------
+emission : 11 * MAX_HEIGHT * MAX_WIDTH, int 1 .. length
+    For each symbol label s and pixel (i, j), count the number of symbols in the
+    sequence that have been assigned label s and have pixel (i, j) active.
+transition : 11 * 11, int 1 .. length
+    For each pair of symbols s1, s2, count the number of times in the sequence
+    s1 precedes s2.
+#}
+
+include "globals.mzn";
+
+int: MAX_DIGITS = 3;
+set of int: DIGITS = 1 .. MAX_DIGITS;
+int: MAX_NUM = pow(10, MAX_DIGITS + 1);
+
+int: MAX_HEIGHT = 9;
+int: MAX_WIDTH = 9;
+set of int: HEIGHT = 1 .. MAX_HEIGHT;
+set of int: WIDTH = 1 .. MAX_WIDTH;
+
+
+% Assume '+' is encoded with 10
+% and '=' is encoded with 11
+int: PLUS = 10;
+int: EQUAL = 11;
+int: N_SYMBOLS = 12;
+set of int: SYMBOLS = 0 .. N_SYMBOLS - 1;
+
+%% Input: Length of the sequence and images
+int: length;
+set of int: SEQUENCE = 1 .. length;
+array[SEQUENCE, HEIGHT, WIDTH] of {0, 1}: images;
+
+%% Output: Sequence of symbols, numers 0 to 9;
+array[SEQUENCE] of var SYMBOLS: sequence;
+
+%% Indices of the two operators
+array[1 .. 2] of var 2 .. length - 1: opr;
+
+constraint increasing(opr);
+constraint sequence[opr[1]] == PLUS /\ sequence[opr[2]] == EQUAL;
+constraint count(sequence, PLUS, 1) /\ count(sequence, EQUAL, 1);
+
+
+set of int: SEQUENCE0 = 1 .. length + 2 * MAX_DIGITS;
+
+array[SEQUENCE0] of var SYMBOLS: sequence0 = [
+    if i > MAX_DIGITS /\ i <= length + MAX_DIGITS then
+        sequence[i - MAX_DIGITS]
+    else
+        0
+    endif | i in SEQUENCE0
+];
+
+array[1 .. 4] of var 0 .. length + 1: ext = [0, opr[1], opr[2], length + 1];
+
+array[1 .. 3] of var DIGITS: n_digits = [
+    ext[i + 1] - ext[i] - 1 | i in 1 .. 3
+];
+
+array[1 .. 3, DIGITS] of var SYMBOLS: digits = array2d(1 .. 3, DIGITS, [
+    if j <= (MAX_DIGITS - n_digits[i]) then 0 else
+        sequence0[ext[i] + j + n_digits[i]]
+    endif | i in 1 .. 3, j in DIGITS
+]);
+
+array[1 .. 3] of var 0 .. MAX_NUM: num = [
+    sum(j in 1 .. MAX_DIGITS)(
+        pow(10, MAX_DIGITS - j) * digits[i, j]
+    ) | i in 1 .. 3
+];
+
+constraint num[1] + num[2] == num[3];
+
+
+%
+% FEATURES
+%
+
+int: N_EMISSION_FEATURES = MAX_HEIGHT * MAX_WIDTH * N_SYMBOLS;
+set of int: EMISSION_FEATURES = 1 .. N_EMISSION_FEATURES;
+
+int: N_TRANSITION_FEATURES = N_SYMBOLS * N_SYMBOLS;
+set of int: TRANSITION_FEATURES = 1 .. N_TRANSITION_FEATURES;
+
+int: N_FEATURES = (
+    N_EMISSION_FEATURES + N_TRANSITION_FEATURES
+);
+set of int: FEATURES = 1 .. N_FEATURES;
+
+array[EMISSION_FEATURES] of var int: emission_features = [
+        sum(e in SEQUENCE)(images[e, i, j] * (sequence[e] == s))
+    | i in HEIGHT, j in WIDTH, s in SYMBOLS
+];
+
+array[TRANSITION_FEATURES] of var int: transition_features = [
+        sum(e in 1 .. length - 1)(sequence[e] == s1 /\ sequence[e + 1] == s2)
+    | s1, s2 in SYMBOLS
+];
+
+array[FEATURES] of var int: phi = (
+    emission_features ++ transition_features
+);
+
+
+{% from 'pyconstruct.pmzn' import solve %}
+{{ solve(problem, model, discretize=True, feature_var='phi') }}
+

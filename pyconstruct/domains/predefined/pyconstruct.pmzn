@@ -1,0 +1,227 @@
+{# pyconstruct.pmzn
+
+Collection of template macros to be used to define domains for structured
+classification with linear models.  Implements standard procedures for handling
+different inference problems.
+
+PROBLEMS
+--------
+phi
+    Gets x and y as data, returns a feature vector phi(x, y).
+n_features
+    Returns the number of features defined in the domain.
+map
+    Gets x as data, computes the argmax of the score w.r.t. the given model.
+loss_augmented_map
+    Gets x as data, computes the argmax of the score + loss.
+
+#}
+
+{% set BOOL_SET = '{0, 1}' %}
+{% set INT_SET = '-461168601 .. 461168601' %}
+{% set FLOAT_SET = '-461168601.0 .. 461168601.0' %}
+
+
+{% macro n_features(
+    n_features='', n_features_var='N_FEATURES', feature_set_var='FEATURES'
+) %}
+    {# Boilerplate for feature number definition.
+
+    PARAMETERS
+    ----------
+    n_features : int or str
+        The number of feature. Use this parameter in alternative to caller.
+    n_feature_var : str
+        The variable name of the feature array. Default is 'phi'.
+    feature_set : str
+        The variable name of the feature index set: Default is 'FEATURES'.
+
+    USAGE
+    -----
+        {{ call n_features(10) }}
+    Or
+        {% call n_features() %}
+            N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
+        {% endcall %}
+    Or
+        {% call n_features(10) %}
+            % Sums 10 at the end
+            N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
+        {% endcall %}
+    #}
+
+    {% if caller is defined %}
+        int: {{ n_features_var }} = {{ caller() }}{{ ' + ' + n_features if n_features != '' else '' }};
+    {% elif n_features != '' %}
+        int: {{ n_features_var }} = {{ n_features }};
+    {% else %}
+        int: {{ n_features_var }} = 0;
+    {% endif %}
+    set of int: {{ feature_set_var }} = 1 .. {{ n_features_var }};
+
+{% endmacro %}
+
+
+{% macro features(
+    features='', feature_var='phi', feature_set='FEATURES', feature_type='float'
+) %}
+    {# Boilerplate for features definition.
+
+    PARAMETERS
+    ----------
+    features : str
+        The feature definition. Use this parameter in alternative to caller.
+    feature_var : str
+        The variable name of the feature array. Default is 'phi'.
+    feature_set : str
+        The variable name of the feature index set: Default is 'FEATURES'.
+    feature_type : str
+        The type of the features. Default is 'float'.
+
+    USAGE
+    -----
+        {% call features() %}
+            % Your features definition, e.g.
+            % [ feature1, feature2 ] ++ [ feature3 ]
+        {% endcall %}
+
+    #}
+
+    {% if caller is defined %}
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ caller() }}{{ ' ++ ' + features if features != '' else ''}};
+    {% elif features != '' %}
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ features }};
+    {% else %}
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = [];
+    {% endif %}
+
+{% endmacro %}
+
+
+{% macro domain(problem, domain='') %}
+    {# Boilerplate for domain definition.
+
+    PARAMETERS
+    ----------
+    problem : str in ['phi', 'n_features', 'map', 'loss_augmented_map']
+        The problem to solve. This parameter is usually passed by the Python
+        domain class.
+    domain : str
+        The domain definition. Use this parameter in alternative to caller.
+
+    USAGE
+    -----
+        {% call domain(problem) %}
+            % Your domain definition, e.g.
+            % int: x;
+            % var 0 .. 10: y;
+            % constraint x + y <= 10;
+        {% endcall %}
+    #}
+
+    {% if problem in ('phi', 'map', 'loss_augmented_map') %}
+        {% if domain != '' %}
+            {{ domain }}
+        {% endif %}
+        {% if caller is defined %}
+            {{ caller() }}
+        {% endif %}
+    {% endif %}
+
+{% endmacro %}
+
+
+{% macro solve(
+    problem, model={}, discretize=False, factor=100, score='',
+    feature_var='phi', feature_set='FEATURES', w_type='', score_type='',
+    loss='', loss_type=''
+) %}
+    {# Boilerplate for problem dependent solve statement.
+
+    PARAMETERS
+    ----------
+    problem : str in ['phi', 'n_features', 'map', 'loss_augmented_map']
+        The problem to solve. This parameter is usually passed by the Python
+        domain class.
+    model : dict
+        Dictionary containing the model's paramenters.
+    discretize : bool
+       Wheter to discretize the weight vector and the scoring function. Use only
+       if feature_type and loss_type are int. Default 'False'.
+    factor : int
+        The pre-multiplicative factor before discretization.
+    score : str
+        The score function. Default to dot product between weights and features.
+    feature_var : str
+        Name of the variable containing the feature array.
+    feature_set : str
+        Name or formula for the index set of the feature array.
+    w_type : str
+        The type of the weights. Defaults to float unless discretize is True, in
+        which case defaults to int.
+    score_type : str
+        The type of the score. Defaults to float unless discretize is True, in
+        which case defaults to int.
+    loss : str
+        Formula for the loss. Used in loss_augmented_map problems.
+    loss_type : str
+        The type of the loss. Defaults to float unless discretize is True, in
+        which case defaults to int.
+
+    USAGE
+    -----
+        {{ solve(problem, model, ...) }}
+    #}
+    {% if problem in ('phi', 'n_features') %}
+        solve satisfy;
+    {% else %}
+        {% if w_type == '' %}
+            {% if discretize %}
+                {% set w_type = INT_SET %}
+            {% else %}
+                {% set w_type = FLOAT_SET %}
+            {% endif %}
+        {% endif %}
+        {% if score_type == '' %}
+            {% if discretize %}
+                {% set score_type = INT_SET %}
+            {% else %}
+                {% set score_type = FLOAT_SET %}
+            {% endif %}
+        {% endif %}
+        {% if loss_type == '' %}
+            {% if discretize %}
+                {% set loss_type = INT_SET %}
+            {% else %}
+                {% set loss_type = FLOAT_SET %}
+            {% endif %}
+        {% endif %}
+
+        {% if 'w' in model and model['w'] is not none %}
+            {% if discretize %}
+                {% set w = model['w']|int(factor)|dzn %}
+            {% else %}
+                {% set w = model['w']|dzn %}
+            {% endif %}
+        {% else %}
+            {% set w = '[0 | i in ' + feature_set + ']' %}
+        {% endif %}
+
+        {% if score == '' %}
+            {% set score %}
+                sum(i in {{ feature_set }})(w[i] * {{ feature_var }}[i])
+            {% endset %}
+        {% endif %}
+
+        array[{{ feature_set }}] of {{ w_type }}: w = {{ w }};
+        var {{ score_type }}: score = {{ score }};
+
+        {% if problem == 'map' %}
+            solve maximize score;
+        {% elif problem == 'loss_augmented_map' %}
+            var {{ loss_type }}: loss = {{ loss }};
+            solve maximize loss + score;
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+

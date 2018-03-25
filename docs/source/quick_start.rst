@@ -1,21 +1,5 @@
-Pyconstruct
+Quick Start
 ===========
-
-<div align="center">
-  <img height="300px" src="docs/_static/images/pyconstruct.png"><br><br>
-</div>
-
-**Pyconstruct** is a Python library for declarative, constrained,
-structured-output prediction. When using Pyconstruct, the problem specification
-can be encoded in MiniZinc, a high-level constraint programming language. This
-means that domain knowledge can be declaratively included in the inference
-procedure as constraints over the optimization variables.
-
-Sounds complicated? A simple example will clear up the doubts!
-
-
-Getting started
----------------
 
 In the following example we will implement a simple OCR (Optical Character
 Recognition) model in few lines of MiniZinc.
@@ -23,17 +7,13 @@ Recognition) model in few lines of MiniZinc.
 First of all, lets fetch the data. Pyconstruct has a utility for getting some
 standard datasets::
 
-```python
     from pyconstruct import datasets
     ocr = datasets.load('ocr')
-```
 
 The first time the dataset is loaded it will actually be fetched from the web
 and stored locally. You can now see the description of the dataset::
 
-```python
     print(ocr.descr)
-```
 
 By default, structured objects are represented as Python dictionaries in
 Pyconstruct. Each objects as several "attributes", identified with some string.
@@ -45,10 +25,8 @@ bitmap images of each character in the word. The targets (labels) are also
 structured objects containig a single attribute `sequence`, a list of integers
 representing the letters associated to each image in the word. For instance::
 
-```python
     print(ocr.data[0])
     print(ocr.targets[0])
-```
 
 After getting the data, we can start coding our problem. First of all, in
 Pyconstruct there are three main kinds of objects to interact with: Domains,
@@ -66,7 +44,6 @@ MiniZinc which defines how the attributes of the objects interact, which are the
 constraints and the features of the objects. To do so, we need to create a
 `ocr.pmzn` file::
 
-```HTML+Django
     {% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
 
     {{ n_features('16 * 8 * 26') }}
@@ -89,14 +66,11 @@ constraints and the features of the objects. To do so, we need to create a
     {% endcall %}
 
     {{ solve(problem, model, discretize=True) }}
-```
 
 That's it! Now we can instantiate a `Domain` with our new `ocr.pmzn` file::
 
-```python
     from pyconstruct import Domain
     ocr_dom = Domain('ocr.pmzn')
-```
 
 If you know MiniZinc, the above code will probably look a bit odd. That is
 because Pyconstruct by default uses a superset of MiniZinc defined by the PyMzn
@@ -111,10 +85,8 @@ imports few useful macros from the `pyconstruct.pmzn` file.
 The second line `{{ n_features('16 * 8 * 26') }}` calls the `n_features` macro,
 which compiles into::
 
-```HTML+Django
     int: N_FEATURES = 16 * 8 * 26;
     set of int: FEATURES 1 .. N_FEATURES;
-```
 
 The MiniZinc code enclosed in the tags
 `{% call domain(problem) %} ... {% endcall %}` is processed on the basis of the
@@ -131,12 +103,10 @@ optimization variables when solving inference.
 
 Inside the domain call we also call the `features` macro, which compiles into::
 
-```HTML+Django
     array[FEATURES] of var int: phi = [
         sum(e in 1 .. length)(images[e, i, j] * (sequence[e] == s))
         | i in 1 .. 16, j in 1 .. 8, s in 1 .. 26
     ];
-```
 
 These are typical features used in OCR, for each symbol `s` and each pixel `(i,
 j)` in the images containing the number of times in the sequence the `(i, j)`
@@ -153,48 +123,54 @@ usually passed to the domain by Pyconstruct.
 The above model is actually a partial example of the complete `ocr` domain
 available in Pyconstruct out-of-the-box. You can load the domain by simply::
 
-```python
     ocr_dom = Domain('ocr')
-```
 
 After defining the domain, using the predefined one or the `ocr.pmzn` file, we
-can start learning by instantiating a learner, say a `StructuredPerceptron`, and
-fitting the data::
+can start learning. We first need to instantiate a learner, say a
+`StructuredPerceptron`::
 
-```python
     from pyconstruct import StructuredPerceptron
     sp = StructuredPerceptron(domain=ocr_dom)
-    sp.fit(ocr.data, ocr.targets)
-```
 
-This will take a while... If you need a quick benchmark, Pyconstruct contains
-pretrained models for many domains and learners (link).
+Pyconstruct is built to be compatible with most of the available utilities in
+Scikit-learn. One thing one would like to do at this point is to shuffle and
+split the data into training and test set. We can use Scikit-learn like this::
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, Y_train, Y_test = train_test_split(ocr.data, ocr.target, test_size=0.05)
+
+Pyconstruct has also its own utilities to deal with structured data. In order
+to use train the `StructuredPerceptron` we will need to divide the data in
+mini-batches and use its `partial_fit` method.::
+
+    from pyconstruct.utils import batches
+
+    for X_batch, Y_batch in batches(X_train, Y_train, batch_size=50):
+        sp.partial_fit(X_batch, Y_batch)
+
+To evaluate the learner we will need a suitable metric. What it usually done
+used with OCR is the normalized Hamming loss. Pyconstruct has a Hamming loss
+function already available::
+
+    from pyconstruct.metrics import hamming
+
+    def loss(Y_pred, Y_true):
+        return hamming(Y_pred, Y_true, key='sequence', normalize=True).mean()
+
+The `hamming` function returns the Hamming distance between each pair of
+elements in the input arrays, so we take the mean. We can then compute the loss
+over the test set while training::
+
+    for X_batch, Y_batch in batches(X_train, Y_train, batch_size=50):
+        sp.partial_fit(X_batch, Y_batch)
+        Y_pred = sp.predict(X_test)
+        print('Loss = {}'.format(loss(Y_pred, Y_test)))
+
+This will take a while, depending on the computational resources you have. You
+can parallelize inference by passing `n_jobs` to the `Domain` constructor, as
+well as to the `hamming` function. Additionally, if you need a quick benchmark,
+Pyconstruct also contains pretrained models for many domains and learners
+(link).
 
 
-Install
--------
-Pyconstruct can be installed through `pip`:
-
-```bash
-pip install pyconstruct
-```
-
-Or by downloading the code from Github and running the following from the
-downloaded directory:
-
-```bash
-python setup.py install
-```
-
-After installing Pyconstruct you will need to install **MiniZinc** as well.
-Download the latest release of MiniZincIDE and follow the instructions.
-
-Authors
--------
-This project is developed at the SML research group at the University of Trento
-(Italy). Main developers and maintainers:
-
-* Paolo Dragone
-* Stefano Teso (now at KU Leuven)
-* Andrea Passerini
 

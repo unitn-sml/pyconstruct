@@ -1,0 +1,131 @@
+{# conll00.pmzn
+
+Domain for the Text Chunking task from the CoNLL 2000 dataset [sang2000conll].
+
+PARAMETERS
+----------
+y_true : dict
+   The true output object for computing the hamming loss in loss_augmented_map
+   problems.
+
+INPUT x
+-------
+length : int
+    The length of the sentence (sequence of words).
+attributes : array2d(1 .. length, 1 .. 19)
+    The sequence of precomputed attributes of the words.
+
+OUTPUT y
+--------
+labels : array[1 .. length], 1 .. 23
+    The sequence of chunk labels, encoded as integers in 1 .. 23. To convert
+    back to a textual representation use
+    `pyconstruct.datasets.conll00.int2label`.
+
+FEATURES phi
+------------
+emission : 74658 * 23, int 0 .. length
+    For each word e, attribute i and value j, count the number of words in the
+    sequence that have been assigned label s and have attribute i equal to j.
+transition : 23 * 23, int 0 .. length
+    For each pair of labels l1, l2, count the number of times in the sequence
+    l1 precedes l2.
+bias : 23 * 2, int {0, 1}
+    Whether label l is at the beginning or at the end of the sequence.
+
+REFERENCES
+----------
+       .. [sang2000conll] Tjong Kim Sang, Erik F., and Sabine Buchholz.
+          "Introduction to the CoNLL-2000 shared task: Chunking." Proceedings
+          of the 2nd workshop on Learning language in logic and the 4th
+          conference on Computational natural language learning-Volume 7.
+          Association for Computational Linguistics, 2000.
+
+LINKS
+-----
+Dataset
+    https://www.clips.uantwerpen.be/conll2000/chunking/
+#}
+
+{% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
+
+int: N_ATTRIBUTES = 19;
+set of int: ATTRIBUTES = 1 .. N_ATTRIBUTES;
+
+int: N_LABELS = 23;
+set of int: LABELS = 1 .. N_LABELS;
+
+array[ATTRIBUTES] of set of int: ATTRIBUTE_SETS = [
+    1 .. 6046, 1 .. 6324, 1 .. 6325, 1 .. 6163, 1 .. 5986, 1 .. 12432,
+    1 .. 12055, 1 .. 45, 1 .. 45, 1 .. 44, 1 .. 44, 1 .. 44, 1 .. 901,
+    1 .. 911, 1 .. 888, 1 .. 878, 1 .. 5241, 1 .. 5246, 1 .. 5040
+];
+
+int: N_EMISSION_FEATURES = 74658 * N_LABELS;
+set of int: EMISSION_FEATURES = 1 .. N_EMISSION_FEATURES;
+
+int: N_TRANSITION_FEATURES = N_LABELS * N_LABELS;
+set of int: TRANSITION_FEATURES = 1 .. N_TRANSITION_FEATURES;
+
+int: N_BIAS_FEATURES = N_LABELS * 2;
+set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
+
+{% call n_features() %}
+    N_EMISSION_FEATURES + N_TRANSITION_FEATURES + N_BIAS_FEATURES
+{% endcall %}
+
+{% call domain() %}
+    %%
+    % DOMAIN
+    %
+    % x = { 'length': int, 'attributes': [np.ndarray] }
+    % y = { 'labels': [int] }
+    %
+    % len(y['labels']) = len(x['attributes']) = x['length']
+    %%
+
+    int: length;
+    set of int: SEQUENCE = 1 .. length;
+    array[SEQUENCE, ATTRIBUTES] of var int: attributes;
+
+    array[SEQUENCE] of var LABELS: labels;
+
+    {% if problem == 'loss_augmented_map'%}
+        array[SEQUENCE] of var LABELS: true_labels = {{ y_true['labels']|dzn }};
+    {% endif %}
+
+
+    %
+    % FEATURES
+    %
+
+    array[EMISSION_FEATURES] of var int: emission_features = [
+            sum(e in SEQUENCE)((attributes[e, i] == j) * (labels[e] == l))
+        | i in ATTRIBUTES, j in ATTRIBUTE_SETS[i], l in LABELS
+    ];
+
+    array[TRANSITION_FEATURES] of var int: transition_features = [
+            sum(e in 1 .. length - 1)(labels[e] == l1 /\ labels[e + 1] == l2)
+        | l1, l2 in LABELS
+    ];
+
+    array[BIAS_FEATURES] of var int: bias_features =[
+        labels[1] == l | l in LABELS
+    ] ++ [
+        labels[length] == l | l in LENGTH
+    ];
+
+    {% call features(feature_type='int') %}
+        emission_features ++ transition_features ++ bias_features
+    {% endcall %}
+
+{% endblock %}
+
+{% set loss %}
+    sum(e in SEQUENCE)(
+        sequence[e] != true_sequence[e]
+    )
+{% endset %}
+
+{{ solve(problem, model, discretize=True, loss=loss) }}
+
