@@ -33,9 +33,14 @@ class TypedHashableArgs:
 
 
 def hashkey(*args, **kwargs):
+    """Return an hasable object out of the input parameters."""
     return HashableArgs(*args, **kwargs)
 
 
 def typedkey(*args, **kwargs):
+    """Return an hasable object out of the input parameters.
+
+    The type of the objects is taken into account.
+    """
     return TypedHashableArgs(*args, **args)
 
