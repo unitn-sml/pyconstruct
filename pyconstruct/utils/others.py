@@ -15,8 +15,8 @@ def get_class(name, defmod=None):
     'pyconstruct.domains.predefined.Class'.  If the class name is not fully
     qualified, e.g. 'Class', it is searched inside the default module.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     name : str
         The fully qualified name of the class or the name of the class or the
         class name in the default module.
@@ -40,8 +40,8 @@ def get_class(name, defmod=None):
 def get_defaults(func):
     """Gets the default values of the keyword arguments a function.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     func : function
         A function.
     """
