@@ -180,7 +180,7 @@ class SSG(BaseSSG):
     def _eta(self):
         return {
             'constant': lambda t: self.eta0,
-            'optimal': lambda t: 1.0 / (alpha * (self._init_t + t - 1)),
+            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
@@ -261,7 +261,7 @@ class EG(BaseSSG):
     def _eta(self):
         return {
             'constant': lambda t: self.eta0,
-            'optimal': lambda t: 1.0 / (alpha * (self._init_t + t - 1)),
+            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
