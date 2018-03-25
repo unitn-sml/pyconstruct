@@ -8,7 +8,12 @@ __all__ = ['StructuredPerceptron']
 
 
 class StructuredPerceptron(SSG):
-    """A simple structured perceptron algorithm [1]_.
+    """A simple structured perceptron algorithm from [1]_.
+
+    Parameters
+    ----------
+    domain : BaseDomain
+        The domain of the data.
 
     References
     ----------
