@@ -163,6 +163,7 @@ class SSG(BaseSSG):
 
     This learner performs the standard Stochastic Subgradient descent from [1]_.
     It also includes the options for:
+
      - Training with the Pegasos update scheme [2]_; simply set `alpha` greater
        than zero to regularize the model.
      - Project onto an L2 or an L1 ball of a given radius, the latter using the
