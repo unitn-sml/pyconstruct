@@ -33,7 +33,7 @@ def train(args):
         X_train.shape[0], X_test.shape[0]
     ))
 
-    sp = StructuredPerceptron(domain=dom)
+    sp = StructuredPerceptron(domain=dom, no_constraints=args.no_constraints)
 
     for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=50)):
 
@@ -61,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--data-file', default='formulas.pickle')
     parser.add_argument('-D', '--domain-file', default='formulas.pmzn')
     parser.add_argument('-p', '--parallel', type=int, default=4)
+    parser.add_argument('-N', '--no-constraints', action='store_true')
     args = parser.parse_args()
 
     train(args)
