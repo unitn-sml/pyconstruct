@@ -26,7 +26,7 @@ def train(args):
 
     X, Y = load(args.data_file)
     X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, test_size=0.005, random_state=42
+        X, Y, test_size=0.01, random_state=42
     )
 
     print('Splitting dataset: {} training example, {} test examples'.format(
