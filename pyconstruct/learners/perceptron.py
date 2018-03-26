@@ -1,6 +1,7 @@
 
 import numpy as np
 
+from ..utils import asarrays
 from .subgradient import SSG
 
 
@@ -28,8 +29,8 @@ class StructuredPerceptron(SSG):
         )
 
     def _step(self, w, x, y_true, y_pred):
-        score_true = self.model.decision_function(x, y_true)
-        score_pred = self.model.decision_function(x, y_pred)
+        score_true = self.model.decision_function(*asarrays(x, y_true))
+        score_pred = self.model.decision_function(*asarrays(x, y_pred))
         if score_true < score_pred:
             return super()._step(w, x, y_true, y_pred)
         return w
