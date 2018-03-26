@@ -51,13 +51,14 @@ array[SEQUENCE, HEIGHT, WIDTH] of {0, 1}: images;
 %% Output: Sequence of symbols, numers 0 to 9;
 array[SEQUENCE] of var SYMBOLS: sequence;
 
+{% if not no_constraints %}
+
 %% Indices of the two operators
 array[1 .. 2] of var 2 .. length - 1: opr;
 
 constraint increasing(opr);
 constraint sequence[opr[1]] == PLUS /\ sequence[opr[2]] == EQUAL;
 constraint count(sequence, PLUS, 1) /\ count(sequence, EQUAL, 1);
-
 
 set of int: SEQUENCE0 = 1 .. length + 2 * MAX_DIGITS;
 
@@ -89,6 +90,7 @@ array[1 .. 3] of var 0 .. MAX_NUM: num = [
 
 constraint num[1] + num[2] == num[3];
 
+{% endif %}
 
 %
 % FEATURES
