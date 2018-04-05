@@ -55,7 +55,7 @@ def load(dataset, *, base=None, fetch=True, force=False):
         else:
             raise RuntimeError('Dataset not found, need to fetch it first.')
 
-    module = __import__('.'.join([__name__, dataset]), fromlist=['load_data'])
+    module = __import__('.'.join([__package__, dataset]), fromlist=['load_data'])
     X, Y, *args = module.load_data(paths)
 
     if len(args) > 0:
