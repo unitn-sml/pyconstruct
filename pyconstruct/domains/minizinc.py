@@ -171,7 +171,7 @@ class MiniZincDomain(BaseDomain):
             return self._phi(x, y_true, **kwargs)
 
         if model is None:
-            model = BaseModel()
+            model = BaseModel(self)
 
         args = {
             **self.args, **kwargs, 'model': model.parameters, 'problem': problem
