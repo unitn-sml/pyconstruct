@@ -116,7 +116,7 @@ class BaseSSG(BaseLearner, ABC):
         # Inference
         if Y_pred is None:
             start = _time()
-            Y_pred = self.predict(X, Y_true, problem=self.inference)
+            Y_pred = self.predict(X, Y, problem=self.inference)
             infer_time = _time() - start
 
         w = None
