@@ -124,8 +124,7 @@ class BaseDomain(ABC):
     def __getstate__(self):
         state = dict(self.__dict__)
         if state['cache'] is not None:
-            for key in state['cache']:
-                del state['cache'][key]
+            state['cache'].clear()
         return state
 
     def __setstate__(self, state):
