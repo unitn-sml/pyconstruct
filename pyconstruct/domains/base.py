@@ -93,6 +93,7 @@ class BaseDomain(ABC):
         # Check cache
         if self.cache is not None:
             keys = []
+            preds = []
             for x in zip(*args):
                 key = hashkey(*x, **kwargs)
                 keys.append(key)
