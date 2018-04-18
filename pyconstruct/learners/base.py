@@ -32,7 +32,7 @@ class BaseLearner(BaseEstimator, ABC):
             return BaseModel(self.domain)
         return self.model_
 
-    def predict(self, X, **kwargs):
+    def predict(self, X, *args, **kwargs):
         """Computes the prediction of the current model for the given input.
 
         Parameters
@@ -46,7 +46,7 @@ class BaseLearner(BaseEstimator, ABC):
         numpy.ndarray
             The array of predicted objects.
         """
-        return self.model.predict(X, **kwargs)
+        return self.model.predict(X, *args, **kwargs)
 
     def score(self, X, Y_true, Y_pred=None, **kwargs):
         """Compute the score as the average loss over the examples.
