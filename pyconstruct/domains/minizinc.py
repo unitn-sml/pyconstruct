@@ -205,9 +205,12 @@ class MiniZincDomain(BaseDomain):
             raise InferenceError('Inference returned no solution.')
 
         y, phi_d = dictsplit(stream[-1], self._y_vars)
-        phi = phi_d['phi']
 
-        if self.cache is not None:
+        phi = None
+        if 'phi' in phi_d:
+            phi = phi_d['phi']
+
+        if self.cache is not None and phi is not None:
             key = hashkey(x, y, **kwargs)
             self.cache[key] = phi
 
