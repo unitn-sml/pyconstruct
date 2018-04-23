@@ -100,7 +100,7 @@ class BaseSSG(BaseLearner, ABC):
         self.structured_loss = structured_loss
 
     @abstractmethod
-    def _step(self, w, x, y_true, y_pred):
+    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
         """Returns updated w"""
 
     def partial_fit(self, X, Y, Y_pred=None):
@@ -119,6 +119,9 @@ class BaseSSG(BaseLearner, ABC):
             Y_pred = self.predict(X, Y, problem=self.inference)
             infer_time = _time() - start
 
+        phi_Y = self.domain.phi(X, Y)
+        phi_Y_pred = self.domain.phi(X, Y_pred)
+
         w = None
         if self.w_ is not None:
             w = np.copy(self.w_)
@@ -130,9 +133,9 @@ class BaseSSG(BaseLearner, ABC):
 
         # Weight updates
         learn_times = []
-        for x, y_true, y_pred in zip(X, Y, Y_pred):
+        for x, y_true, y_pred, phi_y, phi_y_pred in zip(X, Y, Y_pred, phi_Y, phi_Y_pred):
             start = _time()
-            w = self._step(w, x, y_true, y_pred)
+            w = self._step(w, x, y_true, y_pred, phi_y, phi_y_pred)
             learn_time = _time() - start
             learn_times.append(learn_time)
 
@@ -266,13 +269,11 @@ class SSG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, w, x, y_true, y_pred):
+    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
-
-        phi_y_pred = self.domain.phi(*asarrays(x, y_pred))[0]
-        phi_y_true = self.domain.phi(*asarrays(x, y_true))[0]
+        
         psi = phi_y_true - phi_y_pred
 
         if w is None:
@@ -384,13 +385,11 @@ class EG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, w, x, y_true, y_pred):
+    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
 
-        phi_y_pred = self.domain.phi(x, y_pred)
-        phi_y_true = self.domain.phi(x, y_true)
         psi = phi_y_true - phi_y_pred
 
         if w is None:
