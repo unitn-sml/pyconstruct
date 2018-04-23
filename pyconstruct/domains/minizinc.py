@@ -6,6 +6,7 @@ pymzn.templates.add_package('pyconstruct.domains', 'predefined')
 import numpy as np
 
 from .base import BaseDomain, InferenceError
+from ..utils import dictsplit
 
 from pkg_resources import resource_exists, resource_filename
 
@@ -129,6 +130,8 @@ class MiniZincDomain(BaseDomain):
         self.feature_var = feature_var
         self.n_features_var = n_features_var
         self.args = kwargs
+        self._x_vars = None
+        self._y_vars = None
 
     def n_features(self, **kwargs):
         """Return the number of features in the feature vector.
@@ -150,6 +153,11 @@ class MiniZincDomain(BaseDomain):
         return stream[-1][self.n_features_var]
 
     def _phi(self, x, y, **kwargs):
+        if self._x_vars is None:
+            self._x_vars = list(x.keys())
+        if self._y_vars is None:
+            self._y_vars = list(y.keys())
+
         stream = pymzn.minizinc(
             self.domain_file, data={**x, **y},
             args={**self.args, **kwargs, 'problem': 'phi'},
@@ -162,9 +170,14 @@ class MiniZincDomain(BaseDomain):
         return np.array(stream[-1][self.feature_var])
 
     def _infer(self, x, *args, model=None, problem='map', **kwargs):
+        if self._x_vars is None:
+            self._x_vars = list(x.keys())
+
         y_true = None
         if len(args) >= 1:
             y_true = args[0]
+            if self._y_vars is None:
+                self._y_vars = list(y_true.keys())
 
         if problem == 'phi':
             assert y_true is not None
@@ -177,15 +190,31 @@ class MiniZincDomain(BaseDomain):
             **self.args, **kwargs, 'model': model.parameters, 'problem': problem
         }
 
+        output_vars = None
+        if problem in ['map', 'loss_augmented_map'] and self._y_vars:
+            output_vars = self._y_vars + ['phi']
+
         if y_true is not None:
             args['y_true'] = y_true
 
-        stream = pymzn.minizinc(self.domain_file, data=x, args=args)
+        stream = pymzn.minizinc(
+            self.domain_file, data=x, args=args, output_vars=output_vars
+        )
 
         if len(stream) == 0:
             raise InferenceError('Inference returned no solution.')
 
-        return stream[-1]
+        y, phi_d = dictsplit(stream[-1], self._y_vars)
+        phi = phi_d['phi']
+
+        if self.cache is not None:
+            key = hashkey(x, y, **kwargs)
+            self.cache[key] = phi
+
+        if self._y_vars is None:
+            self._y_vars = list(y.keys())
+
+        return y
 
     def __repr__(self):
         return 'MiniZincDomain({}, {})'.format(self.domain_file, self.args)
