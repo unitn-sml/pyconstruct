@@ -192,7 +192,7 @@ class MiniZincDomain(BaseDomain):
 
         output_vars = None
         if problem in ['map', 'loss_augmented_map'] and self._y_vars:
-            output_vars = self._y_vars + ['phi']
+            output_vars = self._y_vars + [self.feature_var]
 
         if y_true is not None:
             args['y_true'] = y_true
@@ -208,11 +208,7 @@ class MiniZincDomain(BaseDomain):
 
         phi = None
         if 'phi' in phi_d:
-            phi = phi_d['phi']
-
-        if self.cache is not None and phi is not None:
-            key = hashkey(x, y, **kwargs)
-            self.cache[key] = phi
+            phi = np.array(phi_d[self.feature_var])
 
         if self._y_vars is None:
             self._y_vars = list(y.keys())
