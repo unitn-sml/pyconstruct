@@ -6,7 +6,7 @@ pymzn.templates.add_package('pyconstruct.domains', 'predefined')
 import numpy as np
 
 from .base import BaseDomain, InferenceError
-from ..utils import dictsplit
+from ..utils import dictsplit, hashkey
 
 from pkg_resources import resource_exists, resource_filename
 
