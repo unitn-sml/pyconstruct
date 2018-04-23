@@ -17,6 +17,21 @@ class HashableArgs:
         self.kwargs = kwargs
         self._hashkey = self.args + sum(sorted(self.kwargs.items()), _kwmark)
         self._hashvalue = None
+    
+    def __eq__(self, other):
+       if len(self._hashkey) != len(other._hashkey):
+           return False
+
+       for arg1, arg2 in zip(self._hashkey, other._hashkey):
+           if arg1 != arg2:
+               return False
+       return True
+    
+    def __lt__(self, other):
+       return hash(self) < hash(other)
+
+    def __gt__(self, other):
+       return hash(self) > hash(other)
 
     def __hash__(self):
         if self._hashvalue is None:
