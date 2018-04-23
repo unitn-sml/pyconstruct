@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from ..utils import broadcast, hashkey
+from ..utils import broadcast, hashkey, subdict
 
 from abc import ABC, abstractmethod
 
@@ -90,13 +90,20 @@ class BaseDomain(ABC):
         """
         n_samples = args[0].shape[0]
 
+        pred_problem = 'problem' not in kwargs or kwargs['problem'] in [None, 'map', 'loss_augmented_map']
+
         # Check cache
         if self.cache is not None:
             keys = []
             preds = []
+            if pred_problem:
+                phi_keys = []
             for x in zip(*args):
                 key = hashkey(*x, **kwargs)
                 keys.append(key)
+                if pred_problem:
+                    phi_key = hashkey(*x, **{**subdict(kwargs, nokeys=['model']), 'problem': 'phi'})
+                    phi_keys.append(phi_key)
                 preds.append(None)
                 if key in self.cache:
                     preds[-1] = self.cache[key]
@@ -107,10 +114,17 @@ class BaseDomain(ABC):
         _args = [x[_idx] for x in args]
         _preds = broadcast(self._infer, *_args, n_jobs=self.n_jobs, **kwargs)
 
+        if pred_problem:
+            _preds, _phis = list(zip(*_preds))
+
         # Save missing
         if self.cache is not None:
             for i, pred in zip(_idx, _preds):
                 self.cache[keys[i]] = pred
+            if pred_problem:
+                for i, phi in zip(_idx, _phis):
+                    if phi is not None:
+                        self.cache[phi_keys[i]] = phi
 
         # Merge
         j = 0
@@ -120,15 +134,6 @@ class BaseDomain(ABC):
                 j += 1
 
         return np.array(preds)
-
-    def __getstate__(self):
-        state = dict(self.__dict__)
-        if state['cache'] is not None:
-            state['cache'].clear()
-        return state
-
-    def __setstate__(self, state):
-        self.__dict__ = state
 
 
 class InferenceError(RuntimeError):

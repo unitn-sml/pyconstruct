@@ -213,6 +213,8 @@ class MiniZincDomain(BaseDomain):
         if self._y_vars is None:
             self._y_vars = list(y.keys())
 
+        if problem in ['map', 'loss_augmented_map']:
+            return y, phi
         return y
 
     def __repr__(self):
