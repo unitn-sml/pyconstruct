@@ -56,10 +56,13 @@ class HashableArgs:
                     if o1_value > o2_value:
                         return False
             else:
-                if o1 > o2:
+                try:
+                    if o1 > o2:
+                        return False
+                    if o1 < o2:
+                        return True
+                except TypeError:
                     return False
-                if o1 < o2:
-                    return True
         return False
 
     def __gt__(self, other):
@@ -90,10 +93,13 @@ class HashableArgs:
                     if o1_value < o2_value:
                         return False
             else:
-                if o1 < o2:
+                try:
+                    if o1 < o2:
+                        return False
+                    if o1 > o2:
+                        return True
+                except TypeError:
                     return False
-                if o1 > o2:
-                    return True
         return False
 
     def __hash__(self):
