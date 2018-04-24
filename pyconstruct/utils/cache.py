@@ -1,5 +1,6 @@
 
 from sklearn.externals import joblib
+from collections.abc import Mapping
 
 try:
     from cachetools.keys import _kwmark
@@ -40,10 +41,25 @@ class HashableArgs:
                 return False
             if type(o1) != type(o2):
                 raise TypeError('The two objects are not comparable')
-            if o1 > o2:
-                return False
-            if o1 < o2:
-                return True
+            if isinstance(o1, Mapping):
+                if len(o1) != len(o2):
+                    raise TypeError('The two objects are not comparable')
+                o1_items = sum(sorted(o1.items()), _kwmark)
+                o2_items = sum(sorted(o2.items()), _kwmark)
+                for o1_item, o2_item in zip(o1_items, o2_items):
+                    o1_key, o1_value = o1_item
+                    o2_key, o2_value = o2_item
+                    if o1_key != o2_key:
+                        raise TypeError('The two objects are not comparable')
+                    if o1_value > o2_value:
+                        return False
+                    if o1_value < o2_value:
+                        return True
+            else:
+                if o1 > o2:
+                    return False
+                if o1 < o2:
+                    return True
         return False
 
     def __gt__(self, other):
@@ -59,10 +75,25 @@ class HashableArgs:
                 return False
             if type(o1) != type(o2):
                 raise TypeError('The two objects are not comparable')
-            if o1 < o2:
-                return False
-            if o1 > o2:
-                return True
+            if isinstance(o1, Mapping):
+                if len(o1) != len(o2):
+                    raise TypeError('The two objects are not comparable')
+                o1_items = sum(sorted(o1.items()), _kwmark)
+                o2_items = sum(sorted(o2.items()), _kwmark)
+                for o1_item, o2_item in zip(o1_items, o2_items):
+                    o1_key, o1_value = o1_item
+                    o2_key, o2_value = o2_item
+                    if o1_key != o2_key:
+                        raise TypeError('The two objects are not comparable')
+                    if o1_value < o2_value:
+                        return False
+                    if o1_value > o2_value:
+                        return True
+            else:
+                if o1 < o2:
+                    return False
+                if o1 > o2:
+                    return True
         return False
 
     def __hash__(self):
