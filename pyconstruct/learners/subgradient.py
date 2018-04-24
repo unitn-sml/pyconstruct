@@ -181,9 +181,10 @@ class BaseSSG(BaseLearner, ABC):
         phi_Y = self.domain.phi(X, Y)
         phi_Y_pred = self.domain.phi(X, Y_pred)
 
-        w = None
         if self.w_ is not None:
             w = np.copy(self.w_)
+        else:
+            w = self._init_w(phi_Y[-1].shape[0])
 
         if isinstance(self.learning_rate, str):
             eta = self._eta()
@@ -287,11 +288,7 @@ class SSG(BaseSSG):
         return np.zeros(shape, dtype=np.float64)
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
-        if w is None:
-            w = self._init_w(phi_y_true.shape[0])
-
         psi = phi_y_true - phi_y_pred
-
         margin = w.dot(psi)
         loss = - margin
         if self.structured_loss is not None:
@@ -365,11 +362,7 @@ class EG(BaseSSG):
         return np.full(dim, 1.0 / dim)
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
-        if w is None:
-            w = self._init_w(phi_y_true.shape[0])
-
         psi = phi_y_true - phi_y_pred
-
         margin = w.dot(psi)
         loss = - margin
         if self.structured_loss is not None:
