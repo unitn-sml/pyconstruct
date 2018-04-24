@@ -169,11 +169,8 @@ class BaseSSG(BaseLearner, ABC):
         if not hasattr(self, 'w_'):
             self.w_ = None
         if not hasattr(self, 't_'):
-            self.iter_ = 0
-
-        self.iter_ += 1
-
-        log = get_logger(__name__)
+            self.t_ = 0
+        self.t_ += 1
 
         # Inference
         if Y_pred is None:
@@ -187,11 +184,6 @@ class BaseSSG(BaseLearner, ABC):
         w = None
         if self.w_ is not None:
             w = np.copy(self.w_)
-
-        log.debug('''\
-            Iteration {self.iter_:>2d}, current weights
-            w = {w}
-        ''', locals())
 
         if isinstance(self.learning_rate, str):
             eta = self._eta()
@@ -295,14 +287,10 @@ class SSG(BaseSSG):
         return np.zeros(shape, dtype=np.float64)
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
-        if not hasattr(self, 't_'):
-            self.t_ = 0
-        self.t_ += 1
-
-        psi = phi_y_true - phi_y_pred
-
         if w is None:
             w = self._init_w(psi.shape[0])
+
+        psi = phi_y_true - phi_y_pred
 
         margin = w.dot(psi)
         loss = - margin
@@ -377,14 +365,10 @@ class EG(BaseSSG):
         return np.full(dim, 1.0 / dim)
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
-        if not hasattr(self, 't_'):
-            self.t_ = 0
-        self.t_ += 1
-
-        psi = phi_y_true - phi_y_pred
-
         if w is None:
             w = self._init_w(psi.shape[0])
+
+        psi = phi_y_true - phi_y_pred
 
         margin = w.dot(psi)
         loss = - margin
