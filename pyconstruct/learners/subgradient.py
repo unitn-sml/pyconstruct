@@ -4,7 +4,7 @@ import numpy as np
 from time import monotonic as _time
 
 from .base import BaseLearner
-from ..utils import get_logger, asarrays
+from ..utils import get_logger, asarrays, broadcast
 from ..models import LinearModel, BaseModel
 
 from scipy.special import expit
@@ -82,8 +82,29 @@ class BaseSSG(BaseLearner, ABC):
         The domain of the data.
     inference : str in ['map', 'loss_augmented_map']
         Which type of inference to perform when learning.
+    alpha : float
+        The regularization coefficient.
+    train_loss : str in ['hinge', 'logistic', 'exponential']
+        The training loss. The derivative of this loss is used to rescale the
+        margin of the examples when making an update.
+    radius : float
+        The radius used to cap the norm of the update when using an exponential
+        training loss.
+    eta0 : float
+        The initial value of the learning rate.
+    power_t : float
+        The power of the iteration index when using an `invscaling`
+        learning_rate.
+    learning_rate : str in ['constant', 'optimal', 'invscaling']
+        The learning rate strategy. The `constant` learning multiplies the
+        updates for `eta0`; the `invscaling` divides the updates by the
+        iteration number raised to the `power_t`; the `optimal` strategy finds
+        the best rate depending on `alpha` and `train_loss` (similar to
+        Scikit-learn's SGDRegressor `optimal` learning rate).
     structured_loss : function (y, y) -> float
         The structured loss to compute on the objects.
+    n_jobs : int
+        The number of parallel jobs used when calculating the gradient steps.
 
     References
     ----------
@@ -93,15 +114,56 @@ class BaseSSG(BaseLearner, ABC):
     """
 
     def __init__(
-        self, domain=None, inference='loss_augmented_map', structured_loss=None
+        self, *, domain=None, inference='loss_augmented_map', alpha=0.0001,
+        train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
+        learning_rate='optimal', structured_loss=None, n_jobs=1, **kwargs
     ):
         super().__init__(domain=domain)
         self.inference = inference
         self.structured_loss = structured_loss
+        self.alpha = alpha
+        self.train_loss = train_loss
+        self.radius = radius
+        self.eta0 = eta0
+        self.power_t = power_t
+        self.learning_rate = learning_rate
+        self.n_jobs = n_jobs
 
     @abstractmethod
-    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
+        """Returns a gradient step"""
+
+    @abstractmethod
+    def _update(self, w, step, eta):
         """Returns updated w"""
+
+    def _exp(self, x, psi):
+        # cap at self.radius if update would have greater norm
+        norm = np.linalg.norm(psi)
+        if np.log(norm) + x >= np.log(self.radius):
+            return 1.0
+        else:
+            return np.exp(x) / self.radius
+
+    def _dloss(self, loss, psi=1.0):
+        return {
+            'hinge': lambda x: 1.0,
+            'logistic': lambda x: expit(x),
+            'exponential': lambda x: self._exp(x, psi),
+        }[self.train_loss](loss)
+
+    @property
+    def _init_t(self):
+        typw = np.sqrt(1.0 / np.sqrt(self.alpha))
+        initial_eta0 = typw / max(1.0, self._dloss(-typw))
+        return 1.0 / (initial_eta0 * self.alpha)
+
+    def _eta(self):
+        return {
+            'constant': lambda t: self.eta0,
+            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
+            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
+        }[self.learning_rate](self.t_)
 
     def partial_fit(self, X, Y, Y_pred=None):
         if not hasattr(self, 'w_'):
@@ -133,21 +195,16 @@ class BaseSSG(BaseLearner, ABC):
 
         # Weight updates
         learn_times = []
-        for x, y_true, y_pred, phi_y, phi_y_pred in zip(X, Y, Y_pred, phi_Y, phi_Y_pred):
-            start = _time()
-            w = self._step(w, x, y_true, y_pred, phi_y, phi_y_pred)
-            learn_time = _time() - start
-            learn_times.append(learn_time)
+        steps = broadcast(
+            self._step, X, Y, Y_pred, phi_Y, phi_Y_pred, w=w, n_jobs=self.n_jobs
+        )
 
-            log.debug('''\
-                Iteration {self.iter_:>2d}, weights update
-                x       = {x}
-                y_true  = {y_true}
-                y_pred  = {y_pred}
-                w       = {w}
-            ''', locals())
+        if isinstance(self.learning_rate, str):
+            eta = self._eta()
+        else:
+            eta = self.learning_rate(self)
 
-        self.w_ = w
+        self.w_ = self._update(w, steps.mean(), eta)
         self.model_ = LinearModel(self.domain, self.w_)
         return self
 
@@ -228,52 +285,20 @@ class SSG(BaseSSG):
         power_t=0.5, learning_rate='optimal', structured_loss=None, **kwargs
     ):
         super().__init__(
-            domain=domain, inference=inference, structured_loss=structured_loss
+            domain=domain, inference=inference, alpha=alpha,
+            train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
+            learning_rate=learning_rate, structured_loss=structured_loss
         )
-        self.alpha = alpha
-        self.train_loss = train_loss
         self.projection = projection
-        self.radius = radius
-        self.eta0 = eta0
-        self.power_t = power_t
-        self.learning_rate = learning_rate
 
     def _init_w(self, shape):
         return np.zeros(shape, dtype=np.float64)
 
-    @property
-    def _init_t(self):
-        typw = np.sqrt(1.0 / np.sqrt(self.alpha))
-        initial_eta0 = typw / max(1.0, self._dloss(-typw))
-        return 1.0 / (initial_eta0 * self.alpha)
-
-    def _exp(self, x, psi):
-        # cap at self.radius if update would have greater norm
-        norm = np.linalg.norm(psi)
-        if np.log(norm) + x >= np.log(self.radius):
-            return 1.0
-        else:
-            return np.exp(x) / self.radius
-
-    def _dloss(self, loss, psi=1.0):
-        return {
-            'hinge': lambda x: 1.0,
-            'logistic': lambda x: expit(x),
-            'exponential': lambda x: self._exp(x, psi),
-        }[self.train_loss](loss)
-
-    def _eta(self):
-        return {
-            'constant': lambda t: self.eta0,
-            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
-            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
-        }[self.learning_rate](self.t_)
-
-    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
-        
+
         psi = phi_y_true - phi_y_pred
 
         if w is None:
@@ -284,13 +309,11 @@ class SSG(BaseSSG):
         if self.structured_loss is not None:
             loss += self.structured_loss(y_true, y_pred)
 
-        if isinstance(self.learning_rate, str):
-            eta = self._eta()
-        else:
-            eta = self.learning_rate(self)
-
         rho = self._dloss(loss, eta * psi)
         step = self.alpha * w - psi * rho
+        return step
+
+    def _update(self, w, step, eta):
         w -= eta * step
         if self.projection == 'l2':
             w = _project_l2(w, self.radius)
@@ -345,47 +368,15 @@ class EG(BaseSSG):
         learning_rate='optimal', structured_loss=None, **kwargs
     ):
         super().__init__(
-            domain=domain, inference=inference, structured_loss=structured_loss
+            domain=domain, inference=inference, alpha=alpha,
+            train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
+            learning_rate=learning_rate, structured_loss=structured_loss
         )
-        self.alpha = alpha
-        self.train_loss = train_loss
-        self.radius = radius
-        self.eta0 = eta0
-        self.power_t = power_t
-        self.learning_rate = learning_rate
 
     def _init_w(dim):
         return np.full(dim, 1.0 / dim)
 
-    @property
-    def _init_t(self):
-        typw = np.sqrt(1.0 / np.sqrt(self.alpha))
-        initial_eta0 = typw / max(1.0, self._dloss(-typw))
-        return 1.0 / (initial_eta0 * self.alpha)
-
-    def _exp(self, x, psi):
-        # cap at self.radius if update would have greater norm
-        norm = np.linalg.norm(psi)
-        if np.log(norm) + x >= np.log(self.radius):
-            return 1.0
-        else:
-            return np.exp(x) / self.radius
-
-    def _dloss(self, loss, psi=1.0):
-        return {
-            'hinge': lambda x: 1.0,
-            'logistic': lambda x: expit(x),
-            'exponential': lambda x: self._exp(x, psi),
-        }[self.train_loss](loss)
-
-    def _eta(self):
-        return {
-            'constant': lambda t: self.eta0,
-            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
-            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
-        }[self.learning_rate](self.t_)
-
-    def _step(self, w, x, y_true, y_pred, phi_y_true, phi_y_pred):
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
@@ -400,13 +391,11 @@ class EG(BaseSSG):
         if self.structured_loss is not None:
             loss += self.structured_loss(y_true, y_pred)
 
-        if isinstance(self.learning_rate, str):
-            eta = self._eta()
-        else:
-            eta = self.learning_rate(self)
-
         rho = self._dloss(loss, eta * psi)
         step = self.alpha * w - psi * rho
+        return step
+
+    def _update(self, w, step, eta):
         w *= np.exp(- eta * step)
         w /= np.sum(w)
         return w
