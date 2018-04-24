@@ -16,7 +16,14 @@ class HashableArgs:
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        self._hashkey = self.args + sum(sorted(self.kwargs.items()), _kwmark)
+        _hashkey = self.args + sum(sorted(self.kwargs.items()), _kwmark)
+        self._hashkey = []
+        for arg in _hashkey:
+            if isinstance(arg, dict):
+                self._hashkey += list(sum(sorted(arg.items()), _kwmark))
+            else:
+                self._hashkey.append(arg)
+        self._hashkey = tuple(self._hashkey)
         self._hashvalue = None
 
     def __eq__(self, other):
