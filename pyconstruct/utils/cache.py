@@ -44,8 +44,8 @@ class HashableArgs:
             if isinstance(o1, Mapping):
                 if len(o1) != len(o2):
                     raise TypeError('The two objects are not comparable')
-                o1_items = sum(sorted(o1.items()), _kwmark)
-                o2_items = sum(sorted(o2.items()), _kwmark)
+                o1_items = sorted(o1.items())
+                o2_items = sorted(o2.items())
                 for o1_item, o2_item in zip(o1_items, o2_items):
                     o1_key, o1_value = o1_item
                     o2_key, o2_value = o2_item
@@ -78,8 +78,8 @@ class HashableArgs:
             if isinstance(o1, Mapping):
                 if len(o1) != len(o2):
                     raise TypeError('The two objects are not comparable')
-                o1_items = sum(sorted(o1.items()), _kwmark)
-                o2_items = sum(sorted(o2.items()), _kwmark)
+                o1_items = sorted(o1.items())
+                o2_items = sorted(o2.items())
                 for o1_item, o2_item in zip(o1_items, o2_items):
                     o1_key, o1_value = o1_item
                     o2_key, o2_value = o2_item
