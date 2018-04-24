@@ -193,16 +193,16 @@ class BaseSSG(BaseLearner, ABC):
             w = {w}
         ''', locals())
 
-        # Weight updates
-        learn_times = []
-        steps = broadcast(
-            self._step, X, Y, Y_pred, phi_Y, phi_Y_pred, w=w, n_jobs=self.n_jobs
-        )
-
         if isinstance(self.learning_rate, str):
             eta = self._eta()
         else:
             eta = self.learning_rate(self)
+
+        # Weight updates
+        steps = broadcast(
+            self._step, X, Y, Y_pred, phi_Y, phi_Y_pred, w=w, eta=eta,
+            n_jobs=self.n_jobs
+        )
 
         self.w_ = self._update(w, steps.mean(), eta)
         self.model_ = LinearModel(self.domain, self.w_)
@@ -294,7 +294,7 @@ class SSG(BaseSSG):
     def _init_w(self, shape):
         return np.zeros(shape, dtype=np.float64)
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
@@ -376,7 +376,7 @@ class EG(BaseSSG):
     def _init_w(dim):
         return np.full(dim, 1.0 / dim)
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
         if not hasattr(self, 't_'):
             self.t_ = 0
         self.t_ += 1
