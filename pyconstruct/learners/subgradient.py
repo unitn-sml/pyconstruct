@@ -288,7 +288,7 @@ class SSG(BaseSSG):
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
         if w is None:
-            w = self._init_w(psi.shape[0])
+            w = self._init_w(phi_y_true.shape[0])
 
         psi = phi_y_true - phi_y_pred
 
@@ -366,7 +366,7 @@ class EG(BaseSSG):
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
         if w is None:
-            w = self._init_w(psi.shape[0])
+            w = self._init_w(phi_y_true.shape[0])
 
         psi = phi_y_true - phi_y_pred
 
