@@ -27,11 +27,43 @@ class HashableArgs:
                return False
        return True
 
-    # def __lt__(self, other):
-    #    return hash(self) < hash(other)
+    def __lt__(self, other):
+        for i in range(max(len(self._hashkey), len(other._hashkey))):
+            o1, o2 = None, None
+            if i < len(self._hashkey):
+                o1 = self._hashkey[i]
+            if i < len(self._hashkey):
+                o2 = other._hashkey[i]
+            if o1 is None:
+                return True
+            if o2 is None:
+                return False
+            if type(o1) != type(o2):
+                raise TypeError('The two objects are not comparable')
+            if o1 > o2:
+                return False
+            if o1 < o2:
+                return True
+        return False
 
-    # def __gt__(self, other):
-    #    return hash(self) > hash(other)
+    def __gt__(self, other):
+        for i in range(max(len(self._hashkey), len(other._hashkey))):
+            o1, o2 = None, None
+            if i < len(self._hashkey):
+                o1 = self._hashkey[i]
+            if i < len(self._hashkey):
+                o2 = other._hashkey[i]
+            if o2 is None:
+                return True
+            if o1 is None:
+                return False
+            if type(o1) != type(o2):
+                raise TypeError('The two objects are not comparable')
+            if o1 < o2:
+                return False
+            if o1 > o2:
+                return True
+        return False
 
     def __hash__(self):
         if self._hashvalue is None:
