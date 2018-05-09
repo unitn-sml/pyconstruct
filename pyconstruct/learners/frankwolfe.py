@@ -41,7 +41,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
     """
 
     def __init__(
-        self, *, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
+        self, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
     ):
         super().__init__(domain=domain)
         if structured_loss is None:

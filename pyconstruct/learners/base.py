@@ -20,7 +20,7 @@ class BaseLearner(BaseEstimator, ABC):
     domain : BaseDomain
         The domain.
     """
-    def __init__(self, *, domain=None):
+    def __init__(self, domain=None):
         if domain is None:
             raise ValueError('Need to specify a domain.')
         self.domain = domain

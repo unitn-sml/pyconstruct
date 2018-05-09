@@ -114,7 +114,7 @@ class BaseSSG(BaseLearner, ABC):
     """
 
     def __init__(
-        self, *, domain=None, inference='loss_augmented_map', alpha=0.0001,
+        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
         learning_rate='optimal', structured_loss=None, n_jobs=1, **kwargs
     ):
@@ -273,7 +273,7 @@ class SSG(BaseSSG):
     """
 
     def __init__(
-        self, *, domain=None, inference='loss_augmented_map', alpha=0.0001,
+        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', projection='l2', radius=1000.0, eta0=1.0,
         power_t=0.5, learning_rate='optimal', structured_loss=None, **kwargs
     ):
@@ -348,7 +348,7 @@ class EG(BaseSSG):
     """
 
     def __init__(
-        self, *, domain=None, inference='loss_augmented_map', alpha=0.0001,
+        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
         learning_rate='optimal', structured_loss=None, **kwargs
     ):

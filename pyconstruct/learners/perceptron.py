@@ -22,7 +22,7 @@ class StructuredPerceptron(SSG):
         models: Theory and experiments with perceptron algorithms." EMNLP
         (2002).
     """
-    def __init__(self, *, domain=None):
+    def __init__(self, domain=None):
         super().__init__(
             domain=domain, projection=None, alpha=0.0, learning_rate='constant',
             inference='map'
