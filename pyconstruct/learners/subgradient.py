@@ -4,7 +4,7 @@ import numpy as np
 from time import monotonic as _time
 
 from .base import BaseLearner
-from ..utils import get_logger, asarrays, broadcast
+from ..utils import get_logger, asarrays, broadcast, hashkey
 from ..models import LinearModel, BaseModel
 
 from scipy.special import expit
@@ -165,7 +165,14 @@ class BaseSSG(BaseLearner, ABC):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def partial_fit(self, X, Y, Y_pred=None):
+    def _update_phi_cache(self, X, Y, Y_phi, **kwargs):
+        if self.domain.cache is not None:
+            for x, y, y_phi in zip(X, Y, Y_phi):
+                key = hashkey(x, y, problem='phi', **kwargs)
+                if key not in self.domain.cache:
+                    self.domain.cache[key] = y_phi
+
+    def partial_fit(self, X, Y, Y_pred=None, Y_phi=None, Y_pred_phi=None):
         if not hasattr(self, 'w_'):
             self.w_ = None
         if not hasattr(self, 't_'):
@@ -175,11 +182,19 @@ class BaseSSG(BaseLearner, ABC):
         # Inference
         if Y_pred is None:
             start = _time()
-            Y_pred = self.predict(X, Y, problem=self.inference)
+            Y_pred, Y_pred_phi = self.predict(
+                X, Y, return_phi=True, problem=self.inference
+            )
             infer_time = _time() - start
+            self._update_phi_cache(X, Y_pred, Y_pred_phi)
 
-        phi_Y = self.domain.phi(X, Y)
-        phi_Y_pred = self.domain.phi(X, Y_pred)
+        if Y_phi is None:
+            Y_phi = self.domain.phi(X, Y)
+            self._update_phi_cache(X, Y, Y_phi)
+
+        if Y_pred_phi is None:
+            Y_pred_phi = self.domain.phi(X, Y_pred)
+            self._update_phi_cache(X, Y_pred, Y_pred_phi)
 
         if self.w_ is not None:
             w = np.copy(self.w_)
@@ -193,7 +208,7 @@ class BaseSSG(BaseLearner, ABC):
 
         # Weight updates
         steps = broadcast(
-            self._step, X, Y, Y_pred, phi_Y, phi_Y_pred, w=w, eta=eta,
+            self._step, X, Y, Y_pred, Y_phi, Y_pred_phi, w=w, eta=eta,
             n_jobs=self.n_jobs
         )
 
