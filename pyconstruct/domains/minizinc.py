@@ -169,7 +169,9 @@ class MiniZincDomain(BaseDomain):
 
         return np.array(stream[-1][self.feature_var])
 
-    def _infer(self, x, *args, model=None, problem='map', **kwargs):
+    def _infer(
+        self, x, *args, model=None, problem='map', return_phi=False, **kwargs
+    ):
         if self._x_vars is None:
             self._x_vars = list(x.keys())
 
@@ -206,13 +208,14 @@ class MiniZincDomain(BaseDomain):
 
         y, res = dictsplit(stream[-1], self._y_vars)
 
-        phi = None
-        if self.feature_var in res:
-            phi = np.array(res[self.feature_var])
-        else:
-            phi = self._phi(x, y, **kwargs)
-
-        return y, phi
+        if return_phi:
+            phi = None
+            if self.feature_var in res:
+                phi = np.array(res[self.feature_var])
+            else:
+                phi = self._phi(x, y, **kwargs)
+            return y, phi
+        return y
 
     def __repr__(self):
         return 'MiniZincDomain({}, {})'.format(self.domain_file, self.args)
