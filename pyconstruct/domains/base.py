@@ -85,46 +85,31 @@ class BaseDomain(ABC):
 
         Returns
         -------
-        pred : numpy.ndarray
+        preds : numpy.ndarray
             The array of predictions. The array contains n_samples solutions.
+        phis : numpy.ndarray
+            The array of feature vectors corresponding to the predicted objects.
         """
         n_samples = args[0].shape[0]
 
-        pred_problem = 'problem' not in kwargs or kwargs['problem'] in [None, 'map', 'loss_augmented_map']
-
-        # Check cache
+        # Fetch cached predictions
+        preds = [None] * n_samples
+        keys = [None] * n_samples
         if self.cache is not None:
-            keys = []
-            preds = []
-            if pred_problem:
-                phi_keys = []
-            for x in zip(*args):
-                key = hashkey(*x, **kwargs)
-                keys.append(key)
-                if pred_problem:
-                    phi_key = hashkey(*x, **{**subdict(kwargs, nokeys=['model']), 'problem': 'phi'})
-                    phi_keys.append(phi_key)
-                preds.append(None)
-                if key in self.cache:
-                    preds[-1] = self.cache[key]
-        else:
-            preds = [None] * n_samples
+            for i, x in enumerate(zip(*args)):
+                preds_keys[i] = hashkey(*x, **kwargs)
+                if pred_keys[i] in self.cache:
+                    preds[i] = self.cache[pred_keys[i]]
 
-        _idx = [i for i in range(n_samples) if preds[i] is None]
+        # Compute remaining
+        _idx = [idx for idx, pred in enumerate(preds) if pred is None]
         _args = [x[_idx] for x in args]
         _preds = broadcast(self._infer, *_args, n_jobs=self.n_jobs, **kwargs)
 
-        if pred_problem:
-            _preds, _phis = list(zip(*_preds))
-
         # Save missing
         if self.cache is not None:
-            for i, pred in zip(_idx, _preds):
-                self.cache[keys[i]] = pred
-            if pred_problem:
-                for i, phi in zip(_idx, _phis):
-                    if phi is not None:
-                        self.cache[phi_keys[i]] = phi
+            for idx, pred in zip(_idx, _preds):
+                self.cache[keys[idx]] = pred
 
         # Merge
         j = 0
