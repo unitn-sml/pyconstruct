@@ -10,6 +10,8 @@ from ..models import LinearModel, BaseModel
 from scipy.special import expit
 from abc import ABC, abstractmethod
 
+from sklearn.utils import _check_random_state
+
 
 __all__ = ['BaseSSG', 'SSG', 'EG']
 
@@ -290,7 +292,8 @@ class SSG(BaseSSG):
     def __init__(
         self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', projection='l2', radius=1000.0, eta0=1.0,
-        power_t=0.5, learning_rate='optimal', structured_loss=None, **kwargs
+        power_t=0.5, learning_rate='optimal', structured_loss=None,
+        init_w='zeros', random_state=None, **kwargs
     ):
         super().__init__(
             domain=domain, inference=inference, alpha=alpha,
@@ -298,9 +301,20 @@ class SSG(BaseSSG):
             learning_rate=learning_rate, structured_loss=structured_loss
         )
         self.projection = projection
+        self.init_w = init_w
+        self.random_state = _check_random_state(random_state)
 
     def _init_w(self, shape):
-        return np.zeros(shape, dtype=np.float64)
+        w = {
+            'zeros': lambda s: np.zeros(s, dtype=np.float64),
+            'uniform': lambda s: self.random_state.uniform(0.0, 1.0, s),
+            'normal': lambda s: self.random_state.normal(0.0, 1.0, s),
+            'laplace': lambda s: self.random_state.laplace(0.0, 1.0, s)
+        }[self.init_w](shape)
+        norm = np.linalg.norm(w)
+        if norm > 0:
+            return w / np.linalg.norm(w)
+        return w
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
         psi = phi_y_true - phi_y_pred
