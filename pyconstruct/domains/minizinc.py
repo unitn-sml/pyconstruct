@@ -191,7 +191,7 @@ class MiniZincDomain(BaseDomain):
         }
 
         output_vars = None
-        if problem in ['map', 'loss_augmented_map'] and self._y_vars:
+        if problem and self._y_vars:
             output_vars = self._y_vars + [self.feature_var]
 
         if y_true is not None:
@@ -204,18 +204,15 @@ class MiniZincDomain(BaseDomain):
         if len(stream) == 0:
             raise InferenceError('Inference returned no solution.')
 
-        y, phi_d = dictsplit(stream[-1], self._y_vars)
+        y, res = dictsplit(stream[-1], self._y_vars)
 
         phi = None
-        if 'phi' in phi_d:
-            phi = np.array(phi_d[self.feature_var])
+        if self.feature_var in res:
+            phi = np.array(res[self.feature_var])
+        else:
+            phi = self._phi(x, y, **kwargs)
 
-        if self._y_vars is None:
-            self._y_vars = list(y.keys())
-
-        if problem in ['map', 'loss_augmented_map']:
-            return y, phi
-        return y
+        return y, phi
 
     def __repr__(self):
         return 'MiniZincDomain({}, {})'.format(self.domain_file, self.args)
