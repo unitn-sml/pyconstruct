@@ -4,13 +4,13 @@ import numpy as np
 from time import monotonic as _time
 
 from .base import BaseLearner
-from ..utils import get_logger, asarrays, broadcast, hashkey
+from ..utils import get_logger, asarrays, broadcast, hashkey, batches
 from ..models import LinearModel, BaseModel
 
 from scipy.special import expit
 from abc import ABC, abstractmethod
 
-from sklearn.utils import _check_random_state
+from sklearn.utils import _check_random_state, shuffle
 
 
 __all__ = ['BaseSSG', 'SSG', 'EG']
@@ -118,7 +118,9 @@ class BaseSSG(BaseLearner, ABC):
     def __init__(
         self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
-        learning_rate='optimal', structured_loss=None, n_jobs=1, **kwargs
+        learning_rate='optimal', structured_loss=None, n_jobs=1,
+        shuffle=True, warm_start=False, verbose=True,
+        batch_size=None, validate=True, random_state=None, **kwargs
     ):
         super().__init__(domain=domain)
         self.inference = inference
@@ -130,6 +132,12 @@ class BaseSSG(BaseLearner, ABC):
         self.power_t = power_t
         self.learning_rate = learning_rate
         self.n_jobs = n_jobs
+        self.shuffle = shuffle
+        self.warm_start = warm_start
+        self.verbose = verbose
+        self.batch_size = batch_size
+        self.validate = validate
+        self.random_state = _check_random_state(random_state)
 
     @abstractmethod
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
@@ -218,8 +226,32 @@ class BaseSSG(BaseLearner, ABC):
         self.model_ = LinearModel(self.domain, self.w_)
         return self
 
-    # Alias
-    fit = partial_fit
+    def fit(X, Y):
+        if not self.warm_start:
+            self.w_ = None
+            self.t_ = 0
+
+        if self.shuffle:
+            X, Y = shuffle(X, Y, random_state=self.random_state)
+
+        losses = np.array([])
+        batch_size = self.batch_size if self.batch_size is None else self.n_jobs
+
+        for n_b, (X_b, Y_b) in enumerate(batches(X, Y, batch_size)):
+            if self.verbose:
+                print('BATCH N. {}'.format(n_b + 1))
+                print('\tSamples: {}'.format(batch_size*n_b + X_b.shape[0]))
+
+                if self.validate and self.structured_loss is not None:
+                    Y_pred = self.predict(X_b)
+                    loss = self.structured_loss(Y_b, Y_pred).mean()
+                    losses = np.append(losses, loss)
+                    avg_loss = losses.sum() / (losses.size + 1)
+                    print('\tTraining loss: {:>5.4f}'.format(loss))
+                    print('\tAverage training loss: {:>5.4f}'.format(avg_loss))
+            self.partial_fit(X_b, Y_b)
+
+        return self
 
     def loss(self, X, Y_true, Y_pred):
         loss = super().loss(X, Y_true, Y_pred)
@@ -293,16 +325,19 @@ class SSG(BaseSSG):
         self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', projection='l2', radius=1000.0, eta0=1.0,
         power_t=0.5, learning_rate='optimal', structured_loss=None,
-        init_w='zeros', random_state=None, **kwargs
+        init_w='zeros', shuffle=True, warm_start=False, verbose=True,
+        batch_size=None, validate=True, random_state=None, **kwargs
     ):
         super().__init__(
             domain=domain, inference=inference, alpha=alpha,
             train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
-            learning_rate=learning_rate, structured_loss=structured_loss
+            learning_rate=learning_rate, structured_loss=structured_loss,
+            shuffle=shuffle, warm_start=warm_start, verbose=verbose,
+            batch_size=batch_size, validate=validate, random_state=random_state,
+            **kwargs
         )
         self.projection = projection
         self.init_w = init_w
-        self.random_state = _check_random_state(random_state)
 
     def _init_w(self, shape):
         w = {
@@ -379,12 +414,17 @@ class EG(BaseSSG):
     def __init__(
         self, domain=None, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
-        learning_rate='optimal', structured_loss=None, **kwargs
+        learning_rate='optimal', structured_loss=None, shuffle=True,
+        warm_start=False, verbose=True, batch_size=None, validate=True,
+        random_state=None, **kwargs
     ):
         super().__init__(
             domain=domain, inference=inference, alpha=alpha,
             train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
-            learning_rate=learning_rate, structured_loss=structured_loss
+            learning_rate=learning_rate, structured_loss=structured_loss,
+            shuffle=shuffle, warm_start=warm_start, verbose=verbose,
+            batch_size=batch_size, validate=validate, random_state=random_state,
+            **kwargs
         )
 
     def _init_w(dim):
