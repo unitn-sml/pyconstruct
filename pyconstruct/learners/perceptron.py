@@ -22,16 +22,16 @@ class StructuredPerceptron(SSG):
         models: Theory and experiments with perceptron algorithms." EMNLP
         (2002).
     """
-    def __init__(self, domain=None):
+    def __init__(self, domain=None, **kwargs):
         super().__init__(
             domain, projection=None, alpha=0.0, learning_rate='constant',
-            inference='map'
+            inference='map', **kwargs
         )
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
         score_true = self.model.decision_function(*asarrays(x, y_true))
         score_pred = self.model.decision_function(*asarrays(x, y_pred))
-        if w is None or score_true < score_pred:
+        if w is None or score_true <= score_pred:
             return super()._step(
                 x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta
             )
