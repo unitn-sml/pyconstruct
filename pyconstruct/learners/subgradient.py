@@ -117,20 +117,15 @@ class BaseSSG(BaseLearner, ABC):
 
     def __init__(
         self, domain=None, inference='loss_augmented_map', alpha=0.0001,
-        train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
-        learning_rate='optimal', structured_loss=None, n_jobs=1,
-        shuffle=True, warm_start=False, verbose=True,
-        batch_size=None, validate=True, random_state=None, **kwargs
+        train_loss='hinge', structured_loss=None, n_jobs=1, shuffle=True,
+        warm_start=False, verbose=True, batch_size=None, validate=True,
+        random_state=None, **kwargs
     ):
-        super().__init__(domain=domain)
+        super().__init__(domain)
         self.inference = inference
-        self.structured_loss = structured_loss
         self.alpha = alpha
         self.train_loss = train_loss
-        self.radius = radius
-        self.eta0 = eta0
-        self.power_t = power_t
-        self.learning_rate = learning_rate
+        self.structured_loss = structured_loss
         self.n_jobs = n_jobs
         self.shuffle = shuffle
         self.warm_start = warm_start
@@ -140,7 +135,11 @@ class BaseSSG(BaseLearner, ABC):
         self.random_state = _check_random_state(random_state)
 
     @abstractmethod
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None):
+    def _learning_rate(self):
+        """Returns the current learning rate"""
+
+    @abstractmethod
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
         """Returns a gradient step"""
 
     @abstractmethod
@@ -148,12 +147,12 @@ class BaseSSG(BaseLearner, ABC):
         """Returns updated w"""
 
     def _exp(self, x, psi):
-        # cap at self.radius if update would have greater norm
+        # cap at self.radius_ if update would have greater norm
         norm = np.linalg.norm(psi)
-        if np.log(norm) + x >= np.log(self.radius):
+        if np.log(norm) + x >= np.log(self.radius_):
             return 1.0
         else:
-            return np.exp(x) / self.radius
+            return np.exp(x) / self.radius_
 
     def _dloss(self, loss, psi=1.0):
         return {
@@ -161,19 +160,6 @@ class BaseSSG(BaseLearner, ABC):
             'logistic': lambda x: expit(x),
             'exponential': lambda x: self._exp(x, psi),
         }[self.train_loss](loss)
-
-    @property
-    def _init_t(self):
-        typw = np.sqrt(1.0 / np.sqrt(self.alpha))
-        initial_eta0 = typw / max(1.0, self._dloss(-typw))
-        return 1.0 / (initial_eta0 * self.alpha)
-
-    def _eta(self):
-        return {
-            'constant': lambda t: self.eta0,
-            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1)),
-            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
-        }[self.learning_rate](self.t_)
 
     def _update_phi_cache(self, X, Y, Y_phi, **kwargs):
         if self.domain.cache is not None:
@@ -211,10 +197,7 @@ class BaseSSG(BaseLearner, ABC):
         else:
             w = self._init_w(phi_Y[-1].shape[0])
 
-        if isinstance(self.learning_rate, str):
-            eta = self._eta()
-        else:
-            eta = self.learning_rate(self)
+        eta = self._learning_rate()
 
         # Weight updates
         steps = broadcast(
@@ -230,6 +213,8 @@ class BaseSSG(BaseLearner, ABC):
         if not self.warm_start:
             self.w_ = None
             self.t_ = 0
+
+        self.n_samples_ = X.shape[0]
 
         if self.shuffle:
             X, Y = shuffle(X, Y, random_state=self.random_state)
@@ -322,20 +307,15 @@ class SSG(BaseSSG):
     """
 
     def __init__(
-        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
-        train_loss='hinge', projection='l2', radius=1000.0, eta0=1.0,
-        power_t=0.5, learning_rate='optimal', structured_loss=None,
-        init_w='zeros', shuffle=True, warm_start=False, verbose=True,
-        batch_size=None, validate=True, random_state=None, **kwargs
+        self, domain=None, inference='loss_augmented_map', eta0=1.0,
+        power_t=0.5, learning_rate='optimal', radius=1000.0, projection='l2',
+        init_w='normal', **kwargs
     ):
-        super().__init__(
-            domain=domain, inference=inference, alpha=alpha,
-            train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
-            learning_rate=learning_rate, structured_loss=structured_loss,
-            shuffle=shuffle, warm_start=warm_start, verbose=verbose,
-            batch_size=batch_size, validate=validate, random_state=random_state,
-            **kwargs
-        )
+        super().__init__(domain, inference=inference, **kwargs)
+        self.eta0 = eta0
+        self.power_t = power_t
+        self.learning_rate = learning_rate
+        self.radius = self.radius_ = radius
         self.projection = projection
         self.init_w = init_w
 
@@ -348,10 +328,25 @@ class SSG(BaseSSG):
         }[self.init_w](shape)
         norm = np.linalg.norm(w)
         if norm > 0:
-            return w / np.linalg.norm(w)
+            return w / norm
         return w
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
+    @property
+    def _init_t(self):
+        if self.alpha > 0:
+            typw = np.sqrt(1.0 / np.sqrt(self.alpha))
+            initial_eta0 = typw / max(1.0, self._dloss(-typw))
+            return 1.0 / (initial_eta0 * self.alpha)
+        return 1.0
+
+    def _learning_rate(self):
+        return {
+            'constant': lambda t: self.eta0,
+            'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1.0)),
+            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
+        }[self.learning_rate](self.t_)
+
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
         psi = phi_y_true - phi_y_pred
         margin = w.dot(psi)
         loss = - margin
@@ -412,25 +407,29 @@ class EG(BaseSSG):
     """
 
     def __init__(
-        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
-        train_loss='hinge', radius=1000.0, eta0=1.0, power_t=0.5,
-        learning_rate='optimal', structured_loss=None, shuffle=True,
-        warm_start=False, verbose=True, batch_size=None, validate=True,
-        random_state=None, **kwargs
+        self, domain=None, inference='map', eta0=1.0, power_t=0.5,
+        learning_rate='decaying', n_samples=1000, **kwargs
     ):
-        super().__init__(
-            domain=domain, inference=inference, alpha=alpha,
-            train_loss=train_loss, radius=radius, eta0=eta0, power_t=power_t,
-            learning_rate=learning_rate, structured_loss=structured_loss,
-            shuffle=shuffle, warm_start=warm_start, verbose=verbose,
-            batch_size=batch_size, validate=validate, random_state=random_state,
-            **kwargs
-        )
+        super().__init__(domain, inference=inference, **kwargs)
+        self.eta0 = eta0
+        self.power_t = power_t
+        self.learning_rate = learning_rate
+        self.n_samples = self.n_samples_ = n_samples
 
     def _init_w(dim):
         return np.full(dim, 1.0 / dim)
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w=None, eta=1.0):
+    def _learning_rate(self):
+        return {
+            'constant': lambda t: self.eta0,
+            'decaying': lambda t: self.eta0 / (1.0 + self.t_ / self.n_samples_),
+            'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
+        }[self.learning_rate](self.t_)
+
+    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
+        if not hasattr('radius_', self):
+            self.radius_ = w.shape[0]
+
         psi = phi_y_true - phi_y_pred
         margin = w.dot(psi)
         loss = - margin
