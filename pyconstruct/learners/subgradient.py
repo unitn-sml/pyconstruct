@@ -186,11 +186,11 @@ class BaseSSG(BaseLearner, ABC):
             self._update_phi_cache(X, Y_pred, Y_pred_phi)
 
         if Y_phi is None:
-            Y_phi = self.domain.phi(X, Y)
+            Y_phi = self.phi(X, Y)
             self._update_phi_cache(X, Y, Y_phi)
 
         if Y_pred_phi is None:
-            Y_pred_phi = self.domain.phi(X, Y_pred)
+            Y_pred_phi = self.phi(X, Y_pred)
             self._update_phi_cache(X, Y_pred, Y_pred_phi)
 
         if self.w_ is not None:
