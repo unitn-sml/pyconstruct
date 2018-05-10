@@ -433,7 +433,7 @@ class EG(BaseSSG):
         }[self.learning_rate](self.t_)
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
-        if not hasattr('radius_', self):
+        if not hasattr(self, 'radius_'):
             self.radius_ = w.shape[0]
 
         psi = phi_y_true - phi_y_pred
