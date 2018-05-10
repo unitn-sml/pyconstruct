@@ -210,7 +210,7 @@ class BaseSSG(BaseLearner, ABC):
         self.model_ = LinearModel(self.domain, self.w_)
         return self
 
-    def fit(X, Y):
+    def fit(self, X, Y):
         if not self.warm_start:
             self.w_ = None
             self.t_ = 0
