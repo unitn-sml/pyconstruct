@@ -10,7 +10,7 @@ from ..models import LinearModel, BaseModel
 from scipy.special import expit
 from abc import ABC, abstractmethod
 
-from sklearn.utils import _check_random_state, shuffle
+from sklearn.utils import check_random_state, shuffle
 
 
 __all__ = ['BaseSSG', 'SSG', 'EG']
@@ -133,7 +133,7 @@ class BaseSSG(BaseLearner, ABC):
         self.verbose = verbose
         self.batch_size = batch_size
         self.validate = validate
-        self.random_state = _check_random_state(random_state)
+        self.random_state = check_random_state(random_state)
 
     @abstractmethod
     def _learning_rate(self):
