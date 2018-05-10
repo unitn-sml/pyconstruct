@@ -29,8 +29,8 @@ class StructuredPerceptron(SSG):
         )
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
-        score_true = self.model.decision_function(*asarrays(x, y_true))
-        score_pred = self.model.decision_function(*asarrays(x, y_pred))
+        score_true = self.decision_function(*asarrays(x, y_true))
+        score_pred = self.decision_function(*asarrays(x, y_pred))
         if w is None or score_true <= score_pred:
             return super()._step(
                 x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta
