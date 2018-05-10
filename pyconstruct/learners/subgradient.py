@@ -179,9 +179,9 @@ class BaseSSG(BaseLearner, ABC):
         # Inference
         if Y_pred is None:
             start = _time()
-            Y_pred, Y_pred_phi = self.predict(
+            Y_pred, Y_pred_phi = zip(*self.predict(
                 X, Y, return_phi=True, problem=self.inference
-            )
+            ))
             infer_time = _time() - start
             self._update_phi_cache(X, Y_pred, Y_pred_phi)
 
@@ -196,7 +196,7 @@ class BaseSSG(BaseLearner, ABC):
         if self.w_ is not None:
             w = np.copy(self.w_)
         else:
-            w = self._init_w(phi_Y[-1].shape[0])
+            w = self._init_w(Y_phi[-1].shape[0])
 
         eta = self._learning_rate()
 
@@ -206,7 +206,7 @@ class BaseSSG(BaseLearner, ABC):
             n_jobs=self.n_jobs
         )
 
-        self.w_ = self._update(w, steps.mean(), eta)
+        self.w_ = self._update(w, steps.mean(axis=0), eta)
         self.model_ = LinearModel(self.domain, self.w_)
         return self
 
@@ -221,9 +221,9 @@ class BaseSSG(BaseLearner, ABC):
             X, Y = shuffle(X, Y, random_state=self.random_state)
 
         losses = np.array([])
-        batch_size = self.batch_size if self.batch_size is None else self.n_jobs
+        batch_size = self.batch_size or self.n_jobs
 
-        for n_b, (X_b, Y_b) in enumerate(batches(X, Y, batch_size)):
+        for n_b, (X_b, Y_b) in enumerate(batches(X, Y, batch_size=batch_size)):
             if self.verbose:
                 print('BATCH N. {}'.format(n_b + 1))
                 print('\tSamples: {}'.format(batch_size*n_b + X_b.shape[0]))
@@ -232,7 +232,7 @@ class BaseSSG(BaseLearner, ABC):
                     Y_pred = self.predict(X_b)
                     loss = self.structured_loss(Y_b, Y_pred).mean()
                     losses = np.append(losses, loss)
-                    avg_loss = losses.sum() / (losses.size + 1)
+                    avg_loss = losses.sum() / (losses.size)
                     print('\tTraining loss: {:>5.4f}'.format(loss))
                     print('\tAverage training loss: {:>5.4f}'.format(avg_loss))
             self.partial_fit(X_b, Y_b)
@@ -356,7 +356,7 @@ class SSG(BaseSSG):
         margin = w.dot(psi)
         loss = - margin
         if self.structured_loss is not None:
-            loss += self.structured_loss(y_true, y_pred)
+            loss += self.structured_loss(*asarrays(y_true, y_pred))
 
         rho = self._dloss(loss, eta * psi)
         step = self.alpha * w - psi * rho
