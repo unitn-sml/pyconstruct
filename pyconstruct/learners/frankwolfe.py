@@ -64,8 +64,8 @@ class BlockCoordinateFrankWolfe(BaseLearner):
             self.t_ = 0
         self.t_ += 1
 
-        phi_y_pred = self.domain.phi(*asarrays(x, y_pred))[0]
-        phi_y_true = self.domain.phi(*asarrays(x, y_true))[0]
+        phi_y_pred = self.phi(*asarrays(x, y_pred))[0]
+        phi_y_true = self.phi(*asarrays(x, y_true))[0]
         psi = phi_y_true - phi_y_pred
 
         d = psi.shape[0]
