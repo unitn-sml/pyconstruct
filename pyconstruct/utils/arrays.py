@@ -1,4 +1,5 @@
 
+import warnings
 import numpy as np
 
 from sklearn.externals.joblib import Parallel, delayed
@@ -11,9 +12,11 @@ __all__ = [
 
 def broadcast(f, *args, n_jobs=1, **kwargs):
     """Applies f to each element of the input vectors."""
-    return np.array(Parallel(n_jobs)(
-        delayed(f)(*x, **kwargs) for x in zip(*args)
-    ))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return np.array(Parallel(n_jobs)(
+            delayed(f)(*x, **kwargs) for x in zip(*args)
+        ))
 
 
 def isarray(x):
