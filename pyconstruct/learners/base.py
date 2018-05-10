@@ -32,6 +32,24 @@ class BaseLearner(BaseEstimator, ABC):
             return BaseModel(self.domain)
         return self.model_
 
+    def phi(self, X, Y, **kwargs):
+        """Computes the feature vector for the given input and output objects.
+
+        Parameters
+        ----------
+        X : numpy.ndarray
+            An array of input examples. The first dimension must be the number
+            of samples.
+        Y : numpy.ndarray
+            An array of output objects.
+
+        Returns
+        -------
+        numpy.ndarray
+            The array of feature vectors.
+        """
+        return self.model.phi(X, Y, **kwargs)
+
     def predict(self, X, *args, **kwargs):
         """Computes the prediction of the current model for the given input.
 
