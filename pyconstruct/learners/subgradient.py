@@ -89,24 +89,25 @@ class BaseSSG(BaseLearner, ABC):
     train_loss : str in ['hinge', 'logistic', 'exponential']
         The training loss. The derivative of this loss is used to rescale the
         margin of the examples when making an update.
-    radius : float
-        The radius used to cap the norm of the update when using an exponential
-        training loss.
-    eta0 : float
-        The initial value of the learning rate.
-    power_t : float
-        The power of the iteration index when using an `invscaling`
-        learning_rate.
-    learning_rate : str in ['constant', 'optimal', 'invscaling']
-        The learning rate strategy. The `constant` learning multiplies the
-        updates for `eta0`; the `invscaling` divides the updates by the
-        iteration number raised to the `power_t`; the `optimal` strategy finds
-        the best rate depending on `alpha` and `train_loss` (similar to
-        Scikit-learn's SGDRegressor `optimal` learning rate).
     structured_loss : function (y, y) -> float
         The structured loss to compute on the objects.
     n_jobs : int
         The number of parallel jobs used when calculating the gradient steps.
+    shuffle : bool
+        Wheter to shuffle the data prior to fitting.
+    warm_start : bool
+        If True, the model is not reinitialized upon a second call to the fit
+        method, and the parameters of the fit method are reused.
+    verbose : bool
+        Whether to print the training losses when fitting.
+    batch_size : None or int
+        The size of the batches used when fitting the data. If None, the batch
+        size will be equal to `n_jobs`.
+    validate : bool
+        Whether to validate the model using the training examples prior to the
+        update. Only used when `verbose` is True.
+    random_state : None, int, RandomState
+        The random number generator seed.
 
     References
     ----------
@@ -270,12 +271,8 @@ class SSG(BaseSSG):
     train_loss : str in ['hinge', 'logistic', 'exponential']
         The training loss. The derivative of this loss is used to rescale the
         margin of the examples when making an update.
-    projection : None or str in ['l1', 'l2']
-        If None, no projection is applied, otherwise, if 'l1' or 'l2' are given,
-        the weights are projected back onto an L1 or an L2 ball respectively.
-    radius : float
-        The radius of the ball onto which project the weights when using
-        projection.
+    structured_loss : function (y, y) -> float
+        The structured loss to compute on the objects.
     eta0 : float
         The initial value of the learning rate.
     power_t : float
@@ -287,8 +284,16 @@ class SSG(BaseSSG):
         iteration number raised to the `power_t`; the `optimal` strategy finds
         the best rate depending on `alpha` and `train_loss` (similar to
         Scikit-learn's SGDRegressor `optimal` learning rate).
-    structured_loss : function (y, y) -> float
-        The structured loss to compute on the objects.
+    radius : float
+        The radius of the ball enclosing the parameter space.
+    projection : None or str in ['l1', 'l2']
+        If None, no projection is applied, otherwise, if 'l1' or 'l2' are given,
+        the weights are projected back onto an L1 or an L2 ball respectively.
+    init_w : str in ['zeros', 'uniform', 'normal', 'laplace']
+        Initialization strategy for the parameter vector. 'zeros' initializes
+        the vector to all zero values; 'uniform', 'normal' and 'laplace'
+        initialize the vector with random weights from, respectively, a uniform,
+        normal, or Laplace distribution.
 
     References
     ----------
@@ -382,22 +387,23 @@ class EG(BaseSSG):
     train_loss : str in ['hinge', 'logistic', 'exponential']
         The training loss. The derivative of this loss is used to rescale the
         margin of the examples when making an update.
-    radius : float
-        This property is only used here to decide when to clip the exponential
-        training loss.
+    structured_loss : function (y, y) -> float
+        The structured loss to compute on the objects.
     eta0 : float
         The initial value of the learning rate.
     power_t : float
         The power of the iteration index when using an `invscaling`
         learning_rate.
-    learning_rate : str in ['constant', 'optimal', 'invscaling']
+    learning_rate : str in ['constant', 'decaying', 'invscaling']
         The learning rate strategy. The `constant` learning multiplies the
         updates for `eta0`; the `invscaling` divides the updates by the
-        iteration number raised to the `power_t`; the `optimal` strategy finds
-        the best rate depending on `alpha` and `train_loss` (similar to
-        Scikit-learn's SGDRegressor `optimal` learning rate).
-    structured_loss : function (y, y) -> float
-        The structured loss to compute on the objects.
+        iteration number raised to the `power_t`; the `decaying` strategy
+        decreases monotonically within the range [0.5, 1] with the number of
+        samples seen. Same strategy used in [1]_.
+    n_samples : int
+        Estimate of the number of samples in the dataset. This parameter helps
+        setting the decaying learning rate when training is initialized with the
+        `partial_fit` instead of the `fit` method.
 
     References
     ----------
