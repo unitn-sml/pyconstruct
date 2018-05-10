@@ -66,7 +66,7 @@ class LinearModel(BaseModel):
 
     @property
     def parameters(self):
-        return {'w': self.w, **super().parameters}
+        return {**super().parameters, 'w': self.w}
 
     def decision_function(self, X, Y):
         return np.inner(self.w, self.phi(X, Y))
