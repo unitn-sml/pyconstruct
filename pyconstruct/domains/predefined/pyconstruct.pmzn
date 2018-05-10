@@ -98,7 +98,9 @@ loss_augmented_map
 {% endmacro %}
 
 
-{% macro domain(problem, domain='') %}
+{% macro domain(
+    problem, domain='', allowed=('phi', 'map', 'loss_augmented_map')
+) %}
     {# Boilerplate for domain definition.
 
     PARAMETERS
@@ -108,6 +110,8 @@ loss_augmented_map
         domain class.
     domain : str
         The domain definition. Use this parameter in alternative to caller.
+    allowed : tuple
+        Allowed problems for this domain.
 
     USAGE
     -----
@@ -119,7 +123,7 @@ loss_augmented_map
         {% endcall %}
     #}
 
-    {% if problem in ('phi', 'map', 'loss_augmented_map') %}
+    {% if problem in allowed %}
         {% if domain != '' %}
             {{ domain }}
         {% endif %}
