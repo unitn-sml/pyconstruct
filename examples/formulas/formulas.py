@@ -14,9 +14,9 @@ from pyconstruct.utils import batches, load
 from sklearn.model_selection import train_test_split
 
 
-def loss(Y_pred, Y_true, parallel=4):
+def loss(Y_pred, Y_true, n_jobs=4):
     return hamming(
-        Y_pred, Y_true, key='sequence', n_jobs=parallel
+        Y_pred, Y_true, key='sequence', n_jobs=n_jobs
     ).mean()
 
 
@@ -29,32 +29,48 @@ def train(args):
 
     X, Y = load(args.data_file)
     X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, test_size=0.01, random_state=42
+        X, Y, test_size=0.25, random_state=42
     )
 
     print('Splitting dataset: {} training example, {} test examples'.format(
         X_train.shape[0], X_test.shape[0]
     ))
 
-    sp = StructuredPerceptron(domain=dom)
+    sp = StructuredPerceptron(dom, n_jobs=args.parallel)
+    bs = 24
 
-    for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=50)):
+    losses = []
+    for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=bs)):
+
+        # Validation
+        t0 = time()
+        Y_pred = sp.predict(X_b)
+        infer_time = time() - t0
+
+        losses.append(loss(Y_pred, Y_b, n_jobs=args.parallel))
+        avg_loss = sum(losses) / len(losses)
 
         # Learning
         t0 = time()
         sp.partial_fit(X_b, Y_b)
         learn_time = time() - t0
 
-        # Validation
-        t0 = time()
-        Y_pred = sp.predict(X_test)
-        infer_time = time() - t0
-
         print('Batch {}'.format(i + 1))
-        print('Loss = {}'.format(loss(Y_pred, Y_test, parallel=args.parallel)))
+        print('Examples: {}'.format((i + 1) * bs))
+        print('Training loss = {}'.format(losses[-1]))
+        print('Average training loss = {}'.format(avg_loss))
         print('Learn time = {}'.format(learn_time))
-        print('Infer time = {}'.format(infer_time))
-        print()
+        print('Infer time = {}\n'.format(infer_time))
+
+    print('Training complete!')
+    print('Inference on the test set...')
+
+    t0 = time()
+    Y_pred = sp.predict(X_test)
+    infer_time = time() - t0
+
+    print('Test loss = {}'.format(loss(Y_pred, Y_test, n_jobs=args.parallel)))
+    print('Infer time = {}\n'.format(infer_time))
 
 
 if __name__ == '__main__':
