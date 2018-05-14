@@ -8,7 +8,7 @@ pymzn.config.set('solver', pymzn.gurobi)
 pymzn.config.set('no_output_annotations', True)
 
 from time import time
-from pyconstruct import Domain, StructuredPerceptron
+from pyconstruct import Domain, SSG
 from pyconstruct.metrics import hamming
 from pyconstruct.utils import batches, load, save
 
@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 def loss(Y_pred, Y_true, n_jobs=4):
     return hamming(
         Y_pred, Y_true, key='sequence', n_jobs=n_jobs
-    ).mean()
+    )
 
 
 def train(args):
@@ -29,15 +29,16 @@ def train(args):
     )
 
     X, Y = load(args.data_file)
+    X, Y = X[:args.n_samples], Y[:args.n_samples]
     X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, test_size=0.25, random_state=42
+        X, Y, test_size=0.2, random_state=42
     )
 
-    print('Splitting dataset: {} training example, {} test examples'.format(
+    print('Splitting dataset: {} training examples, {} test examples'.format(
         X_train.shape[0], X_test.shape[0]
     ))
 
-    sp = StructuredPerceptron(dom, n_jobs=args.parallel)
+    sp = SSG(dom, inference='map', n_jobs=args.parallel)
     bs = 2 * args.parallel
 
     losses = []
@@ -49,7 +50,7 @@ def train(args):
         Y_pred = sp.predict(X_b)
         infer_time = time() - t0
 
-        losses.append(loss(Y_pred, Y_b, n_jobs=args.parallel))
+        losses.append(loss(Y_pred, Y_b, n_jobs=args.parallel).mean())
         avg_loss = sum(losses) / len(losses)
 
         # Learning
@@ -73,10 +74,13 @@ def train(args):
     Y_pred = sp.predict(X_test)
     infer_time = time() - t0
 
-    print('Test loss = {}'.format(loss(Y_pred, Y_test, n_jobs=args.parallel)))
+    test_losses = loss(Y_pred, Y_test, n_jobs=args.parallel)
+    print('Test loss = {}'.format(test_losses.mean()))
     print('Infer time = {}\n'.format(infer_time))
 
-    save({'losses': losses, 'times': times}, args.output)
+    save({
+        'train-losses': losses, 'test-losses': test_losses, 'times': times
+    }, args.output)
 
 
 if __name__ == '__main__':
@@ -85,6 +89,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--data-file', default='formulas.pickle')
     parser.add_argument('-D', '--domain-file', default='formulas.pmzn')
+    parser.add_argument('-n', '--n_samples', type=int, default=1000)
     parser.add_argument('-p', '--parallel', type=int, default=4)
     parser.add_argument('-N', '--no-constraints', action='store_true')
     parser.add_argument('-O', '--output', default='results.pickle')
