@@ -97,9 +97,9 @@ class BaseDomain(ABC):
         keys = [None] * n_samples
         if self.cache is not None:
             for i, x in enumerate(zip(*args)):
-                preds_keys[i] = hashkey(*x, **kwargs)
-                if pred_keys[i] in self.cache:
-                    preds[i] = self.cache[pred_keys[i]]
+                keys[i] = hashkey(*x, **kwargs)
+                if keys[i] in self.cache:
+                    preds[i] = self.cache[keys[i]]
 
         # Compute remaining
         _idx = [idx for idx, pred in enumerate(preds) if pred is None]
