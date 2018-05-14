@@ -63,8 +63,8 @@ def train(args):
         print('Examples: {}'.format(i * bs + X_b.shape[0]))
         print('Training loss = {}'.format(losses[-1]))
         print('Average training loss = {}'.format(avg_loss))
-        print('Infer time = {}\n'.format(infer_time))
-        print('Learn time = {}'.format(learn_time))
+        print('Infer time = {}'.format(infer_time))
+        print('Learn time = {}\n'.format(learn_time))
 
     print('Training complete!')
     print('Inference on the test set...')
