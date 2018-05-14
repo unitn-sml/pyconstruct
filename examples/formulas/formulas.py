@@ -10,7 +10,7 @@ pymzn.config.set('no_output_annotations', True)
 from time import time
 from pyconstruct import Domain, StructuredPerceptron
 from pyconstruct.metrics import hamming
-from pyconstruct.utils import batches, load
+from pyconstruct.utils import batches, load, save
 
 from sklearn.model_selection import train_test_split
 
@@ -25,7 +25,7 @@ def train(args):
 
     dom = Domain(
         args.domain_file, n_jobs=args.parallel,
-        no_constraints=args.no_constraints, cache={}
+        no_constraints=args.no_constraints
     )
 
     X, Y = load(args.data_file)
@@ -41,6 +41,7 @@ def train(args):
     bs = 2 * args.parallel
 
     losses = []
+    times = []
     for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=bs)):
 
         # Validation
@@ -56,12 +57,14 @@ def train(args):
         sp.partial_fit(X_b, Y_b)
         learn_time = time() - t0
 
+        times.append((infer_time, learn_time))
+
         print('Batch {}'.format(i + 1))
         print('Examples: {}'.format(i * bs + X_b.shape[0]))
         print('Training loss = {}'.format(losses[-1]))
         print('Average training loss = {}'.format(avg_loss))
-        print('Learn time = {}'.format(learn_time))
         print('Infer time = {}\n'.format(infer_time))
+        print('Learn time = {}'.format(learn_time))
 
     print('Training complete!')
     print('Inference on the test set...')
@@ -73,6 +76,8 @@ def train(args):
     print('Test loss = {}'.format(loss(Y_pred, Y_test, n_jobs=args.parallel)))
     print('Infer time = {}\n'.format(infer_time))
 
+    save({'losses': losses, 'times': times}, args.output)
+
 
 if __name__ == '__main__':
     import argparse
@@ -82,6 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('-D', '--domain-file', default='formulas.pmzn')
     parser.add_argument('-p', '--parallel', type=int, default=4)
     parser.add_argument('-N', '--no-constraints', action='store_true')
+    parser.add_argument('-O', '--output', default='results.pickle')
     args = parser.parse_args()
 
     train(args)
