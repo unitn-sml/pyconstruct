@@ -5,6 +5,7 @@ Example of code for training a StructuredPerceptron over the formulas data.
 
 import pymzn
 pymzn.config.set('solver', pymzn.gurobi)
+pymzn.config.set('no_output_annotations', True)
 
 from time import time
 from pyconstruct import Domain, StructuredPerceptron
@@ -24,7 +25,7 @@ def train(args):
 
     dom = Domain(
         args.domain_file, n_jobs=args.parallel,
-        no_constraints=args.no_constraints
+        no_constraints=args.no_constraints, cache={}
     )
 
     X, Y = load(args.data_file)
@@ -37,7 +38,7 @@ def train(args):
     ))
 
     sp = StructuredPerceptron(dom, n_jobs=args.parallel)
-    bs = 24
+    bs = 2 * args.parallel
 
     losses = []
     for i, (X_b, Y_b) in enumerate(batches(X_train, Y_train, batch_size=bs)):
@@ -56,7 +57,7 @@ def train(args):
         learn_time = time() - t0
 
         print('Batch {}'.format(i + 1))
-        print('Examples: {}'.format((i + 1) * bs))
+        print('Examples: {}'.format(i * bs + X_b.shape[0]))
         print('Training loss = {}'.format(losses[-1]))
         print('Average training loss = {}'.format(avg_loss))
         print('Learn time = {}'.format(learn_time))
