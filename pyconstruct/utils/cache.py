@@ -35,7 +35,10 @@ class HashableArgs:
            return False
 
        for o1, o2 in zip(self._hashkey, other._hashkey):
-           if o1 != o2:
+           try:
+               if o1 != o2:
+                   return False
+           except (TypeError, ValueError):
                return False
        return True
 
@@ -57,7 +60,7 @@ class HashableArgs:
                     return False
                 if o1 < o2:
                     return True
-            except TypeError:
+            except (TypeError, ValueError):
                 return False
         return False
 
@@ -79,7 +82,7 @@ class HashableArgs:
                     return False
                 if o1 > o2:
                     return True
-            except TypeError:
+            except (TypeError, ValueError):
                 return False
         return False
 
