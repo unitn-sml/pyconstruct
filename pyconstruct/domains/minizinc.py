@@ -11,7 +11,10 @@ from ..utils import dictsplit, hashkey
 from pkg_resources import resource_exists, resource_filename
 
 
-__all__ = ['get_path', 'get_source', 'get_info', 'print_info', 'MiniZincDomain']
+__all__ = [
+    'get_path', 'get_predefined', 'get_source', 'get_info', 'print_info',
+    'MiniZincDomain'
+]
 
 
 def get_path(domain):
@@ -20,6 +23,13 @@ def get_path(domain):
     if resource_exists(module, file_name):
         return resource_filename(module, file_name)
     return None
+
+
+def get_predefined(domain, **kwargs):
+    path = get_path(domain)
+    if path is None:
+        raise ValueError('No predefined domain named {}'.format(domain))
+    return MiniZincDomain(path, **kwargs)
 
 
 def get_source(domain):
@@ -122,8 +132,6 @@ class MiniZincDomain(BaseDomain):
 
         if os.path.exists(domain_file):
             self.domain_file = domain_file
-        else:
-            self.domain_file = get_path(domain_file)
         if not self.domain_file:
             raise ValueError('Domain file not found.')
 
