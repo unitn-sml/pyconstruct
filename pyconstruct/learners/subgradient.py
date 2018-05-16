@@ -81,7 +81,7 @@ class BaseSSG(BaseLearner, ABC):
         self.verbose = verbose
         self.batch_size = batch_size
         self.validate = validate
-        self.random_state = check_random_state(random_state)
+        self.random_state = random_state
 
     def _validate_params(self):
         super()._validate_params()
@@ -283,11 +283,12 @@ class SSG(BaseSSG):
         super()._validate_params()
 
     def _init_w(self, shape):
+        rng = check_random_state(self.random_state)
         w = {
             'zeros': lambda s: np.zeros(s, dtype=np.float64),
-            'uniform': lambda s: self.random_state.uniform(0.0, 1.0, s),
-            'normal': lambda s: self.random_state.normal(0.0, 1.0, s),
-            'laplace': lambda s: self.random_state.laplace(0.0, 1.0, s)
+            'uniform': lambda s: rng.uniform(0.0, 1.0, s),
+            'normal': lambda s: rng.normal(0.0, 1.0, s),
+            'laplace': lambda s: rng.laplace(0.0, 1.0, s)
         }[self.init_w](shape)
         norm = np.linalg.norm(w)
         if norm > 0:
