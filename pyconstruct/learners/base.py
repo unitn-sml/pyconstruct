@@ -2,6 +2,7 @@
 import numpy as np
 
 from ..models import BaseModel
+from ..domains import BaseDomain
 from abc import ABC, abstractmethod
 from sklearn.base import BaseEstimator
 
@@ -20,14 +21,17 @@ class BaseLearner(BaseEstimator, ABC):
     domain : BaseDomain
         The domain.
     """
-    def __init__(self, domain=None):
-        if domain is None:
-            raise ValueError('Need to specify a domain.')
+    def __init__(self, domain=None, **kwargs):
         self.domain = domain
+
+    def _validate_params(self):
+        if not isinstance(self.domain, BaseDomain):
+            raise ValueError('domain must be an instance of BaseDomain')
 
     @property
     def model(self):
         """The predictive model the algorithm has learned."""
+        self._validate_params()
         if not hasattr(self, 'model_'):
             return BaseModel(self.domain)
         return self.model_
@@ -66,7 +70,7 @@ class BaseLearner(BaseEstimator, ABC):
         """
         return self.model.predict(X, *args, **kwargs)
 
-    def score(self, X, Y_true, Y_pred=None, **kwargs):
+    def score(self, X, Y, Y_pred=None, **kwargs):
         """Compute the score as the average loss over the examples.
 
         This method is needed for scikit-learn estimation in GridSearchCV and
@@ -77,7 +81,7 @@ class BaseLearner(BaseEstimator, ABC):
         X : numpy.ndarray
             An array of input examples. The first dimension must be the number
             of samples.
-        Y_true : numpy.ndarray
+        Y : numpy.ndarray
             An array of true output objects.
         Y_pred : numpy.ndarray
             An array of predicted object.
@@ -89,13 +93,13 @@ class BaseLearner(BaseEstimator, ABC):
         """
         if Y_pred is None:
             Y_pred = self.predict(X, **kwargs)
-        return (- np.array(self.loss(X, Y_true, Y_pred))).mean()
+        return (- self.loss(X, Y, Y_pred)).mean()
 
     def decision_function(self, X, Y):
         return self.model.decision_function(X, Y)
 
-    def loss(self, X, Y_true, Y_pred):
-        return self.model.loss(X, Y_true, Y_pred)
+    def loss(self, X, Y, Y_pred):
+        return self.model.loss(X, Y, Y_pred)
 
     @abstractmethod
     def partial_fit(self, X, Y, Y_pred=None):
