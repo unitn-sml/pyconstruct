@@ -65,12 +65,12 @@ class BaseSSG(BaseLearner, ABC):
     """
 
     def __init__(
-        self, domain=None, inference='loss_augmented_map', alpha=0.0001,
+        self, domain=None, *, inference='loss_augmented_map', alpha=0.0001,
         train_loss='hinge', structured_loss=None, n_jobs=1, shuffle=True,
         warm_start=False, verbose=True, batch_size=None, validate=True,
         random_state=None, **kwargs
     ):
-        super().__init__(domain)
+        super().__init__(domain=domain, **kwargs)
         self.inference = inference
         self.alpha = alpha
         self.train_loss = train_loss
@@ -83,12 +83,15 @@ class BaseSSG(BaseLearner, ABC):
         self.validate = validate
         self.random_state = check_random_state(random_state)
 
+    def _validate_params(self):
+        super()._validate_params()
+
     @abstractmethod
     def _learning_rate(self):
         """Returns the current learning rate"""
 
     @abstractmethod
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
         """Returns a gradient step"""
 
     @abstractmethod
@@ -118,6 +121,8 @@ class BaseSSG(BaseLearner, ABC):
                     self.domain.cache[key] = y_phi
 
     def partial_fit(self, X, Y, Y_pred=None, Y_phi=None, Y_pred_phi=None):
+        self._validate_params()
+
         if not hasattr(self, 'w_'):
             self.w_ = None
         if not hasattr(self, 't_'):
@@ -159,6 +164,8 @@ class BaseSSG(BaseLearner, ABC):
         return self
 
     def fit(self, X, Y):
+        self._validate_params()
+
         if not self.warm_start:
             self.w_ = None
             self.t_ = 0
@@ -187,10 +194,10 @@ class BaseSSG(BaseLearner, ABC):
 
         return self
 
-    def loss(self, X, Y_true, Y_pred):
-        loss = super().loss(X, Y_true, Y_pred)
+    def loss(self, X, Y, Y_pred):
+        loss = super().loss(X, Y, Y_pred)
         if self.structured_loss is not None:
-            loss += self.structured_loss(Y_true, Y_pred)
+            loss += self.structured_loss(Y, Y_pred)
         return loss
 
 
@@ -260,17 +267,20 @@ class SSG(BaseSSG):
     """
 
     def __init__(
-        self, domain=None, inference='loss_augmented_map', eta0=1.0,
+        self, domain=None, *, inference='loss_augmented_map', eta0=1.0,
         power_t=0.5, learning_rate='optimal', radius=1000.0, projection='l2',
         init_w='normal', **kwargs
     ):
-        super().__init__(domain, inference=inference, **kwargs)
+        super().__init__(domain=domain, inference=inference, **kwargs)
         self.eta0 = eta0
         self.power_t = power_t
         self.learning_rate = learning_rate
         self.radius = self.radius_ = radius
         self.projection = projection
         self.init_w = init_w
+
+    def _validate_params(self):
+        super()._validate_params()
 
     def _init_w(self, shape):
         w = {
@@ -299,12 +309,12 @@ class SSG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
-        psi = phi_y_true - phi_y_pred
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
+        psi = phi_y - phi_y_pred
         margin = w.dot(psi)
         loss = - margin
         if self.structured_loss is not None:
-            loss += self.structured_loss(*asarrays(y_true, y_pred))
+            loss += self.structured_loss(*asarrays(y, y_pred))
 
         rho = self._dloss(loss, eta * psi)
         step = self.alpha * w - psi * rho
@@ -364,11 +374,14 @@ class EG(BaseSSG):
         self, domain=None, inference='map', eta0=1.0, power_t=0.5,
         learning_rate='decaying', n_samples=1000, **kwargs
     ):
-        super().__init__(domain, inference=inference, **kwargs)
+        super().__init__(domain=domain, inference=inference, **kwargs)
         self.eta0 = eta0
         self.power_t = power_t
         self.learning_rate = learning_rate
         self.n_samples = self.n_samples_ = n_samples
+
+    def _validate_params(self):
+        super()._validate_params()
 
     def _init_w(dim):
         return np.full(dim, 1.0 / dim)
@@ -380,15 +393,15 @@ class EG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
         if not hasattr(self, 'radius_'):
             self.radius_ = w.shape[0]
 
-        psi = phi_y_true - phi_y_pred
+        psi = phi_y - phi_y_pred
         margin = w.dot(psi)
         loss = - margin
         if self.structured_loss is not None:
-            loss += self.structured_loss(y_true, y_pred)
+            loss += self.structured_loss(y, y_pred)
 
         rho = self._dloss(loss, eta * psi)
         step = self.alpha * w - psi * rho
