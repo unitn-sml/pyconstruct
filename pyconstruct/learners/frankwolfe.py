@@ -44,11 +44,16 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         self, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
     ):
         super().__init__(domain=domain)
-        if structured_loss is None:
-            raise ValueError('Need a structured loss')
         self.structured_loss = structured_loss
         self.dataset_size = dataset_size
         self.alpha = alpha
+
+    def _validate_params(self):
+        super()._validate_params()
+        if self.structured_loss is None:
+            raise ValueError(
+                'structured_loss must be a function (dict, dict) -> float'
+            )
 
     @property
     def dual_gap(self):
@@ -112,6 +117,8 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         return w, w_mat, l, l_mat, idx, dual_gap
 
     def partial_fit(self, X, Y, Y_pred=None):
+        self._validate_params()
+
         if not hasattr(self, 'w_'):
             self.w_ = None
         if not hasattr(self, 'w_mat_'):
