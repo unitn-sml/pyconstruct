@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from ..utils import broadcast
+from ..utils import broadcast, check_params
 
 
 __all__ = ['BaseModel', 'LinearModel']
@@ -15,7 +15,8 @@ class BaseModel:
     domain : Domain
         The underlying domain.
     """
-    def __init__(self, domain):
+    def __init__(self, domain=None, **kwargs):
+        check_params(domain=domain)
         self.domain = domain
 
     @property
@@ -60,8 +61,9 @@ class LinearModel(BaseModel):
     w : np.ndarray
         The weight vector.
     """
-    def __init__(self, domain, w):
-        super().__init__(domain)
+    def __init__(self, domain=None, w=None, **kwargs):
+        super().__init__(domain=domain, **kwargs)
+        check_params(w=w)
         self.w = w
 
     @property
