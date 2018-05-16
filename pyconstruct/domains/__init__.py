@@ -120,8 +120,11 @@ from .base import *
 from .minizinc import *
 
 
-# Alias
-Domain = MiniZincDomain
+def Domain(domain, **kwargs):
+    """Meta-function for instantiating a domain from its name"""
+    if domain.endswith('.pmzn'):
+        return MiniZincDomain(domain, **kwargs)
+    return get_predefined(domain, **kwargs)
 
 
 __all__ = base.__all__ + minizinc.__all__ + ['Domain']
