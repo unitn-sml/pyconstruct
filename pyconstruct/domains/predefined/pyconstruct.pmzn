@@ -23,14 +23,14 @@ loss_augmented_map
 
 
 {% macro n_features(
-    n_features='', n_features_var='N_FEATURES', feature_set_var='FEATURES'
+    model=none, n_features_var='N_FEATURES', feature_set_var='FEATURES'
 ) %}
     {# Boilerplate for feature number definition.
 
     PARAMETERS
     ----------
-    n_features : int or str
-        The number of feature. Use this parameter in alternative to caller.
+    model : dict
+        Parameters of the model.
     n_feature_var : str
         The variable name of the feature array. Default is 'phi'.
     feature_set : str
@@ -38,39 +38,42 @@ loss_augmented_map
 
     USAGE
     -----
-        {{ call n_features(10) }}
-    Or
+    Only fixed domain features:
         {% call n_features() %}
             N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
         {% endcall %}
-    Or
-        {% call n_features(10) %}
-            % Sums 10 at the end
+
+    Only model-dependent features:
+        {{ call n_features(model) }}
+
+    Combination of both:
+        {% call n_features(model) %}
             N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
         {% endcall %}
     #}
 
     {% if caller is defined %}
-        int: {{ n_features_var }} = {{ caller() }}{{ ' + ' + n_features if n_features != '' else '' }};
-    {% elif n_features != '' %}
-        int: {{ n_features_var }} = {{ n_features }};
+        int: {{ n_features_var }} = {{ caller() }}
     {% else %}
-        int: {{ n_features_var }} = 0;
+        int: {{ n_features_var }} = 0
     {% endif %}
+    {% if model is not none and 'features' in model and model['features'] is not none %}
+        + {{ model['features']|length }}
+    {% endif %} ;
     set of int: {{ feature_set_var }} = 1 .. {{ n_features_var }};
 
 {% endmacro %}
 
 
 {% macro features(
-    features='', feature_var='phi', feature_set='FEATURES', feature_type='float'
+    model=none, feature_var='phi', feature_set='FEATURES', feature_type='float'
 ) %}
     {# Boilerplate for features definition.
 
     PARAMETERS
     ----------
-    features : str
-        The feature definition. Use this parameter in alternative to caller.
+    model : dict
+        Parameters of the model.
     feature_var : str
         The variable name of the feature array. Default is 'phi'.
     feature_set : str
@@ -80,20 +83,34 @@ loss_augmented_map
 
     USAGE
     -----
+    Only fixed domain features:
         {% call features() %}
             % Your features definition, e.g.
             % [ feature1, feature2 ] ++ [ feature3 ]
         {% endcall %}
 
+    Only model-dependent features:
+        {{ call features(model) }}
+
+    Combination of both:
+        {% call features(model) %}
+            % Your features definition, e.g.
+            % [ feature1, feature2 ] ++ [ feature3 ]
+        {% endcall %}
     #}
 
     {% if caller is defined %}
-        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ caller() }}{{ ' ++ ' + features if features != '' else ''}};
-    {% elif features != '' %}
-        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ features }};
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ caller() }}
     {% else %}
-        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = [];
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = []
     {% endif %}
+    {% if model is not none and 'features' in model and model['features'] is not none and model['features']|length > 0 %}
+        ++ [
+        {% for feature in model['features'] %}
+            {{ feature }}
+        {% endfor %}
+        ]
+    {% endif %} ;
 
 {% endmacro %}
 
