@@ -91,11 +91,11 @@ class BaseSSG(BaseLearner, ABC):
         """Returns the current learning rate"""
 
     @abstractmethod
-    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta, **kwargs):
         """Returns a gradient step"""
 
     @abstractmethod
-    def _update(self, w, step, eta):
+    def _update(self, w, step, eta, **kwargs):
         """Returns updated w"""
 
     def _exp(self, x, psi):
@@ -120,7 +120,9 @@ class BaseSSG(BaseLearner, ABC):
                 if key not in self.domain.cache:
                     self.domain.cache[key] = y_phi
 
-    def partial_fit(self, X, Y, Y_pred=None, Y_phi=None, Y_pred_phi=None):
+    def partial_fit(
+        self, X, Y, Y_pred=None, Y_phi=None, Y_pred_phi=None, **kwargs
+    ):
         self._validate_params()
 
         if not hasattr(self, 'w_'):
@@ -133,18 +135,18 @@ class BaseSSG(BaseLearner, ABC):
         if Y_pred is None:
             start = _time()
             Y_pred, Y_pred_phi = zip(*self.predict(
-                X, Y, return_phi=True, problem=self.inference
+                X, Y, return_phi=True, problem=self.inference, **kwargs
             ))
             infer_time = _time() - start
-            self._update_phi_cache(X, Y_pred, Y_pred_phi)
+            self._update_phi_cache(X, Y_pred, Y_pred_phi, **kwargs)
 
         if Y_phi is None:
-            Y_phi = self.phi(X, Y)
-            self._update_phi_cache(X, Y, Y_phi)
+            Y_phi = self.phi(X, Y, **kwargs)
+            self._update_phi_cache(X, Y, Y_phi, **kwargs)
 
         if Y_pred_phi is None:
-            Y_pred_phi = self.phi(X, Y_pred)
-            self._update_phi_cache(X, Y_pred, Y_pred_phi)
+            Y_pred_phi = self.phi(X, Y_pred, **kwargs)
+            self._update_phi_cache(X, Y_pred, Y_pred_phi, **kwargs)
 
         if self.w_ is not None:
             w = np.copy(self.w_)
@@ -156,14 +158,14 @@ class BaseSSG(BaseLearner, ABC):
         # Weight updates
         steps = broadcast(
             self._step, X, Y, Y_pred, Y_phi, Y_pred_phi, w=w, eta=eta,
-            n_jobs=self.n_jobs
+            n_jobs=self.n_jobs, **kwargs
         )
 
-        self.w_ = self._update(w, steps.mean(axis=0), eta)
+        self.w_ = self._update(w, steps.mean(axis=0), eta, **kwargs)
         self.model_ = LinearModel(self.domain, self.w_)
         return self
 
-    def fit(self, X, Y):
+    def fit(self, X, Y, **kwargs):
         self._validate_params()
 
         if not self.warm_start:
@@ -184,18 +186,18 @@ class BaseSSG(BaseLearner, ABC):
                 print('\tSamples: {}'.format(batch_size*n_b + X_b.shape[0]))
 
                 if self.validate and self.structured_loss is not None:
-                    Y_pred = self.predict(X_b)
+                    Y_pred = self.predict(X_b, **kwargs)
                     loss = self.structured_loss(Y_b, Y_pred).mean()
                     losses = np.append(losses, loss)
                     avg_loss = losses.sum() / (losses.size)
                     print('\tTraining loss: {:>5.4f}'.format(loss))
                     print('\tAverage training loss: {:>5.4f}'.format(avg_loss))
-            self.partial_fit(X_b, Y_b)
+            self.partial_fit(X_b, Y_b, **kwargs)
 
         return self
 
-    def loss(self, X, Y, Y_pred):
-        loss = super().loss(X, Y, Y_pred)
+    def loss(self, X, Y, Y_pred, **kwargs):
+        loss = super().loss(X, Y, Y_pred, **kwargs)
         if self.structured_loss is not None:
             loss += self.structured_loss(Y, Y_pred)
         return loss
@@ -310,7 +312,7 @@ class SSG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta, **kwargs):
         psi = phi_y - phi_y_pred
         margin = w.dot(psi)
         loss = - margin
@@ -321,7 +323,7 @@ class SSG(BaseSSG):
         step = self.alpha * w - psi * rho
         return step
 
-    def _update(self, w, step, eta):
+    def _update(self, w, step, eta, **kwargs):
         w -= eta * step
         if self.projection == 'l2':
             w = project.l2(w, self.radius)
@@ -394,7 +396,7 @@ class EG(BaseSSG):
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
         }[self.learning_rate](self.t_)
 
-    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta):
+    def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta, **kwargs):
         if not hasattr(self, 'radius_'):
             self.radius_ = w.shape[0]
 
@@ -408,7 +410,7 @@ class EG(BaseSSG):
         step = self.alpha * w - psi * rho
         return step
 
-    def _update(self, w, step, eta):
+    def _update(self, w, step, eta, **kwargs):
         w *= np.exp(- eta * step)
         w /= np.sum(w)
         return w
