@@ -4,8 +4,8 @@ import inspect
 
 
 __all__ = [
-    'check_params', 'get_class', 'get_defaults', 'add_prefix', 'strip_prefix',
-    'parse_remainder'
+    'check_params', 'rewrap', 'get_class', 'get_defaults', 'add_prefix',
+    'strip_prefix', 'parse_remainder'
 ]
 
 
@@ -13,6 +13,10 @@ def check_params(**kwargs):
     for key, val in kwargs.items():
         if val is None:
             raise ValueError('The parameter `{}` must not be None'.format(key))
+
+
+def rewrap(s):
+    return dedent(s).replace('\n', ' ').strip()
 
 
 def get_class(name, defmod=None):
