@@ -29,7 +29,7 @@ class BaseModel:
         self._validate_params()
         return {'type': type(self).__name__}
 
-    def phi(self, X, Y):
+    def phi(self, X, Y, **kwargs):
         self._validate_params()
         return self.domain.phi(X, Y, model=self)
 
@@ -38,20 +38,20 @@ class BaseModel:
         self._validate_params()
         return self.domain.infer(X, *args, model=self, **kwargs)
 
-    def decision_function(self, X, Y):
+    def decision_function(self, X, Y, **kwargs):
         """Computes the score assigned to the (x, y) by the model."""
         self._validate_params()
         return 0.0
 
-    def margin(self, X, Y, Y_pred):
+    def margin(self, X, Y, Y_pred, **kwargs):
         """Computes the margin of the current model for the given data."""
-        Y_f = self.decision_function(X, Y)
-        Y_pred_f = self.decision_function(X, Y_pred)
+        Y_f = self.decision_function(X, Y, **kwargs)
+        Y_pred_f = self.decision_function(X, Y_pred, **kwargs)
         return Y_f - Y_pred_f
 
-    def loss(self, X, Y, Y_pred):
+    def loss(self, X, Y, Y_pred, **kwargs):
         """Computes the loss of the predictions with respect the model."""
-        return - self.margin(X, Y, Y_pred)
+        return - self.margin(X, Y, Y_pred, **kwargs)
 
 
 class LinearModel(BaseModel):
@@ -103,7 +103,7 @@ class LinearModel(BaseModel):
     def parameters(self):
         return {**super().parameters, 'w': self.w, 'features': self.features}
 
-    def decision_function(self, X, Y):
+    def decision_function(self, X, Y, **kwargs):
         self._validate_params()
         return np.inner(self.w, self.phi(X, Y))
 
