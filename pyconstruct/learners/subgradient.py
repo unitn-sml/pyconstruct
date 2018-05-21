@@ -125,11 +125,9 @@ class BaseSSG(BaseLearner, ABC):
     ):
         self._validate_params()
 
-        if not hasattr(self, 'w_'):
-            self.w_ = None
-        if not hasattr(self, 't_'):
-            self.t_ = 0
-        self.t_ += 1
+        if not hasattr(self, 'state_') or self.state_ is None:
+            self.state_ = Bunch(w=None, t=0)
+        self.state_.t += 1
 
         # Inference
         if Y_pred is None:
@@ -148,8 +146,8 @@ class BaseSSG(BaseLearner, ABC):
             Y_pred_phi = self.phi(X, Y_pred, **kwargs)
             self._update_phi_cache(X, Y_pred, Y_pred_phi, **kwargs)
 
-        if self.w_ is not None:
-            w = np.copy(self.w_)
+        if self.state_.w is not None:
+            w = np.copy(self.state_.w)
         else:
             w = self._init_w(Y_phi[-1].shape[0])
 
@@ -161,24 +159,21 @@ class BaseSSG(BaseLearner, ABC):
             n_jobs=self.n_jobs, **kwargs
         )
 
-        self.w_ = self._update(w, steps.mean(axis=0), eta, **kwargs)
-        self.model_ = LinearModel(self.domain, self.w_)
+        self.state_.w = self._update(w, steps.mean(axis=0), eta, **kwargs)
+        self.model_ = LinearModel(self.domain, self.state_.w)
         return self
 
     def fit(self, X, Y, **kwargs):
         self._validate_params()
 
-        if not hasattr(self, 'rng_'):
-            self.rng_ = check_random_state(self.random_state)
-
         if not self.warm_start:
-            self.w_ = None
-            self.t_ = 0
-
-        self.n_samples_ = X.shape[0]
+            self.state_ = Bunch(
+                w=None, t=0, n_samples=X.shape[0],
+                rng=check_random_state(self.random_state),
+            )
 
         if self.shuffle:
-            X, Y = shuffle(X, Y, random_state=self.rng_)
+            X, Y = shuffle(X, Y, random_state=self.state_.rng)
 
         losses = np.array([])
         batch_size = self.batch_size or self.n_jobs
@@ -288,13 +283,14 @@ class SSG(BaseSSG):
         super()._validate_params()
 
     def _init_w(self, shape):
-        if not hasattr(self, 'rng_'):
-            self.rng_ = check_random_state(self.random_state)
+        if not hasattr(self.state_, 'rng'):
+            self.state_.rng = check_random_state(self.random_state)
+        rng = self.state_.rng
         w = {
             'zeros': lambda s: np.zeros(s, dtype=np.float64),
-            'uniform': lambda s: self.rng_.uniform(0.0, 1.0, s),
-            'normal': lambda s: self.rng_.normal(0.0, 1.0, s),
-            'laplace': lambda s: self.rng_.laplace(0.0, 1.0, s)
+            'uniform': lambda s: rng.uniform(0.0, 1.0, s),
+            'normal': lambda s: rng.normal(0.0, 1.0, s),
+            'laplace': lambda s: rng.laplace(0.0, 1.0, s)
         }[self.init_w](shape)
         norm = np.linalg.norm(w)
         if norm > 0:
@@ -314,7 +310,7 @@ class SSG(BaseSSG):
             'constant': lambda t: self.eta0,
             'optimal': lambda t: 1.0 / (self.alpha * (self._init_t + t - 1.0)),
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
-        }[self.learning_rate](self.t_)
+        }[self.learning_rate](self.state_.t)
 
     def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta, **kwargs):
         psi = phi_y - phi_y_pred
@@ -385,7 +381,7 @@ class EG(BaseSSG):
         self.eta0 = eta0
         self.power_t = power_t
         self.learning_rate = learning_rate
-        self.n_samples = self.n_samples_ = n_samples
+        self.n_samples = n_samples
 
     def _validate_params(self):
         super()._validate_params()
@@ -394,15 +390,20 @@ class EG(BaseSSG):
         return np.full(dim, 1.0 / dim)
 
     def _learning_rate(self):
+        if hasattr(self.state_, 'n_samples'):
+            n_samples = self.state_.n_samples
+        else:
+            n_samples = self.n_samples
+
         return {
             'constant': lambda t: self.eta0,
-            'decaying': lambda t: self.eta0 / (1.0 + self.t_ / self.n_samples_),
+            'decaying': lambda t: self.eta0 / (1.0 + t / n_samples),
             'invscaling': lambda t: self.eta0 / np.power(t, self.power_t)
-        }[self.learning_rate](self.t_)
+        }[self.learning_rate](self.state_.t)
 
     def _step(self, x, y, y_pred, phi_y, phi_y_pred, w, eta, **kwargs):
-        if not hasattr(self, 'radius_'):
-            self.radius_ = w.shape[0]
+        if not hasattr(self.state_, 'radius'):
+            self.state_.radius = w.shape[0]
 
         psi = phi_y - phi_y_pred
         margin = w.dot(psi)
