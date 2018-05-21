@@ -11,7 +11,7 @@ from ..models import LinearModel, BaseModel
 from scipy.special import expit
 from abc import ABC, abstractmethod
 
-from sklearn.utils import check_random_state, shuffle
+from sklearn.utils import check_random_state, shuffle, Bunch
 
 
 __all__ = ['BaseSSG', 'SSG', 'EG']
