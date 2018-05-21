@@ -10,6 +10,7 @@ from time import monotonic as _time
 
 __all__ = ['BlockCoordinateFrankWolfe']
 
+# TODO: use `state_` here as well
 
 class BlockCoordinateFrankWolfe(BaseLearner):
     """Learner using the Block-Coordinate Frank-Wolfe algorithm [1]_.
