@@ -168,6 +168,9 @@ class BaseSSG(BaseLearner, ABC):
     def fit(self, X, Y, **kwargs):
         self._validate_params()
 
+        if not hasattr(self, 'rng_'):
+            self.rng_ = check_random_state(self.random_state)
+
         if not self.warm_start:
             self.w_ = None
             self.t_ = 0
@@ -175,7 +178,7 @@ class BaseSSG(BaseLearner, ABC):
         self.n_samples_ = X.shape[0]
 
         if self.shuffle:
-            X, Y = shuffle(X, Y, random_state=self.random_state)
+            X, Y = shuffle(X, Y, random_state=self.rng_)
 
         losses = np.array([])
         batch_size = self.batch_size or self.n_jobs
@@ -285,12 +288,13 @@ class SSG(BaseSSG):
         super()._validate_params()
 
     def _init_w(self, shape):
-        rng = check_random_state(self.random_state)
+        if not hasattr(self, 'rng_'):
+            self.rng_ = check_random_state(self.random_state)
         w = {
             'zeros': lambda s: np.zeros(s, dtype=np.float64),
-            'uniform': lambda s: rng.uniform(0.0, 1.0, s),
-            'normal': lambda s: rng.normal(0.0, 1.0, s),
-            'laplace': lambda s: rng.laplace(0.0, 1.0, s)
+            'uniform': lambda s: self.rng_.uniform(0.0, 1.0, s),
+            'normal': lambda s: self.rng_.normal(0.0, 1.0, s),
+            'laplace': lambda s: self.rng_.laplace(0.0, 1.0, s)
         }[self.init_w](shape)
         norm = np.linalg.norm(w)
         if norm > 0:
