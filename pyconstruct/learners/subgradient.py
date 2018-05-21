@@ -166,10 +166,11 @@ class BaseSSG(BaseLearner, ABC):
     def fit(self, X, Y, **kwargs):
         self._validate_params()
 
-        if not self.warm_start:
+        has_state = hasattr(self, 'state_') and self.state_ is None
+        if not self.warm_start or not hasstate:
+            rng = check_random_state(self.random_state)
             self.state_ = Bunch(
-                w=None, t=0, n_samples=X.shape[0],
-                rng=check_random_state(self.random_state),
+                w=None, t=0, n_samples=X.shape[0], rng=rng
             )
 
         if self.shuffle:
