@@ -93,7 +93,7 @@ class LinearModel(BaseModel):
             raise ValueError('w must be a numpy array')
         if len(self.w.shape) != 1:
             raise ValueError('w must be a one-dimentional array')
-        if self.feature is not None:
+        if self.features is not None:
             if not isinstance(self.features, np.ndarray):
                 raise ValueError('features must be a numpy array')
             if len(self.features.shape) != 1:
