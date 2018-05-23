@@ -22,10 +22,6 @@ loss_augmented_map
 {% set FLOAT_SET = '-461168601.0 .. 461168601.0' %}
 
 
-{% import 'linear.pmzn' as linear with context %}
-{% import 'metrics.pmzn' as linear with context %}
-
-
 {% macro domain(
     problem, allowed=('phi', 'map', 'loss_augmented_map')
 ) %}
