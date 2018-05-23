@@ -1,0 +1,143 @@
+
+{% macro n_features(
+    params=none, n_features_var='N_FEATURES', feature_set='FEATURES'
+) %}
+    {# Boilerplate for feature number definition.
+
+    PARAMETERS
+    ----------
+    params : dict
+        Parameters of the model.
+    n_feature_var : str
+        The variable name of the feature array. Default is 'phi'.
+    feature_set : str
+        The variable name of the feature index set: Default is 'FEATURES'.
+
+    USAGE
+    -----
+    Only fixed domain features:
+        {% call n_features() %}
+            N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
+        {% endcall %}
+
+    Only model-dependent features:
+        {{ call n_features(params) }}
+
+    Combination of both:
+        {% call n_features(params) %}
+            N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
+        {% endcall %}
+    #}
+
+    {% if caller is defined %}
+        int: {{ n_features_var }} = {{ caller() }}
+    {% else %}
+        int: {{ n_features_var }} = 0
+    {% endif %}
+    {% if model is not none and 'features' in model and model['features'] is not none %}
+        + {{ model['features']|length }}
+    {% endif %} ;
+    set of int: {{ feature_set }} = 1 .. {{ n_features_var }};
+
+{% endmacro %}
+
+
+{% macro features(
+    params=none, feature_var='phi', feature_set='FEATURES', feature_type=none
+) %}
+    {# Boilerplate for features definition.
+
+    PARAMETERS
+    ----------
+    params : dict
+        Parameters of the model.
+    feature_var : str
+        The variable name of the feature array. Default is 'phi'.
+    feature_set : str
+        The variable name of the feature index set: Default is 'FEATURES'.
+    feature_type : str
+        The type of the features. Default is FLOAT_SET.
+
+    USAGE
+    -----
+    Only fixed domain features:
+        {% call features() %}
+            % Your features definition, e.g.
+            % [ feature1, feature2 ] ++ [ feature3 ]
+        {% endcall %}
+
+    Only model-dependent features:
+        {{ call features(params) }}
+
+    Combination of both:
+        {% call features(params) %}
+            % Your features definition, e.g.
+            % [ feature1, feature2 ] ++ [ feature3 ]
+        {% endcall %}
+    #}
+
+    {% if feature_type is none %}
+        {% set feature_type = FLOAT_SET %}
+    {% endif %}
+
+    {% if caller is defined %}
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = {{ caller() }}
+    {% else %}
+        array[{{ feature_set }}] of var {{ feature_type }}: {{ feature_var }} = []
+    {% endif %}
+    {% if params is not none and 'features' in params and params.features is not none and params.features|length > 0 %}
+        ++ [
+        {% for feature in params.features %}
+            {{ feature }}
+        {% endfor %}
+        ]
+    {% endif %} ;
+
+{% endmacro %}
+
+
+{% macro linear_model(
+    problem, params=none, n_features='0', n_features_var='N_FEATURES',
+    feature_var='phi', feature_set='FEATURES', feature_type=none,
+    discretize=False, factor=100, score_var='score',
+    allowed=('phi', 'map', 'loss_augmented_map')
+) %}
+
+    {% call n_features(params, n_features_var, feature_set) %}
+        {{ n_features }}
+    {% endcall %}
+
+    {% if problem in allowed  %}
+
+        {% if feature_type is none %}
+            {% if discretize %}
+                {% set feature_type = INT_SET %}
+            {% else %}
+                {% set feature_type = FLOAT_SET %}
+            {% endif %}
+        {% endif %}
+
+        {% call features(params, feature_var, feature_set, feature_type) %}
+            {% if caller is defined %} {{ caller() }} {% else %} [] {% endif %}
+        {% endcall %}
+
+        {% if problem != 'phi' %}
+
+            {% if 'w' in params and params.w is not none %}
+                {% if discretize %}
+                    {% set w = params.w|int(factor)|dzn %}
+                {% else %}
+                    {% set w = params.w|dzn %}
+                {% endif %}
+            {% else %}
+                {% set w = '[0 | i in ' + feature_set + ']' %}
+            {% endif %}
+
+            array[{{ feature_set }}] of {{ feature_type }}: w = {{ w }};
+            var {{ feature_type }}: {{ score_var }} = sum(i in {{ feature_set }})(w[i] * {{ feature_var }}[i]);
+
+        {% endif %}
+
+    {% endif %}
+
+{% endmacro %}
