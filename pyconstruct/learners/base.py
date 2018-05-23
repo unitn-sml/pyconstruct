@@ -1,4 +1,6 @@
 
+import copy
+
 from ..models import BaseModel
 from abc import ABC, abstractmethod
 from sklearn.base import BaseEstimator
@@ -11,10 +13,14 @@ class BaseLearner(BaseEstimator, ABC):
     """A basic learning model class.
 
     A learner fits a model with some data over some given domain.  If only the
-    domain is given, a default model is used. If only the model is given, it
-    must also contain a domain to make predictions with. If both are given, the
-    domain of the model (if it has one) will be overwritten by the domain given
-    to the learner.
+    domain is given, a default model class (depending on the learner subclass)
+    will be used. If a model is also given, the learner will make a copy and
+    overwrite the domain of the copy with the one given to the learner. If no
+    domain is given to the learner, the given model must be initialized with a
+    domain.
+
+    The fitted model is accessible through the `model_` attribute (not to be
+    confused with the input parameter `model` which is copied if given).
 
     Arguments
     ---------
@@ -27,15 +33,28 @@ class BaseLearner(BaseEstimator, ABC):
         self.domain = domain
         self.model = model
 
-    def _model(self, default=None):
+    def _get_model(self, default=None):
+        if hasattr(self, 'model_'):
+            return self.model_
         if self.model is None:
             if self.domain is None:
                 raise ValueError('Either domain or model must be given')
             model_class = default if default is not None else BaseModel
-            self.model = model_class(self.domain)
-        elif self.domain is not None:
-            self.model.domain = self.domain
-        return self.model
+            self.model_ = model_class(self.domain)
+            self.domain_ = self.domain
+        else:
+            self.model_ = copy.deepcopy(self.model)
+            if self.domain is not None:
+                self.model_.domain = self.domain_ = self.domain
+            elif self.model_.domain is not None:
+                self.domain_ = self.model_.domain
+            else:
+                raise ValueError('No domain given to the learner nor the model')
+        return self.model_
+
+    @property
+    def _model(self):
+        return self._get_model()
 
     def phi(self, X, Y, **kwargs):
         """Computes the feature vector for the given input and output objects.
