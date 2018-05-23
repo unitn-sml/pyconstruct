@@ -102,9 +102,7 @@ class LinearModel(BaseModel):
         An optional array of additional features.
     """
     def __init__(self, domain=None, w=None, features=None, **kwargs):
-        super().__init__(domain=domain, **kwargs)
-        self.w = w
-        self.features = features
+        super().__init__(domain=domain, w=w, features=features, **kwargs)
 
     def _validate_params(self):
         super()._validate_params()
@@ -117,10 +115,6 @@ class LinearModel(BaseModel):
                 raise ValueError('features must be a numpy array')
             if len(self.features.shape) != 1:
                 raise ValueError('features must be a one-dimentional array')
-
-    @property
-    def parameters(self):
-        return {**super().parameters, 'w': self.w, 'features': self.features}
 
     def decision_function(self, X, Y, **kwargs):
         self._validate_params()
