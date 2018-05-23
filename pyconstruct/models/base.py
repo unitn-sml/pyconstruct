@@ -10,7 +10,6 @@ from sklearn.utils import Bunch
 __all__ = ['BaseModel', 'LinearModel']
 
 
-
 class BaseModel(Bunch):
     """Base model.
 
@@ -21,32 +20,15 @@ class BaseModel(Bunch):
     """
     def __init__(self, domain=None, **kwargs):
         super().__init__(domain=domain, **kwargs)
-        self._validate_params()
 
     def _validate_params(self):
         if not isinstance(self.domain, BaseDomain):
             raise ValueError('domain must be an instance of BaseDomain')
 
-    def __setitem__(self, k, v):
-        super().__setitem__(k, v)
-        self._validate_params()
-
-    def __delitem__(self, k):
-        super().__delitem__(k)
-        self._validate_params()
-
-    def pop(self, k, v):
-        super().pop(k, v)
-        self._validate_params()
-
-    def update(self, **kwargs):
-        """Update values of the parameters of the model."""
-        super().update(**kwargs)
-        self._validate_params()
-
     @property
     def params(self):
         """A dictionary of parameters of the model."""
+        self._validate_params()
         return Bunch(**{
             **subdict(self, nokeys=['domain']), 'type': type(self).__name__
         })
