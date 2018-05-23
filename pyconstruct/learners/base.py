@@ -21,20 +21,9 @@ class BaseLearner(BaseEstimator, ABC):
     domain : BaseDomain
         The domain.
     """
-    def __init__(self, domain=None, **kwargs):
+    def __init__(self, domain=None, model=None, **kwargs):
         self.domain = domain
-
-    def _validate_params(self):
-        if not isinstance(self.domain, BaseDomain):
-            raise ValueError('domain must be an instance of BaseDomain')
-
-    @property
-    def model(self):
-        """The predictive model the algorithm has learned."""
-        self._validate_params()
-        if not hasattr(self, 'model_'):
-            return BaseModel(self.domain)
-        return self.model_
+        self.model = model
 
     def phi(self, X, Y, **kwargs):
         """Computes the feature vector for the given input and output objects.
@@ -70,6 +59,12 @@ class BaseLearner(BaseEstimator, ABC):
         """
         return self.model.predict(X, *args, **kwargs)
 
+    def decision_function(self, X, Y):
+        return self.model.decision_function(X, Y)
+
+    def loss(self, X, Y, Y_pred):
+        return self.model.loss(X, Y, Y_pred)
+
     def score(self, X, Y, Y_pred=None, **kwargs):
         """Compute the score as the average loss over the examples.
 
@@ -95,14 +90,8 @@ class BaseLearner(BaseEstimator, ABC):
             Y_pred = self.predict(X, **kwargs)
         return (- self.loss(X, Y, Y_pred)).mean()
 
-    def decision_function(self, X, Y):
-        return self.model.decision_function(X, Y)
-
-    def loss(self, X, Y, Y_pred):
-        return self.model.loss(X, Y, Y_pred)
-
     @abstractmethod
-    def partial_fit(self, X, Y, Y_pred=None):
+    def partial_fit(self, X, Y, Y_pred=None, **kwargs):
         """Updates the current model with data (X, Y).
 
         Parameters
@@ -123,7 +112,7 @@ class BaseLearner(BaseEstimator, ABC):
         """
 
     @abstractmethod
-    def fit(self, X, Y, Y_pred=None):
+    def fit(self, X, Y, Y_pred=None, **kwargs):
         """Fit a model with data (X, Y).
 
         Parameters
