@@ -1,5 +1,5 @@
 
-{% macro hamming_loss(
+{% macro hamming(
     indexset='SEQUENCE', sequence='sequence', true_sequence='true_sequence'
 ) %}
     {# Formula for the hamming loss between two sequences.
