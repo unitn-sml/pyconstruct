@@ -43,7 +43,9 @@ Dataset
     http://ai.stanford.edu/~btaskar/ocr/
 #}
 
-{% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
+{% from 'globals.pmzn' import domain, solve %}
+{% from 'linear.pmzn' import linear_model %}
+{% from 'metrics.pmzn' import hamming %}
 
 int: N_SYMBOLS = 26;
 int: MAX_HEIGHT = 16;
@@ -61,9 +63,6 @@ set of int: TRANSITION_FEATURES = 1 .. N_TRANSITION_FEATURES;
 int: N_BIAS_FEATURES = N_SYMBOLS * 2;
 set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
 
-{% call n_features() %}
-    N_EMISSION_FEATURES + N_TRANSITION_FEATURES + N_BIAS_FEATURES
-{% endcall %}
 
 {% call domain(problem) %}
     %%
@@ -85,7 +84,6 @@ set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
         array[SEQUENCE] of var SYMBOLS: true_sequence = {{ y_true['sequence']|dzn }};
     {% endif %}
 
-
     %
     % FEATURES
     %
@@ -103,15 +101,17 @@ set of int: BIAS_FEATURES = 1 .. N_BIAS_FEATURES;
     array[BIAS_FEATURES] of var int: bias_features =
         [sequence[1] == l | l in SYMBOLS] ++ [sequence[length] == l | l in SYMBOLS];
 
-    {% call features(feature_type='int') %}
-        emission_features ++ transition_features ++ bias_features
-    {% endcall %}
-
 {% endcall %}
 
-{% set loss %}
-    sum(e in SEQUENCE)(sequence[e] != true_sequence[e])
+
+{% set n_features %}
+    N_EMISSION_FEATURES + N_TRANSITION_FEATURES + N_BIAS_FEATURES
 {% endset %}
 
-{{ solve(problem, model, discretize=True, loss=loss) }}
+{% call linear_model(problem, params, n_features, discretize=True) %}
+    emission_features ++ transition_features ++ bias_features
+{% endcall %}
+
+{% set loss = hamming() %}
+{{ solve(problem, loss=loss) }}
 
