@@ -23,26 +23,7 @@ loss_augmented_map
 
 
 {% import 'linear.pmzn' as linear with context %}
-
-
-{% macro hamming_loss(
-    indexset='SEQUENCE', sequence='sequence', true_sequence='true_sequence'
-) %}
-    {# Formula for the hamming loss between two sequences.
-
-    PARAMETERS
-    ----------
-    indexset : str
-        The set to iterate over.
-    sequence : str
-        The name of predicted sequence.
-    true_sequence : str
-        The name of the true sequence.
-    #}
-
-    sum(e in {{ indexset }})({{ sequence }}[e] != {{ true_sequence }}[e])
-
-{% endmacro %}
+{% import 'metrics.pmzn' as linear with context %}
 
 
 {% macro domain(
