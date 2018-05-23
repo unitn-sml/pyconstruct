@@ -46,27 +46,6 @@ class BaseDomain(ABC):
         inference problem.
         """
 
-    def phi(self, X, Y, **kwargs):
-        """The feature vector of input X and output Y.
-
-        Parameters
-        ----------
-        X : numpy.ndarray
-            An array of input objects. The first dimension of the array should
-            be the number of samples.
-        Y : numpy.ndarray
-            An array of output objects. The first dimension of the array should
-            be the number of samples.
-        kwargs
-            Additional parameters.
-
-        Returns
-        -------
-        phi : numpy.ndarray
-            The array of feature vectors. The shape is (n_samples, n_features).
-        """
-        return self.infer(X, Y, problem='phi', **kwargs)
-
     def infer(self, *args, **kwargs):
         """Inference oracle.
 
