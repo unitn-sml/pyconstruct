@@ -124,7 +124,7 @@ class MiniZincDomain(BaseDomain):
 
         if os.path.exists(domain_file):
             self.domain_file = domain_file
-        if not self.domain_file:
+        if not hasattr(self, 'domain_file'):
             raise ValueError('Domain file not found.')
 
         self.feature_var = feature_var
@@ -189,7 +189,7 @@ class MiniZincDomain(BaseDomain):
             model = BaseModel(self)
 
         args = {
-            **self.args, **kwargs, 'model': model.parameters, 'problem': problem
+            **self.args, **kwargs, 'params': model.params, 'problem': problem
         }
 
         output_vars = None

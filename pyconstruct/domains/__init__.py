@@ -124,7 +124,7 @@ def Domain(domain, **kwargs):
     """Meta-function for instantiating a domain from different sources"""
     if domain.endswith('.pmzn'):
         return MiniZincDomain(domain, **kwargs)
-    return ValueError('domain not recognized')
+    raise ValueError('domain not recognized')
 
 
 __all__ = base.__all__ + minizinc.__all__ + ['Domain']
