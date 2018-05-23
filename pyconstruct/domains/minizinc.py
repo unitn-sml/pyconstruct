@@ -1,7 +1,7 @@
 
 import os
 import pymzn
-pymzn.templates.add_package('pyconstruct.domains', 'predefined')
+pymzn.templates.add_package('pyconstruct.domains', 'share')
 
 import numpy as np
 
@@ -12,24 +12,16 @@ from pkg_resources import resource_exists, resource_filename
 
 
 __all__ = [
-    'get_path', 'get_predefined', 'get_source', 'get_info', 'print_info',
-    'MiniZincDomain'
+    'get_path', 'get_source', 'get_info', 'print_info', 'MiniZincDomain'
 ]
 
 
 def get_path(domain):
     file_name = domain if domain.endswith('.pmzn') else domain + '.pmzn'
-    module = '.'.join([__package__, 'predefined'])
+    module = '.'.join([__package__, 'share'])
     if resource_exists(module, file_name):
         return resource_filename(module, file_name)
     return None
-
-
-def get_predefined(domain, **kwargs):
-    path = get_path(domain)
-    if path is None:
-        raise ValueError('No predefined domain named {}'.format(domain))
-    return MiniZincDomain(path, **kwargs)
 
 
 def get_source(domain):
@@ -103,7 +95,7 @@ class MiniZincDomain(BaseDomain):
     library should be able to define a valid domain by only specifing the input
     and output variables, the constraints, and the features of the objects in a
     file with the above structure. You can see some examples in the
-    pyconstruct/domains/predefined folder.
+    pyconstruct/domains/share folder.
 
     Templating with Jinja2 is a powerful way to encode a domain, however, if you
     need some even more customization logic for inference, or you simply do not
@@ -117,7 +109,7 @@ class MiniZincDomain(BaseDomain):
     Parameters
     ----------
     domain_file : str
-        The name of the predefined domain or the path to the `pmzn` file.
+        The path to the `pmzn` file.
     feature_var : str
         The name of the MiniZinc variable containing the feature array.
     kwargs
