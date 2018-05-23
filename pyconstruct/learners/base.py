@@ -1,8 +1,5 @@
 
-import numpy as np
-
 from ..models import BaseModel
-from ..domains import BaseDomain
 from abc import ABC, abstractmethod
 from sklearn.base import BaseEstimator
 
@@ -13,17 +10,32 @@ __all__ = ['BaseLearner']
 class BaseLearner(BaseEstimator, ABC):
     """A basic learning model class.
 
-    A model performs learning and inference in a given domain. Subclasses should
-    implement more specific types of learning useful for particular problems.
+    A learner fits a model with some data over some given domain.  If only the
+    domain is given, a default model is used. If only the model is given, it
+    must also contain a domain to make predictions with. If both are given, the
+    domain of the model (if it has one) will be overwritten by the domain given
+    to the learner.
 
     Arguments
     ---------
     domain : BaseDomain
-        The domain.
+        The domain of the data.
+    model : BaseModel
+        The model the learner should fit.
     """
     def __init__(self, domain=None, model=None, **kwargs):
         self.domain = domain
         self.model = model
+
+    def _model(self, default=None):
+        if self.model is None:
+            if self.domain is None:
+                raise ValueError('Either domain or model must be given')
+            model_class = default if default is not None else BaseModel
+            self.model = model_class(self.domain)
+        elif self.domain is not None:
+            self.model.domain = self.domain
+        return self.model
 
     def phi(self, X, Y, **kwargs):
         """Computes the feature vector for the given input and output objects.
@@ -41,7 +53,7 @@ class BaseLearner(BaseEstimator, ABC):
         numpy.ndarray
             The array of feature vectors.
         """
-        return self.model.phi(X, Y, **kwargs)
+        return self._model.phi(X, Y, **kwargs)
 
     def predict(self, X, *args, **kwargs):
         """Computes the prediction of the current model for the given input.
@@ -57,13 +69,13 @@ class BaseLearner(BaseEstimator, ABC):
         numpy.ndarray
             The array of predicted objects.
         """
-        return self.model.predict(X, *args, **kwargs)
+        return self._model.predict(X, *args, **kwargs)
 
-    def decision_function(self, X, Y):
-        return self.model.decision_function(X, Y)
+    def decision_function(self, X, Y, **kwargs):
+        return self._model.decision_function(X, Y, **kwargs)
 
-    def loss(self, X, Y, Y_pred):
-        return self.model.loss(X, Y, Y_pred)
+    def loss(self, X, Y, Y_pred, **kwargs):
+        return self._model.loss(X, Y, Y_pred, **kwargs)
 
     def score(self, X, Y, Y_pred=None, **kwargs):
         """Compute the score as the average loss over the examples.
