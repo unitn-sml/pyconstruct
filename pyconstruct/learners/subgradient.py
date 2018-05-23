@@ -6,7 +6,7 @@ from time import monotonic as _time
 from . import project
 from .base import BaseLearner
 from ..utils import get_logger, asarrays, broadcast, hashkey, batches
-from ..models import LinearModel, BaseModel
+from ..models import LinearModel
 
 from scipy.special import expit
 from abc import ABC, abstractmethod
@@ -65,12 +65,12 @@ class BaseSSG(BaseLearner, ABC):
     """
 
     def __init__(
-        self, domain=None, *, inference='loss_augmented_map', alpha=0.0001,
-        train_loss='hinge', structured_loss=None, n_jobs=1, shuffle=True,
-        warm_start=False, verbose=True, batch_size=None, validate=True,
-        random_state=None, **kwargs
+        self, domain=None, model=None, *, inference='loss_augmented_map',
+        alpha=0.0001, train_loss='hinge', structured_loss=None, n_jobs=1,
+        shuffle=True, warm_start=False, verbose=True, batch_size=None,
+        validate=True, random_state=None, **kwargs
     ):
-        super().__init__(domain=domain, **kwargs)
+        super().__init__(domain=domain, model=model, **kwargs)
         self.inference = inference
         self.alpha = alpha
         self.train_loss = train_loss
@@ -83,8 +83,8 @@ class BaseSSG(BaseLearner, ABC):
         self.validate = validate
         self.random_state = random_state
 
-    def _validate_params(self):
-        super()._validate_params()
+    def _get_model(self):
+        return super()._get_model(LinearModel)
 
     @abstractmethod
     def _learning_rate(self):
@@ -123,7 +123,6 @@ class BaseSSG(BaseLearner, ABC):
     def partial_fit(
         self, X, Y, Y_pred=None, Y_phi=None, Y_pred_phi=None, **kwargs
     ):
-        self._validate_params()
 
         if not hasattr(self, 'state_') or self.state_ is None:
             self.state_ = Bunch(w=None, t=0)
@@ -159,15 +158,14 @@ class BaseSSG(BaseLearner, ABC):
             n_jobs=self.n_jobs, **kwargs
         )
 
-        self.state_.w = self._update(w, steps.mean(axis=0), eta, **kwargs)
-        self.model_ = LinearModel(self.domain, self.state_.w)
+        update = steps.mean(axis=0)
+        self._model.w = self.state_.w = self._update(w, update, eta, **kwargs)
         return self
 
     def fit(self, X, Y, **kwargs):
-        self._validate_params()
 
         has_state = hasattr(self, 'state_') and self.state_ is None
-        if not self.warm_start or not hasstate:
+        if not self.warm_start or not has_state:
             rng = check_random_state(self.random_state)
             self.state_ = Bunch(
                 w=None, t=0, n_samples=X.shape[0], rng=rng
@@ -268,20 +266,19 @@ class SSG(BaseSSG):
     """
 
     def __init__(
-        self, domain=None, *, inference='loss_augmented_map', eta0=1.0,
-        power_t=0.5, learning_rate='optimal', radius=1000.0, projection='l2',
-        init_w='normal', **kwargs
+        self, domain=None, model=None, *, inference='loss_augmented_map',
+        eta0=1.0, power_t=0.5, learning_rate='optimal', radius=1000.0,
+        projection='l2', init_w='normal', **kwargs
     ):
-        super().__init__(domain=domain, inference=inference, **kwargs)
+        super().__init__(
+            domain=domain, model=model, inference=inference, **kwargs
+        )
         self.eta0 = eta0
         self.power_t = power_t
         self.learning_rate = learning_rate
         self.radius = self.radius_ = radius
         self.projection = projection
         self.init_w = init_w
-
-    def _validate_params(self):
-        super()._validate_params()
 
     def _init_w(self, shape):
         if not hasattr(self.state_, 'rng'):
@@ -375,17 +372,16 @@ class EG(BaseSSG):
     """
 
     def __init__(
-        self, domain=None, inference='map', eta0=1.0, power_t=0.5,
-        learning_rate='decaying', n_samples=1000, **kwargs
+        self, domain=None, model=None, *, inference='map', eta0=1.0,
+        power_t=0.5, learning_rate='decaying', n_samples=1000, **kwargs
     ):
-        super().__init__(domain=domain, inference=inference, **kwargs)
+        super().__init__(
+            domain=domain, model=model, inference=inference, **kwargs
+        )
         self.eta0 = eta0
         self.power_t = power_t
         self.learning_rate = learning_rate
         self.n_samples = n_samples
-
-    def _validate_params(self):
-        super()._validate_params()
 
     def _init_w(dim):
         return np.full(dim, 1.0 / dim)
