@@ -87,8 +87,6 @@ class BaseDomain(ABC):
         -------
         preds : numpy.ndarray
             The array of predictions. The array contains n_samples solutions.
-        phis : numpy.ndarray
-            The array of feature vectors corresponding to the predicted objects.
         """
         n_samples = args[0].shape[0]
 
