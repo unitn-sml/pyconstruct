@@ -42,19 +42,16 @@ class BlockCoordinateFrankWolfe(BaseLearner):
     """
 
     def __init__(
-        self, domain=None, structured_loss=None, dataset_size=1, alpha=0.0001
+        self, domain=None, model=None, structured_loss=None, dataset_size=1,
+        alpha=0.0001, **kwargs
     ):
-        super().__init__(domain=domain)
+        super().__init__(domain=domain, model=model, **kwargs)
         self.structured_loss = structured_loss
         self.dataset_size = dataset_size
         self.alpha = alpha
 
-    def _validate_params(self):
-        super()._validate_params()
-        if self.structured_loss is None:
-            raise ValueError(
-                'structured_loss must be a function (dict, dict) -> float'
-            )
+    def _get_model(self):
+        return self._get_model(LinearModel)
 
     @property
     def dual_gap(self):
@@ -155,7 +152,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         if self.idx_ is not None:
             idx = self.idx_
 
-        model = self.model
+        model = self._model
 
         infer_times = []
         learn_times = []
@@ -199,7 +196,7 @@ class BlockCoordinateFrankWolfe(BaseLearner):
         self.l_mat_ = l_mat
         self.idx_ = idx
         self.dual_gap_ = dual_gap
-        self.model_ = LinearModel(self.domain, self.w_)
+        self._model.w = self.w_
         return self
 
     # Alias
