@@ -88,10 +88,11 @@ class LinearModel(BaseModel):
 
     def _validate_params(self):
         super()._validate_params()
-        if not isinstance(self.w, np.ndarray):
-            raise ValueError('w must be a numpy array')
-        if len(self.w.shape) != 1:
-            raise ValueError('w must be a one-dimentional array')
+        if self.w is not None:
+            if not isinstance(self.w, np.ndarray):
+                raise ValueError('w must be a numpy array')
+            if len(self.w.shape) != 1:
+                raise ValueError('w must be a one-dimentional array')
         if self.features is not None:
             if not isinstance(self.features, np.ndarray):
                 raise ValueError('features must be a numpy array')
