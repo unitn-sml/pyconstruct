@@ -22,10 +22,10 @@ class StructuredPerceptron(SSG):
         models: Theory and experiments with perceptron algorithms." EMNLP
         (2002).
     """
-    def __init__(self, domain=None, **kwargs):
+    def __init__(self, domain=None, model=None, **kwargs):
         super().__init__(
-            domain, projection=None, alpha=0.0, learning_rate='constant',
-            inference='map', **kwargs
+            domain=domain, model=model, projection=None, alpha=0.0,
+            learning_rate='constant', inference='map', **kwargs
         )
 
     def _step(self, x, y_true, y_pred, phi_y_true, phi_y_pred, w, eta):
