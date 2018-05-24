@@ -68,6 +68,8 @@ def load(dataset, *, base=None, fetch=True, force=False, remove_raw=False):
 
     if len(args) > 0:
         kwargs = args[0]
+    else:
+        kwargs = {}
 
     descr = None if not hasattr(module, 'DESCR') else module.DESCR
     dataset = Bunch(data=X, target=Y, DESCR=descr, **kwargs)
