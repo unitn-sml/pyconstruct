@@ -12,10 +12,10 @@ DESCR = dedent("""\
 
     The OCR equations dataset used in [dragone2018pyconstruct].
 
-    This is a simple dataset containing sequences of images containing math
-    symbols. The sequences contain equations of the type: a + b = c. The numbers
-    a, b and c are all of variable length (max 3 digits). The equations are all
-    valid.
+    This is a simple dataset of sequences of images containing math symbols. The
+    sequences contain equations of the type: a + b = c. The numbers a, b and c
+    are all positive integers of variable length (max 3 digits). The equations
+    are all valid.
 
     Notes
     -----
