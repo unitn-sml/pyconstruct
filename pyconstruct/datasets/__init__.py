@@ -6,6 +6,7 @@ includes:
   - **ocr** : Ben Taskar's ORC dataset
   - **conll00** : CoNLL 2000 Text Chunking dataset
   - **horseseg** : HorseSeg dataset (coming soon)
+  - **equations** : OCR equations dataset
 
 Datasets can be loaded using the `load` function provided by this module. In
 most cases, the dataset is downloaded upon first loading and stored in a local
