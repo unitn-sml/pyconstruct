@@ -14,27 +14,32 @@ from tempfile import NamedTemporaryFile
 SOURCES = {
     'ocr': {
         'urls': ['http://ai.stanford.edu/~btaskar/ocr/letter.data.gz'],
+        'raw_names': ['letter.data.gz'],
         'names': ['letter.data'],
         'checksums': ['ca5467fb4e87183cec0f8fabbf770b82'],
-        'steps': [('download', 0), ('unzip', 0)]
+        'steps': [('download', 0), ('unpack', 0)]
     },
     'conll00': {
         'urls': [
             'https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz',
             'https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz'
         ],
+        'raw_names': ['train.txt.gz', 'test.txt.gz'],
         'names': ['train.txt', 'test.txt'],
         'checksums': [
             '2e2f24e90e20fcb910ab2251b5ed8cd0',
             '56944df34be553b72a2a634e539a0951'
         ],
-        'steps': [('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1)]
+        'steps': [
+            ('download', 0), ('unpack', 0), ('download', 1), ('unpack', 1)
+        ]
     },
     'horseseg': {
         'urls': [
             'https://pub.ist.ac.at/~akolesnikov/HDSeg/HDSeg.tar',
             'https://pub.ist.ac.at/~akolesnikov/HDSeg/data.tar'
         ],
+        'raw_names': ['HDSeg.tar', 'data.tar'],
         'names': ['train.txt', 'test.txt'],
         'checksums': [
             '2e2f24e90e20fcb910ab2251b5ed8cd0',
@@ -42,19 +47,17 @@ SOURCES = {
         ],
         'steps': [('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1)]
     },
-    'formulas': {
+    'equations': {
         'urls': [
-            'https://github.com/unitn-sml/pyconstruct/blob/master/examples/formulas/data.tar.gz?raw=true',
-            'https://www.kaggle.com/xainano/handwrittenmathsymbols/downloads/data.rar/2'
+            'http://sml.disi.unitn.it/datasets/equations/equations.tar.gz'
         ],
-        'names': ['formulas.pickle', 'extracted_images'],
+        'raw_names': ['equations.tar.gz'],
+        'names': ['equations.pickle'],
         'checksums': [
-            '1feb92c16ad7e657ccbd6b128a308296',
-            'c3b7e8c3d819f8a66361b9c2c4d2a7b2'
+            'b3b1bc045622950e207a791be06f21b1',
         ],
         'steps': [
-            ('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1),
-            ('unzip', 1)
+            ('download', 0), ('unpack', 0)
         ]
     }
 }
@@ -79,7 +82,7 @@ def exist(paths):
     return True
 
 
-def fetch(source, base=None, verbose=True):
+def fetch(source, base=None, verbose=True, remove_raw=False):
     """Fetches a dataset from the given source.
 
     Parameters
@@ -90,6 +93,8 @@ def fetch(source, base=None, verbose=True):
         The base directory where to save the dataset files.
     verbose : bool
         Wether to print progress output.
+    remove_raw : bool
+        Wether to remove the download raw files.
 
     Returns
     -------
@@ -104,38 +109,28 @@ def fetch(source, base=None, verbose=True):
 
     source_info = SOURCES[source]
 
-    names = []
-    for i in range(len(source_info['urls'])):
-        out_name = os.path.join(out_dir, source_info['names'][i])
-        chk = source_info['checksums'][i]
-        if not os.path.isfile(out_name) or checksum(out_name) != chk:
-            url = source_info['urls'][i]
-            if verbose:
-                print('Downloading file: {}'.format(url))
-            with urllib.request.urlopen(url) as response:
-                with NamedTemporaryFile(
-                    delete=False, dir=out_dir, mode='wb'
-                ) as tmp:
-                    copy(response, tmp, verbose=verbose)
-                    tmp_name = tmp.name
-            if zipfile.is_zipfile(tmp_name) or tarfile.is_tarfile(tmp_name):
-                if verbose:
-                    print('Extracting archive into: {}'.format(out_name))
-                shutil.unpack_archive(tmp_name, out_dir)
-                os.remove(tmp_name)
-                names.append(out_name)
-            elif is_gzip(tmp_name):
-                if verbose:
-                    print('Extracting archive into: {}'.format(out_name))
-                unpack_gzip(tmp_name, out_name)
-                os.remove(tmp_name)
-                names.append(out_name)
-            else:
-                if verbose:
-                    print('Moving file into: {}'.format(out_name))
-                shutil.move(tmp_name, out_name)
-                names.append(out_name)
-    return names
+    for step, idx in source_info['steps']:
+        {
+            'download': download, 'unpack': unpack,
+        }[step](source_info, idx, out_dir, verbose)
+
+    if remove_raw:
+        for raw_name in source_info['raw_names']:
+            os.remove(os.path.join(out_dir, raw_name))
+
+
+def download(source_info, idx, out_dir, verbose=True):
+    raw_name = os.path.join(out_dir, source_info['raw_names'][idx])
+    chk = source_info['checksums'][idx]
+    if not os.path.isfile(raw_name) or checksum(raw_name) != chk:
+        url = source_info['urls'][idx]
+        if verbose:
+            print('Downloading file: {}'.format(url))
+        with urllib.request.urlopen(url) as response:
+            with open(raw_name, mode='wb') as f:
+                copy(response, f, verbose=verbose)
+    elif verbose:
+        print('Using previously downloaded source: {}.'.format(raw_name))
 
 
 def copy(response, output_file, chunk_size=8192, verbose=False):
@@ -171,6 +166,19 @@ def checksum(file_name):
         for chunk in iter(lambda: f.read(4096), b''):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+
+def unpack(source_info, idx, out_dir, verbose):
+    raw_name = os.path.join(out_dir, source_info['raw_names'][idx])
+    out_name = os.path.join(out_dir, source_info['out_names'][idx])
+    if verbose:
+        print('Extracting archive: {}'.format(raw_name))
+    if zipfile.is_zipfile(raw_name) or tarfile.is_tarfile(raw_name):
+        shutil.unpack_archive(raw_name, out_dir)
+    elif is_gzip(raw_name):
+        unpack_gzip(tmp_name, out_name)
+    else:
+        raise ValueError('Archive type not recognized: {}.'.format(raw_name))
 
 
 def is_gzip(file_name):
