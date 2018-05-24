@@ -40,7 +40,7 @@ emails = [
     'andrea.passerini@unitn.it'
 ]
 
-short_description = 'An easy to use structured-output prediction framework.'
+short_description = 'A framework for declarative, constrained, structured-output prediction.'
 
 setup(
     name = 'pyconstruct',
@@ -56,11 +56,8 @@ setup(
     include_package_data=True,
     package_data={'': '*.pmzn'},
     install_requires = [
-        'numpy', 'scipy', 'sklearn', 'pymzn', 'appdirs', 'jinja2'
+        'numpy', 'scipy', 'sklearn', 'pymzn', 'appdirs', 'jinja2', 'cachetools'
     ],
-    extra_require = {
-        'cachetools'
-    },
     platforms = 'any',
     classifiers = [
         'Programming Language :: Python',
