@@ -101,15 +101,17 @@
 
 
 {% macro linear_model(
-    problem, params=none, n_features='0', n_features_var='N_FEATURES',
+    problem, params=none, n_features=none, n_features_var='N_FEATURES',
     feature_var='phi', feature_set_var='FEATURES', feature_type=none,
     discretize=False, factor=100, score_var='score',
     allowed=('phi', 'map', 'loss_augmented_map')
 ) %}
 
-    {% call feature_set(params, n_features_var, feature_set_var) %}
-        {{ n_features }}
-    {% endcall %}
+    {% if n_features is not none %}
+        {% call feature_set(params, n_features_var, feature_set_var) %}
+            {{ n_features }}
+        {% endcall %}
+    {% endif %}
 
     {% if problem in allowed  %}
 
@@ -123,12 +125,10 @@
 
         {% if caller is defined %}
             {% set feats = caller() %}
-        {% else %}
-            {% set feats = [] %}
+            {% call features(params, feature_var, feature_set_var, feature_type) %}
+                {{ feats }}
+            {% endcall %}
         {% endif %}
-        {% call features(params, feature_var, feature_set_var, feature_type) %}
-            {{ feats }}
-        {% endcall %}
 
         {% if problem != 'phi' %}
 
