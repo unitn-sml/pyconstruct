@@ -13,7 +13,7 @@ __all__ = ['DATASETS', 'load', 'load_ocr', 'load_conll00']
 DATASETS = list(utils.SOURCES.keys())
 
 
-def load(dataset, *, base=None, fetch=True, force=False):
+def load(dataset, *, base=None, fetch=True, force=False, remove_raw=False):
     """Load a dataset.
 
     This method loads one of the predefined dataset. The list of available
@@ -33,6 +33,8 @@ def load(dataset, *, base=None, fetch=True, force=False):
         Whether to fetch the dataset in case it is not found.
     force : bool
         Whether to force the preprocessing of the dataset.
+    remove_raw : bool
+        Wether to remove the download raw files.
 
     Returns
     -------
@@ -51,20 +53,28 @@ def load(dataset, *, base=None, fetch=True, force=False):
     paths = utils.get_paths(dataset, base)
     if not utils.exist(paths):
         if fetch:
-            paths = utils.fetch(dataset, base)
+            utils.fetch(dataset, base, remove_raw=remove_raw)
         else:
             raise RuntimeError('Dataset not found, need to fetch it first.')
 
-    module = __import__('.'.join([__package__, dataset]), fromlist=['load_data'])
+    module = __import__(
+        '.'.join([__package__, dataset]), fromlist=['load_data']
+    )
     X, Y, *args = module.load_data(paths)
+
+    if remove_raw:
+        for path in paths:
+            os.remove(path)
 
     if len(args) > 0:
         kwargs = args[0]
 
     descr = None if not hasattr(module, 'DESCR') else module.DESCR
     dataset = Bunch(data=X, target=Y, DESCR=descr, **kwargs)
+
     with open(cache_file, 'wb') as f:
         pickle.dump(dataset, f)
+
     return dataset
 
 
