@@ -54,10 +54,9 @@ class MiniZincDomain(BaseDomain):
     their values. The default inference oracle is assumed to be
     `MiniZinc <http://www.minizinc.org/>`_, through its Python interface `PyMzn
     <https://github.com/paolodragone/pymzn>`_. Using MiniZinc, the attributes of
-    the output objects `y` include all the independent optimization variables,
-    whereas the input examples `x` are all the unspecified dzn parameters.
-    Features are assumed to be included in a MiniZinc array named as the value
-    of the `feature_var` argument.
+    the output objects `y` include all independent optimization variables.
+    Input examples `x` are also dictionaries containing attributes corresponding
+    to all the unspecified dzn parameters in the minizinc file.
 
     When using this class out-of-the-box, the domain is assumed to be encoded
     into a PyMzn `pmzn` domain file. PyMzn allows to templatize MiniZinc models
@@ -66,9 +65,8 @@ class MiniZincDomain(BaseDomain):
     different inference problems. The most basic PyMzn domain would look like
     this::
 
-        {% from 'pyconstruct.pmzn' import n_features, features, domain, solve %}
-
-        {% call n_features(10) %}
+        {% from 'globals.pmzn' import domain, solve %}
+        {% from 'linear.pmzn' import linear_model %}
 
         {% call domain(problem) %}
             % Your domain definition, e.g.
@@ -77,7 +75,7 @@ class MiniZincDomain(BaseDomain):
             constraint x + y <= 10;
         {% endcall %}
 
-        {% call features(problem) %}
+        {% call linear_model(problem, params, n_features='10') %}
             % Your features definition, e.g.
             [
                 x + y,
@@ -86,35 +84,51 @@ class MiniZincDomain(BaseDomain):
             ]
         {% endcall %}
 
-        {{ solve(problem, model, discretize=True) }}
+        {{ solve(problem) }}
 
 
     This is a MiniZinc file containing bits of templating in Jinja2. All the
     logic for handling several standard inference problems are hidden inside the
-    various calls to the macros imported from 'pyconstruct.pmzn'.  A user of the
-    library should be able to define a valid domain by only specifing the input
-    and output variables, the constraints, and the features of the objects in a
-    file with the above structure. You can see some examples in the
-    pyconstruct/domains/share folder.
+    various calls to the macros imported from `linear.pmzn` and `globals.pmzn`.
+    A user of the library should be able to define a valid domain by only
+    specifing the input and output variables, the constraints, and the features
+    of the objects in a file with the above structure. You can see some examples
+    in the pyconstruct/examples folder in the `source code
+    <https://github.com/unitn-sml/pyconstruct>`_.
 
     Templating with Jinja2 is a powerful way to encode a domain, however, if you
     need some even more customization logic for inference, or you simply do not
     want to use MiniZinc, you may subclass the BaseDomain class and provide a
     custom implementation. In principle, learning algorithms should be agnostic
-    to the type of objects a domain predicts, as long as the features are
-    encoded as a `numpy.ndarray`; hence, inheriting from the BaseDomain class
-    allows to use any other convenient representation for the objects and any
-    other inference oracle.
+    to the type of objects a domain returns, as long as the features are encoded
+    as a `numpy.ndarray` (in case of a linear model); hence, inheriting from the
+    BaseDomain class allows to use any other convenient representation for the
+    objects and any other inference oracle.
+
+    The shared templating library of Pyconstruct is organized in such a way to
+    group together helper macros pertaining the same kind of models. For
+    instance, the file `linear.pmzn` contains helper macros that can be used in
+    conjunction with LinearModels. Some files like `globals.pmzn` or
+    `metrics.pmzn` contain instead routines useful for all kinds of models.
+
+    Currently, linear models are the only kind supported by Pyconstruct, but we
+    plan to provide more, e.g. CRFs.
 
     Parameters
     ----------
     domain_file : str
         The path to the `pmzn` file.
     feature_var : str
-        The name of the MiniZinc variable containing the feature array.
+        The name of the MiniZinc variable containing the feature array. Used for
+        getting the feature vector when the domain encodes inference over a
+        linear model.
+    n_feature_var : str
+        The name of the MiniZinc variable containing the number of features.
+        Used for getting the number of features when the domain encodes
+        inference over a linear model.
     kwargs
         Any other argument needed by the template engine. These are passed to
-        all inference problems solved by this domain.
+        all inference problems solved by the domain.
     """
     def __init__(
         self, domain_file, feature_var='phi', n_features_var='N_FEATURES',
