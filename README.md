@@ -2,7 +2,7 @@ Pyconstruct
 ===========
 
 <div align="center">
-  <img height="300px" src="docs/_static/images/pyconstruct.png"><br><br>
+  <img height="300px" src="docs/_images/pyconstruct.png"><br><br>
 </div>
 
 **Pyconstruct** is a Python library for declarative, constrained,
