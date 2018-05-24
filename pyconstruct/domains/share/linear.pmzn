@@ -12,7 +12,7 @@
     params : dict
         Parameters of the model.
     n_feature_var : str
-        The variable name of the feature array. Default is 'phi'.
+        The variable name of the feature array length. Default is 'N_FEATURES'.
     feature_set_var : str
         The variable name of the feature index set: Default is 'FEATURES'.
 
@@ -106,6 +106,43 @@
     discretize=False, factor=100, score_var='score',
     allowed=('phi', 'map', 'loss_augmented_map')
 ) %}
+    {# Boilerplate for defining a linear model.
+
+    PARAMETERS
+    ----------
+    problem : str in ['phi', 'n_features', 'map', 'loss_augmented_map']
+        The problem to solve. This parameter is usually passed by the Python
+        domain class.
+    params : dict
+        Parameters of the model.
+    n_features : str
+        The number of feautures (or a fomula to compute it).
+    n_feature_var : str
+        The variable name of the feature array length. Default is 'N_FEATURES'.
+    feature_var : str
+        The variable name of the feature array. Default is 'phi'.
+    feature_set_var : str
+        The variable name of the feature index set: Default is 'FEATURES'.
+    feature_type : str
+        The type of the features. Default is FLOAT_SET.
+    discretize : bool
+       Wheter to discretize the weight vector and the scoring function. Use only
+       if feature_type and loss_type are int. Default 'False'.
+    factor : int
+        The pre-multiplicative factor before discretization.
+    score_var : str
+        The variable name of the score to be used for inference (dot product
+        between weights and features). Default 'score'.
+    allowed : tuple
+        Allowed problems for this model.
+
+    USAGE
+    -----
+        {% call linear_model(problem, params, n_features='20') %}
+            % Your features definition, e.g.
+            % [ feature1, feature2 ] ++ [ feature3 ]
+        {% endcall %}
+    #}
 
     {% if n_features is not none %}
         {% call feature_set(params, n_features_var, feature_set_var) %}

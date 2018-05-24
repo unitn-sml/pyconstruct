@@ -1,8 +1,8 @@
-{# pyconstruct.pmzn
+{# globals.pmzn
 
 Collection of template macros to be used to define domains for structured
-classification with linear models.  Implements standard procedures for handling
-different inference problems.
+classification. Implements standard procedures for handling different inference
+problems.
 
 PROBLEMS
 --------
@@ -32,8 +32,6 @@ loss_augmented_map
     problem : str in ['phi', 'n_features', 'map', 'loss_augmented_map']
         The problem to solve. This parameter is usually passed by the Python
         domain class.
-    domain : str
-        The domain definition. Use this parameter in alternative to caller.
     allowed : tuple
         Allowed problems for this domain.
 
@@ -62,34 +60,15 @@ loss_augmented_map
     problem : str in ['phi', 'n_features', 'map', 'loss_augmented_map']
         The problem to solve. This parameter is usually passed by the Python
         domain class.
-    model : dict
-        Dictionary containing the model's paramenters.
-    discretize : bool
-       Wheter to discretize the weight vector and the scoring function. Use only
-       if feature_type and loss_type are int. Default 'False'.
-    factor : int
-        The pre-multiplicative factor before discretization.
     score : str
-        The score function. Default to dot product between weights and features.
-    feature_var : str
-        Name of the variable containing the feature array.
-    feature_set : str
-        Name or formula for the index set of the feature array.
-    w_type : str
-        The type of the weights. Defaults to float unless discretize is True, in
-        which case defaults to int.
-    score_type : str
-        The type of the score. Defaults to float unless discretize is True, in
-        which case defaults to int.
+        The score function. Default to variable name 'score'.
     loss : str
         Formula for the loss. Used in loss_augmented_map problems.
-    loss_type : str
-        The type of the loss. Defaults to FLOAT_SET unless discretize is True,
-        in which case defaults to INT_SET.
 
     USAGE
     -----
-        {{ solve(problem, model, ...) }}
+        {% set loss = 'some loss' %}
+        {{ solve(problem, loss=loss) }}
     #}
 
     {% if problem in ('phi', 'n_features') %}
