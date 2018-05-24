@@ -1,6 +1,6 @@
-""" formulas.py
+""" equations.py
 
-Example of code for training a StructuredPerceptron over the formulas data.
+Example of code for training an SSG learner over the equations data.
 """
 
 import pymzn
@@ -9,6 +9,7 @@ pymzn.config.set('no_output_annotations', True)
 
 from time import time
 from pyconstruct import Domain, SSG
+from pyconstruct.datasets import load_equations
 from pyconstruct.metrics import hamming
 from pyconstruct.utils import batches, load, save
 
@@ -28,7 +29,7 @@ def train(args):
         no_constraints=args.no_constraints
     )
 
-    X, Y = load(args.data_file)
+    X, Y = load_equations()
     X, Y = X[:args.n_samples], Y[:args.n_samples]
     X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, test_size=0.2, random_state=42
@@ -87,8 +88,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--data-file', default='formulas.pickle')
-    parser.add_argument('-D', '--domain-file', default='formulas.pmzn')
+    parser.add_argument('-D', '--domain-file', default='equations.pmzn')
     parser.add_argument('-n', '--n_samples', type=int, default=1000)
     parser.add_argument('-p', '--parallel', type=int, default=4)
     parser.add_argument('-N', '--no-constraints', action='store_true')
