@@ -10,17 +10,22 @@ __all__ = ['BaseDomain', 'InferenceError']
 
 
 class BaseDomain(ABC):
-    """The objects domain.
+    """The structured objects domain.
 
-    The domain is the description of the objects and their features, and
-    provides oracles for computing inference problems.
+    The domain contain the description of the objects and provides oracles for
+    computing inference problems.
 
-    This is the basic class
+    This is the basic class from which domains should inherit. In most cases,
+    when working with MiniZinc domains, it should not be necessary to create a
+    custom domain, but it is always possible to create a new Domain class for
+    e.g. using an ad-hoc inference algorithm to make predictions more efficient.
+
+    In the future we might introduce additional domains and inference methods.
 
     Parameters
     ----------
     cache : dict-like
-        A dict-like cache like those from the cachetools library.
+        A dict-like cache like those from the `cachetools` library.
     n_jobs : int
         The number of inference problems to solve in parallel.
     """
@@ -60,7 +65,7 @@ class BaseDomain(ABC):
             vectors must be the number of samples (n_samples) and must be the
             same for all vectors.
         kwargs
-            Additional parameters.
+            Additional parameters to pass to each call of _infer.
 
         Returns
         -------
@@ -99,5 +104,6 @@ class BaseDomain(ABC):
 
 
 class InferenceError(RuntimeError):
+    """ Raised when an error with an inference procedure occurs """
     pass
 
