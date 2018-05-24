@@ -123,7 +123,7 @@ class BaseLearner(BaseEstimator, ABC):
 
     @abstractmethod
     def partial_fit(self, X, Y, Y_pred=None, **kwargs):
-        """Updates the current model with data (X, Y).
+        """Updates the current model with a mini-batch (X, Y).
 
         Parameters
         ----------
