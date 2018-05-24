@@ -170,7 +170,7 @@ def checksum(file_name):
 
 def unpack(source_info, idx, out_dir, verbose):
     raw_name = os.path.join(out_dir, source_info['raw_names'][idx])
-    out_name = os.path.join(out_dir, source_info['out_names'][idx])
+    out_name = os.path.join(out_dir, source_info['names'][idx])
     if verbose:
         print('Extracting archive: {}'.format(raw_name))
     if zipfile.is_zipfile(raw_name) or tarfile.is_tarfile(raw_name):
