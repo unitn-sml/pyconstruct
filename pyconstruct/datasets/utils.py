@@ -15,7 +15,8 @@ SOURCES = {
     'ocr': {
         'urls': ['http://ai.stanford.edu/~btaskar/ocr/letter.data.gz'],
         'names': ['letter.data'],
-        'checksums': ['ca5467fb4e87183cec0f8fabbf770b82']
+        'checksums': ['ca5467fb4e87183cec0f8fabbf770b82'],
+        'steps': [('download', 0), ('unzip', 0)]
     },
     'conll00': {
         'urls': [
@@ -26,7 +27,8 @@ SOURCES = {
         'checksums': [
             '2e2f24e90e20fcb910ab2251b5ed8cd0',
             '56944df34be553b72a2a634e539a0951'
-        ]
+        ],
+        'steps': [('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1)]
     },
     'horseseg': {
         'urls': [
@@ -37,6 +39,22 @@ SOURCES = {
         'checksums': [
             '2e2f24e90e20fcb910ab2251b5ed8cd0',
             '56944df34be553b72a2a634e539a0951'
+        ],
+        'steps': [('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1)]
+    },
+    'formulas': {
+        'urls': [
+            'https://github.com/unitn-sml/pyconstruct/blob/master/examples/formulas/data.tar.gz?raw=true',
+            'https://www.kaggle.com/xainano/handwrittenmathsymbols/downloads/data.rar/2'
+        ],
+        'names': ['formulas.pickle', 'extracted_images'],
+        'checksums': [
+            '1feb92c16ad7e657ccbd6b128a308296',
+            'c3b7e8c3d819f8a66361b9c2c4d2a7b2'
+        ],
+        'steps': [
+            ('download', 0), ('unzip', 0), ('download', 1), ('unzip', 1),
+            ('unzip', 1)
         ]
     }
 }
