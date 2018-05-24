@@ -6,7 +6,7 @@ from . import utils
 from sklearn.utils import Bunch
 
 
-__all__ = ['DATASETS', 'load', 'load_ocr', 'load_conll00']
+__all__ = ['DATASETS', 'load', 'load_ocr', 'load_conll00', 'load_equations']
 
 
 # List of available datasets
