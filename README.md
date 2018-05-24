@@ -11,8 +11,8 @@ can be encoded in MiniZinc, a high-level constraint programming language. This
 means that domain knowledge can be declaratively included in the inference
 procedure as constraints over the optimization variables.
 
-Sounds complicated? Check out the [Quick Start
-guide](https://unitn-sml.github.io/pyconstruct/quick_start.html) for to learn
+Check out the [Quick Start
+guide](https://unitn-sml.github.io/pyconstruct/quick_start.html) to learn
 how to solve your first problem with Pyconstruct.
 
 Have a look at the [docs](https://unitn-sml.github.io/pyconstruct/index.html)
@@ -35,7 +35,7 @@ downloaded directory:
 python setup.py install
 ```
 
-After installing Pyconstruct you will need to install **MiniZinc** as well.
+Before using Pyconstruct you will need to install **MiniZinc** as well.
 Download the latest release of MiniZincIDE and follow the instructions.
 
 Check out the [Installation
