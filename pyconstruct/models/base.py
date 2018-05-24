@@ -61,8 +61,6 @@ class LinearModel(BaseModel):
     Represents a linear model of the type:
     :math:`F(x, y) = \langle \boldsymbol{w}, \boldsymbol{\phi}(x, y) \rangle`.
 
-    The weight vector :math:`\boldsymbol{w}` is mandatory.
-
     The parameter `features` is a vector containing part of the features of the
     model that are directly handled into Python code. They could be, for
     instance, the result of some feature learning procedure. The rest of the
