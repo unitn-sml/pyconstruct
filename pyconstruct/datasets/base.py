@@ -87,3 +87,7 @@ def load_conll00(**kwargs):
     """Convenience function for loading the CoNLL00 dataset."""
     return load('conll00', **kwargs)
 
+def load_equations(**kwargs):
+    """Convenience function for loading the equations dataset."""
+    return load('equations', **kwargs)
+
