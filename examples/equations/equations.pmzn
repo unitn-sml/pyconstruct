@@ -121,7 +121,9 @@ array[FEATURES] of var int: phi = (
     emission_features ++ transition_features
 );
 
+{% from 'linear.pmzn' import linear_model %}
+{% from 'globals.pmzn' import solve %}
 
-{% from 'pyconstruct.pmzn' import solve %}
-{{ solve(problem, model, discretize=True, feature_var='phi') }}
+{{ linear_model(problem, params) }}
+{{ solve(problem) }}
 
