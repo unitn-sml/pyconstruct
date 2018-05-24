@@ -45,7 +45,7 @@ def load(dataset, *, base=None, fetch=True, force=False, remove_raw=False):
         raise ValueError('Invalid dataset.')
 
     cache_dir = utils.data_dir(dataset, base)
-    cache_file = os.path.join(cache_dir, '{}.pickle'.format(dataset))
+    cache_file = os.path.join(cache_dir, '{}_cached.pickle'.format(dataset))
     if os.path.exists(cache_file) and not force:
         with open(cache_file, 'rb') as f:
             return pickle.load(f)
