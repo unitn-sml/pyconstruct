@@ -1,7 +1,7 @@
 Pyconstruct
 ===========
 
-Welcome to the documentation of the Pyconstruct project.
+Welcome to the documentation of Pyconstruct.
 
 .. automodule:: pyconstruct
 
@@ -15,6 +15,7 @@ Table of Contents
 
    install
    quick_start
+   structured
    reference/index
 
 Indices and tables
@@ -22,8 +23,8 @@ Indices and tables
 
 * :ref:`genindex`
 
-Author
-======
+Authors
+=======
 `Paolo Dragone <http://paolodragone.com>`__, University of Trento.
 
 `Stefano Teso <http://disi.unitn.it/~teso/>`__, KU Leuven.
