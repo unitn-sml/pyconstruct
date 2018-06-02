@@ -118,15 +118,15 @@ MACROS
         USAGE
         -----
         Only fixed domain features:
-            {% call n_features() %}
+            {% call feature_set() %}
                 N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
             {% endcall %}
 
         Only model-dependent features:
-            {{ call n_features(params) }}
+            {{ call feature_set(params) }}
 
         Combination of both:
-            {% call n_features(params) %}
+            {% call feature_set(params) %}
                 N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
             {% endcall %}
 
@@ -231,4 +231,64 @@ MACROS
         true_sequence : str
             The name of the true sequence.
 
+chain.pmzn
+~~~~~~~~~~
+
+MACROS
+------
+
+.. code-block:: none
+
+    n_emission_features(
+        n_attributes='N_ATTRIBUTES', n_labels='N_LABELS'
+    )
+        Prints the number of emission feautures.
+
+        PARAMETERS
+        ----------
+        n_attributes : str
+            The value or variable name containing the number of input attributes.
+        n_labels : str
+            The value or variable name containing the number of output labels.
+
+    emission_features(
+        attributes_var='attributes', sequence_var='sequence',
+        attributes_set='ATTRIBUTES', sequence_set='SEQUENCE', labels_set='LABELS'
+    )
+        Prints the emission feautures.
+
+        PARAMETERS
+        ----------
+        attributes_var : str
+            The variable name of the attribute matrix. Default 'attributes'.
+        sequence_var : str
+            The variable name of the sequence array. Default 'sequence'.
+        attributes_set : str
+            The value or variable name containing the indexset of input attributes.
+        sequence_set : str
+            The value or variable name containing the indexset of output labels.
+        labels_set : str
+            The value or variable name containing the set of label symbols.
+
+    n_transition_features(n_labels='N_LABELS')
+        Prints the number of transition feautures.
+
+        PARAMETERS
+        ----------
+        n_labels : str
+            The value or variable name containing the number of output labels.
+
+    transition_features(
+        sequence_var='sequence', sequence_set='SEQUENCE', labels_set='LABELS'
+    )
+        Prints the transition feautures.
+
+        PARAMETERS
+        ----------
+        sequence_var : str
+            The variable name of the sequence array. Default 'sequence'.
+        sequence_set : str
+            The value or variable name containing the indexset of output labels.
+        labels_set : str
+            The value or variable name containing the set of label symbols.
 """
