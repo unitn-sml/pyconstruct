@@ -1,12 +1,12 @@
 
 {% macro hamming(
-    indexset='SEQUENCE', sequence='sequence', true_sequence='true_sequence'
+    sequence_set='SEQUENCE', sequence='sequence', true_sequence='true_sequence'
 ) %}
     {# Formula for the hamming loss between two sequences.
 
     PARAMETERS
     ----------
-    indexset : str
+    sequence_set : str
         The set to iterate over.
     sequence : str
         The name of predicted sequence.
