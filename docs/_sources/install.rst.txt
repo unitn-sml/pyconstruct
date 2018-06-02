@@ -19,7 +19,7 @@ Alongside MiniZinc, you will need a constraint solver. PyMzn supports many
 open-source solvers such as `Gecode <http://www.gecode.org/>` and `Chuffed
 <https://github.com/chuffed/chuffed>`. However, we recommend you give `Gurobi
 <http://www.gurobi.com/>`__ a try, it's blazingly fast for the kind of problems
-we usually solve in structured-output prediction, even more so when adding
-constraints to them. If you are in academia, they provide `free licenses
-<http://www.gurobi.com/academia/for-universities>` for research purpose.
+we usually solve in constrained structured prediction. If you are in academia,
+they provide `free licenses <http://www.gurobi.com/academia/for-universities>`
+for research purpose.
 

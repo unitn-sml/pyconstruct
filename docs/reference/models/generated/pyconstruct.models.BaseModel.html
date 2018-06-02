@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.models.BaseModel &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.models.BaseModel &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Models" href="../index.html"/>
-        <link rel="next" title="pyconstruct.models.BaseModel.decision_function" href="pyconstruct.models.BaseModel.decision_function.html"/>
+        <link rel="next" title="pyconstruct.models.BaseModel.clear" href="pyconstruct.models.BaseModel.clear.html"/>
         <link rel="prev" title="Models" href="../index.html"/> 
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,18 +94,30 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learners/index.html">Learners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../metrics/index.html">Metrics</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Models</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.models.BaseModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.clear.html">pyconstruct.models.BaseModel.clear</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.copy.html">pyconstruct.models.BaseModel.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.decision_function.html">pyconstruct.models.BaseModel.decision_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.fromkeys.html">pyconstruct.models.BaseModel.fromkeys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.get.html">pyconstruct.models.BaseModel.get</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.items.html">pyconstruct.models.BaseModel.items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.keys.html">pyconstruct.models.BaseModel.keys</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.loss.html">pyconstruct.models.BaseModel.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.margin.html">pyconstruct.models.BaseModel.margin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.phi.html">pyconstruct.models.BaseModel.phi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.pop.html">pyconstruct.models.BaseModel.pop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.popitem.html">pyconstruct.models.BaseModel.popitem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.predict.html">pyconstruct.models.BaseModel.predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.setdefault.html">pyconstruct.models.BaseModel.setdefault</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.update.html">pyconstruct.models.BaseModel.update</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.BaseModel.values.html">pyconstruct.models.BaseModel.values</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.models.LinearModel.html">pyconstruct.models.LinearModel</a></li>
@@ -158,7 +170,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Models</a> &raquo;</li>
         
@@ -185,13 +197,13 @@
 <h1>pyconstruct.models.BaseModel<a class="headerlink" href="#pyconstruct-models-basemodel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.models.BaseModel">
-<em class="property">class </em><code class="descclassname">pyconstruct.models.</code><code class="descname">BaseModel</code><span class="sig-paren">(</span><em>domain</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.models.BaseModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyconstruct.models.</code><code class="descname">BaseModel</code><span class="sig-paren">(</span><em>domain=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.models.BaseModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<em>Domain</em>) – The underlying domain.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The underlying domain.</td>
 </tr>
 </tbody>
 </table>
@@ -202,20 +214,53 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.decision_function.html#pyconstruct.models.BaseModel.decision_function" title="pyconstruct.models.BaseModel.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.clear.html#pyconstruct.models.BaseModel.clear" title="pyconstruct.models.BaseModel.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.copy.html#pyconstruct.models.BaseModel.copy" title="pyconstruct.models.BaseModel.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.decision_function.html#pyconstruct.models.BaseModel.decision_function" title="pyconstruct.models.BaseModel.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
 <td>Computes the score assigned to the (x, y) by the model.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.loss.html#pyconstruct.models.BaseModel.loss" title="pyconstruct.models.BaseModel.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.fromkeys.html#pyconstruct.models.BaseModel.fromkeys" title="pyconstruct.models.BaseModel.fromkeys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code></a></td>
+<td>Returns a new dict with keys from iterable and values equal to value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.get.html#pyconstruct.models.BaseModel.get" title="pyconstruct.models.BaseModel.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(k[,d])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.items.html#pyconstruct.models.BaseModel.items" title="pyconstruct.models.BaseModel.items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.keys.html#pyconstruct.models.BaseModel.keys" title="pyconstruct.models.BaseModel.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.loss.html#pyconstruct.models.BaseModel.loss" title="pyconstruct.models.BaseModel.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y,&nbsp;Y_pred,&nbsp;**kwargs)</td>
 <td>Computes the loss of the predictions with respect the model.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.margin.html#pyconstruct.models.BaseModel.margin" title="pyconstruct.models.BaseModel.margin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">margin</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.margin.html#pyconstruct.models.BaseModel.margin" title="pyconstruct.models.BaseModel.margin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">margin</span></code></a>(X,&nbsp;Y,&nbsp;Y_pred,&nbsp;**kwargs)</td>
 <td>Computes the margin of the current model for the given data.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.phi.html#pyconstruct.models.BaseModel.phi" title="pyconstruct.models.BaseModel.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.phi.html#pyconstruct.models.BaseModel.phi" title="pyconstruct.models.BaseModel.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
 <td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.pop.html#pyconstruct.models.BaseModel.pop" title="pyconstruct.models.BaseModel.pop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code></a>(k[,d])</td>
+<td>If key is not found, d is returned if given, otherwise KeyError is raised</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.popitem.html#pyconstruct.models.BaseModel.popitem" title="pyconstruct.models.BaseModel.popitem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code></a>()</td>
+<td>2-tuple; but raise KeyError if D is empty.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.predict.html#pyconstruct.models.BaseModel.predict" title="pyconstruct.models.BaseModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Makes a prediction based on the current model.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.setdefault.html#pyconstruct.models.BaseModel.setdefault" title="pyconstruct.models.BaseModel.setdefault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code></a>(k[,d])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.models.BaseModel.update.html#pyconstruct.models.BaseModel.update" title="pyconstruct.models.BaseModel.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>([E,&nbsp;]**F)</td>
+<td>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.models.BaseModel.values.html#pyconstruct.models.BaseModel.values" title="pyconstruct.models.BaseModel.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>()</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -226,7 +271,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></td>
 <td>A dictionary of parameters of the model.</td>
 </tr>
 </tbody>
@@ -245,7 +290,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pyconstruct.models.BaseModel.decision_function.html" class="btn btn-neutral float-right" title="pyconstruct.models.BaseModel.decision_function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pyconstruct.models.BaseModel.clear.html" class="btn btn-neutral float-right" title="pyconstruct.models.BaseModel.clear" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../index.html" class="btn btn-neutral" title="Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -279,7 +324,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

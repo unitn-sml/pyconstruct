@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Domains" href="../index.html"/>
         <link rel="next" title="pyconstruct.domains.MiniZincDomain.infer" href="pyconstruct.domains.MiniZincDomain.infer.html"/>
-        <link rel="prev" title="pyconstruct.domains.BaseDomain.phi" href="pyconstruct.domains.BaseDomain.phi.html"/> 
+        <link rel="prev" title="pyconstruct.domains.BaseDomain.n_features" href="pyconstruct.domains.BaseDomain.n_features.html"/> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,15 +94,16 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Domains</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../predefined.html">Predefined domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../share.html">Shared templating library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.Domain.html">pyconstruct.domains.Domain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.BaseDomain.html">pyconstruct.domains.BaseDomain</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.domains.MiniZincDomain</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.infer.html">pyconstruct.domains.MiniZincDomain.infer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.n_features.html">pyconstruct.domains.MiniZincDomain.n_features</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.phi.html">pyconstruct.domains.MiniZincDomain.phi</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#standard-inference-problems">Standard inference problems</a></li>
@@ -158,7 +159,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Domains</a> &raquo;</li>
         
@@ -192,19 +193,17 @@ MiniZinc to encode a domain, objects are represented in terms of their
 attributes, i.e. as dictionaries containing attribute names associated to
 their values. The default inference oracle is assumed to be
 <a class="reference external" href="http://www.minizinc.org/">MiniZinc</a>, through its Python interface <a class="reference external" href="https://github.com/paolodragone/pymzn">PyMzn</a>. Using MiniZinc, the attributes of
-the output objects <em class="xref py py-obj">y</em> include all the independent optimization variables,
-whereas the input examples <em class="xref py py-obj">x</em> are all the unspecified dzn parameters.
-Features are assumed to be included in a MiniZinc array named as the value
-of the <em class="xref py py-obj">feature_var</em> argument.</p>
+the output objects <em class="xref py py-obj">y</em> include all independent optimization variables.
+Input examples <em class="xref py py-obj">x</em> are also dictionaries containing attributes corresponding
+to all the unspecified dzn parameters in the minizinc file.</p>
 <p>When using this class out-of-the-box, the domain is assumed to be encoded
 into a PyMzn <em class="xref py py-obj">pmzn</em> domain file. PyMzn allows to templatize MiniZinc models
 using <a class="reference external" href="http://jinja.pocoo.org/">Jinja2</a>. With Jinja2, it is possible to
 reuse the same domain (attributes, constraints and features) to solve
 different inference problems. The most basic PyMzn domain would look like
 this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;pyconstruct.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">n_features</span><span class="o">,</span> <span class="nn">features</span><span class="o">,</span> <span class="nn">domain</span><span class="o">,</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
-
-<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">n_features</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;globals.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">domain</span><span class="o">,</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;linear.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">linear_model</span> <span class="o">%</span><span class="p">}</span>
 
 <span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">domain</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
     <span class="o">%</span> <span class="n">Your</span> <span class="n">domain</span> <span class="n">definition</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
@@ -213,7 +212,7 @@ this:</p>
     <span class="n">constraint</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">;</span>
 <span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
 
-<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">features</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">linear_model</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="s1">&#39;10&#39;</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
     <span class="o">%</span> <span class="n">Your</span> <span class="n">features</span> <span class="n">definition</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span>
     <span class="p">[</span>
         <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span>
@@ -222,33 +221,45 @@ this:</p>
     <span class="p">]</span>
 <span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
 
-<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">}}</span>
+<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="p">}}</span>
 </pre></div>
 </div>
 <p>This is a MiniZinc file containing bits of templating in Jinja2. All the
 logic for handling several standard inference problems are hidden inside the
-various calls to the macros imported from ‘pyconstruct.pmzn’.  A user of the
-library should be able to define a valid domain by only specifing the input
-and output variables, the constraints, and the features of the objects in a
-file with the above structure. You can see some examples in the
-pyconstruct/domains/predefined folder.</p>
+various calls to the macros imported from <em class="xref py py-obj">linear.pmzn</em> and <em class="xref py py-obj">globals.pmzn</em>.
+A user of the library should be able to define a valid domain by only
+specifing the input and output variables, the constraints, and the features
+of the objects in a file with the above structure. You can see some examples
+in the pyconstruct/examples folder in the <a class="reference external" href="https://github.com/unitn-sml/pyconstruct">source code</a>.</p>
 <p>Templating with Jinja2 is a powerful way to encode a domain, however, if you
 need some even more customization logic for inference, or you simply do not
 want to use MiniZinc, you may subclass the BaseDomain class and provide a
 custom implementation. In principle, learning algorithms should be agnostic
-to the type of objects a domain predicts, as long as the features are
-encoded as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>; hence, inheriting from the BaseDomain class
-allows to use any other convenient representation for the objects and any
-other inference oracle.</p>
+to the type of objects a domain returns, as long as the features are encoded
+as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (in case of a linear model); hence, inheriting from the
+BaseDomain class allows to use any other convenient representation for the
+objects and any other inference oracle.</p>
+<p>The shared templating library of Pyconstruct is organized in such a way to
+group together helper macros pertaining the same kind of models. For
+instance, the file <em class="xref py py-obj">linear.pmzn</em> contains helper macros that can be used in
+conjunction with LinearModels. Some files like <em class="xref py py-obj">globals.pmzn</em> or
+<em class="xref py py-obj">metrics.pmzn</em> contain instead routines useful for all kinds of models.</p>
+<p>Currently, linear models are the only kind supported by Pyconstruct, but we
+plan to provide more, e.g. CRFs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>domain_file</strong> (<em>str</em>) – The name of the predefined domain or the path to the <em class="xref py py-obj">pmzn</em> file.</li>
-<li><strong>feature_var</strong> (<em>str</em>) – The name of the MiniZinc variable containing the feature array.</li>
+<li><strong>domain_file</strong> (<em>str</em>) – The path to the <em class="xref py py-obj">pmzn</em> file.</li>
+<li><strong>feature_var</strong> (<em>str</em>) – The name of the MiniZinc variable containing the feature array. Used for
+getting the feature vector when the domain encodes inference over a
+linear model.</li>
+<li><strong>n_feature_var</strong> (<em>str</em>) – The name of the MiniZinc variable containing the number of features.
+Used for getting the number of features when the domain encodes
+inference over a linear model.</li>
 <li><strong>kwargs</strong> – Any other argument needed by the template engine. These are passed to
-all inference problems solved by this domain.</li>
+all inference problems solved by the domain.</li>
 </ul>
 </td>
 </tr>
@@ -266,9 +277,6 @@ all inference problems solved by this domain.</li>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.n_features.html#pyconstruct.domains.MiniZincDomain.n_features" title="pyconstruct.domains.MiniZincDomain.n_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_features</span></code></a>(**kwargs)</td>
 <td>Return the number of features in the feature vector.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.phi.html#pyconstruct.domains.MiniZincDomain.phi" title="pyconstruct.domains.MiniZincDomain.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
-<td>The feature vector of input X and output Y.</td>
 </tr>
 </tbody>
 </table>
@@ -289,7 +297,7 @@ all inference problems solved by this domain.</li>
         <a href="pyconstruct.domains.MiniZincDomain.infer.html" class="btn btn-neutral float-right" title="pyconstruct.domains.MiniZincDomain.infer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pyconstruct.domains.BaseDomain.phi.html" class="btn btn-neutral" title="pyconstruct.domains.BaseDomain.phi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pyconstruct.domains.BaseDomain.n_features.html" class="btn btn-neutral" title="pyconstruct.domains.BaseDomain.n_features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -320,7 +328,7 @@ all inference problems solved by this domain.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

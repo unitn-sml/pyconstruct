@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Start &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>Quick Start &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Manual" href="reference/index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="index.html"/>
+        <link rel="next" title="Structured prediction" href="structured.html"/>
         <link rel="prev" title="Install" href="install.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -92,8 +92,16 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ocr-equations-prediction">OCR Equations prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#intermezzo-minizinc-for-pyconstruct">Intermezzo: MiniZinc for Pyconstruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fleshing-out-the-domain">Fleshing out the domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-background-knowledge-as-constraints">Adding background knowledge as constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#learning-and-evaulating-a-model">Learning and evaulating a model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="structured.html">Structured prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Manual</a></li>
 </ul>
 
             
@@ -159,169 +167,600 @@
             
   <div class="section" id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
-<p>In the following example we will implement a simple OCR (Optical Character
-Recognition) model in few lines of MiniZinc.</p>
-<p>First of all, lets fetch the data. Pyconstruct has a utility for getting some
-standard datasets:</p>
+<p>This quick start guide shows the basics of how to use the Pyconstruct library to
+solve a constrained structured prediction problem. A structured prediction
+problem is a machine learning task in which we want to predict some <em>structured</em>
+object, e.g. a sequence, a tree or a graph. Structured prediction problems arise
+often when dealing with images, text and other types of structured data. If you
+have at least some idea of what structured prediction is go ahead reading,
+otherwise check out our <a class="reference external" href="structured.htm">introduction</a> first.</p>
+<p>Using Pyconstruct we can represent
+arbitrary structured objects as key-value assignments (i.e. dictionaries) with
+integer, float or list values. For instance, a sequence object can be
+represented as a dictionary like <code class="docutils literal notranslate"><span class="pre">{'sequence':</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4]}</span></code>.</p>
+<p>In order to make <em>predictions</em> in the structured-output setting, we need a
+method that is able to find the object maximizing some function (the learned
+model). To do so, in Pyconstruct, we use the MiniZinc constraint programming
+language, together with some compatible constraint solver. Check-out the
+<a class="reference external" href="install.html">installation guide</a> for the details on how to install this
+additional software.</p>
+<div class="section" id="ocr-equations-prediction">
+<h2>OCR Equations prediction<a class="headerlink" href="#ocr-equations-prediction" title="Permalink to this headline">¶</a></h2>
+<p>In the following guide we will implement a simple model to perform OCR (Optical
+Character Recognition) over handwritten equations. For this purpose, we will use
+that <code class="docutils literal notranslate"><span class="pre">equations</span></code> dataset available in Pyconstruct, which contains sequences of
+<img class="math" src="_images/math/f1a2432394c200d0f89900040f75126e39c72e75.svg" alt="9 \times 9"/> images encoding equations of the type <img class="math" src="_images/math/fcdbedaed45a0ac18d6a59603f674163d51b38a3.svg" alt="a + b = c"/>. The
+numbers <img class="math" src="_images/math/ef864027c269dedbb94d28b0311d71d5b5985e01.svg" alt="a"/>, <img class="math" src="_images/math/ff0020c19073604c9ca62d9c8807128c738cb53a.svg" alt="b"/>, <img class="math" src="_images/math/583c9d9df358733a6ff85bc5d47082ad0e96c3cf.svg" alt="c"/> are positive integers and the equations
+are all valid. The following is an example of the kind of equations contained in
+this dataset:</p>
+<img alt="_images/equation.png" src="_images/equation.png" />
+<p>which contains the equation <img class="math" src="_images/math/c8b22ca640df419a79e113374676c966733a3848.svg" alt="462 + 384 = 846"/>. The label associated to
+this sequence of images is a list: <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">6,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">3,</span> <span class="pre">8,</span> <span class="pre">4,</span> <span class="pre">11,</span> <span class="pre">8,</span> <span class="pre">4,</span> <span class="pre">6]</span></code> (here
+<img class="math" src="_images/math/0503be0a4ccfddbe9aeed9ee829e8a85eb071e06.svg" alt="10"/> and <img class="math" src="_images/math/3ce84ebd2801875f2fe166072501eab257fb93c1.svg" alt="11"/> represent the <img class="math" src="_images/math/d0c6ac9189858a2e8398f366710fe6f0fd85abbf.svg" alt="+"/> and <img class="math" src="_images/math/138892b7ed259ac19fb419e57a60d17580c7c6bf.svg" alt="="/> signs
+respectively).</p>
+<p>First of all, lets check out the data. Pyconstruct has a module for retrieving
+some predefined datasets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">datasets</span>
-<span class="n">ocr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;ocr&#39;</span><span class="p">)</span>
+<span class="n">eq</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;equations&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The first time the dataset is loaded it will actually be fetched from the web
-and stored locally. You can now see the description of the dataset:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">descr</span><span class="p">)</span>
+<p>The first time the dataset is loaded, it will be fetched from the web and stored
+locally on your machine. You can now see the description of the dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">DESCR</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default, structured objects are represented as Python dictionaries in
-Pyconstruct. Each objects as several “attributes”, identified with some string.
-Each attribute value may be any basic Python data type: strings, integers,
-floats, list or other dictionaries. In OCR, for instance, inputs <em class="xref py py-obj">X</em> are
-represented as dictionaries containing two attributes: an integer containing the
-<em class="xref py py-obj">length</em> of the word; a list of <em class="xref py py-obj">16x8</em> matrices (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) containing the
-bitmap images of each character in the word. The targets (labels) are also
-structured objects containig a single attribute <em class="xref py py-obj">sequence</em>, a list of integers
-representing the letters associated to each image in the word. For instance:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<p>The standard format to represent structured objects in Pyconstruct is by python
+dictionaries. Each objects as several “attributes”, identified by some string.
+Each attribute value may be a basic Python data type (integers, floats, list) or
+Numpy arrays. In the <code class="docutils literal notranslate"><span class="pre">equations</span></code> dataset, for instance, inputs (contained in
+the <code class="docutils literal notranslate"><span class="pre">data</span></code> member) are represented as dictionaries containing two attributes:
+an integer encoding the <code class="docutils literal notranslate"><span class="pre">length</span></code> of the equation; a list of <em class="xref py py-obj">9x9</em> matrices
+(<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) containing the bitmap images of each symbol in the equation.
+The <code class="docutils literal notranslate"><span class="pre">target</span></code> (i.e. the labels) also contains dictionaries with a single
+attribute <code class="docutils literal notranslate"><span class="pre">sequence</span></code>, a list of integers representing the symbols associated
+to each image in the equation. For instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>After getting the data, we can start coding our problem. First of all, in
-Pyconstruct there are three main kinds of objects to interact with: Domains,
-Models and Learners. At a high level: a Domain defines the attributes and the
-constraints of the structured objects; a Model is an object contaning some
-parameters that can be used to make inference over a Domain; a Learner is an
-algorithm that can learn a Model from data. A Domain is also responsible of
-solving inference problems with respect to some Model, so the two classes are
-interdependent, but in general a Domain can be made working for different
-Models.</p>
-<p>Several Models and Learners are already defined by Pyconstruct. All that is
-required for start training a model, apart from the data, is a Domain encoded in
-MiniZinc which defines how the attributes of the objects interact, which are the
-constraints and the features of the objects. To do so, we need to create a
-<em class="xref py py-obj">ocr.pmzn</em> file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;pyconstruct.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">n_features</span><span class="o">,</span> <span class="nn">features</span><span class="o">,</span> <span class="nn">domain</span><span class="o">,</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
-
-<span class="p">{{</span> <span class="n">n_features</span><span class="p">(</span><span class="s1">&#39;16 * 8 * 26&#39;</span><span class="p">)</span> <span class="p">}}</span>
-
-<span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">domain</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
-
-    <span class="nb">int</span><span class="p">:</span> <span class="n">length</span><span class="p">;</span>
-    <span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}:</span> <span class="n">images</span><span class="p">;</span>
-
-    <span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span><span class="p">:</span> <span class="n">sequence</span><span class="p">;</span>
-
-
-    <span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">features</span><span class="p">(</span><span class="n">feature_type</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
-    <span class="p">[</span>
-        <span class="nb">sum</span><span class="p">(</span><span class="n">e</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">)(</span><span class="n">images</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">))</span>
-        <span class="o">|</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span>
-    <span class="p">]</span>
-    <span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
-
-<span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
-
-<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">}}</span>
+<p>We now have to represent our data into a MiniZinc program, which is then going
+to be used by Pyconstruct to generate predictions. Before coding our problem, it
+is first useful to look at how MiniZinc can be used for this purpose.</p>
+</div>
+<div class="section" id="intermezzo-minizinc-for-pyconstruct">
+<h2>Intermezzo: MiniZinc for Pyconstruct<a class="headerlink" href="#intermezzo-minizinc-for-pyconstruct" title="Permalink to this headline">¶</a></h2>
+<p>Here we provide a brief overview to catch the intuition behind how to use
+MiniZinc for structured prediction with Pyconstruct.  For a detailed guide on
+MiniZinc, check out their <a class="reference external" href="http://minizinc.org">webpage</a>.</p>
+<p>MiniZinc allows us to easily specify the structure of the objects that we want
+to predict, the input information we receive prior to the prediction, as well as
+some constraints that the output objects have to satisfy. In the case of our
+handwritten equations, we receive as input both the length of the sequence (an
+integer) as well as the list of images (Numpy array). The output is a list of
+integers of the same length of the input representing the symbols.</p>
+<p>Inputs in MiniZinc are specified through “dzn” parameter variables, while the
+outputs are the optimiziation variables. In the equations case we would have:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="p">:</span> <span class="n">length</span><span class="p">;</span>
+<span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">9</span><span class="p">]</span> <span class="n">of</span> <span class="nb">int</span><span class="p">:</span> <span class="n">images</span><span class="p">;</span>
+<span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="nb">int</span><span class="p">:</span> <span class="n">sequence</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>That’s it! Now we can instantiate a <em class="xref py py-obj">Domain</em> with our new <em class="xref py py-obj">ocr.pmzn</em> file:</p>
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">length</span></code> and <code class="docutils literal notranslate"><span class="pre">images</span></code> match the attributes provided in the
+dataset. The input dictionaries will be passed by Pyconstruct to MiniZinc upon
+making a prediction.</p>
+<p>MiniZinc also allows us to easily add constraints into the mix. For example, we
+know for a fact that the output sequence should contain exactly one <img class="math" src="_images/math/0503be0a4ccfddbe9aeed9ee829e8a85eb071e06.svg" alt="10"/>
+(associated to the symbol <img class="math" src="_images/math/d0c6ac9189858a2e8398f366710fe6f0fd85abbf.svg" alt="+"/>) and exactly one <img class="math" src="_images/math/3ce84ebd2801875f2fe166072501eab257fb93c1.svg" alt="11"/> (associated to
+the symbol <img class="math" src="_images/math/138892b7ed259ac19fb419e57a60d17580c7c6bf.svg" alt="="/>), which can be easily stated in MiniZinc like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">constraint</span> <span class="n">count</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span>\ <span class="n">count</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Pyconstruct actually employs a dialect of MiniZinc defined by the <a class="reference external" href="http://paolodragone.com/pymzn">PyMzn</a> library, which it uses underneath to execute
+the MiniZinc compiler and the solvers. The PyMzn code is simply MiniZinc with
+some templating bits following the <a class="reference external" href="http://jinja.pocoo.org/">Jinja2 format</a>.
+This templating language allows us to do things like conditionally decide what
+solving method use and which function to optimize, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">problem</span> <span class="o">==</span> <span class="s1">&#39;map&#39;</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">solve</span> <span class="n">maximize</span> <span class="p">{{</span> <span class="n">model</span> <span class="p">}};</span>
+<span class="p">{</span><span class="o">%</span> <span class="k">else</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">solve</span> <span class="n">satisfy</span><span class="p">;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>When Pyconstruct wants to solve a MAP problem (finding the object maximizing the
+model), it passes to Jinja the value <code class="docutils literal notranslate"><span class="pre">'map'</span></code> for the parameter <code class="docutils literal notranslate"><span class="pre">problem</span></code> and
+some function for the parameter <code class="docutils literal notranslate"><span class="pre">model</span></code> and the resulting MiniZinc solve
+statement will be formatted accordingly.</p>
+<p>Perhaps the most useful feature that templating with Jinja adds to Pyconstruct
+is the ability to define packages containing reusable <em>macros</em>. Pyconstruct
+provides a <a class="reference external" href="reference/domains/share">shared templating library</a> with
+quite a few modules containing reusable macros that can be used to easily define
+structured prediction problems with MiniZinc. For instance, the above piece of
+code generating a solve statement conditionally to the value of the <code class="docutils literal notranslate"><span class="pre">problem</span></code>
+parameter is similar to what is done by the <code class="docutils literal notranslate"><span class="pre">solve</span></code> macro in the Pyconstruct
+shared templating library:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;globals.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="p">}}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fleshing-out-the-domain">
+<h2>Fleshing out the domain<a class="headerlink" href="#fleshing-out-the-domain" title="Permalink to this headline">¶</a></h2>
+<p>In Pyconstruct, we use the term <em>domain</em>
+to refer to the collection of input and output variables and the constraints
+over them. The domain essentially represent the <em>feasible</em> space of the objects.
+A domain is also equipped with an inference procedure, which given a <em>model</em>,
+returns some prediction. MiniZinc is the default method for implementing a
+domain in Pyconstruct.</p>
+<p>Let’s now start coding out our OCR equations problem.  Let’s create our PyMzn
+file called <code class="docutils literal notranslate"><span class="pre">equations.pmzn</span></code>. This file will contain our domain, as well as
+the method to solve sevaral inference problems. The structure of the file will
+be the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% from &#39;globals.pmzn&#39; import domain, solve %}
+{% from &#39;linear.pmzn&#39; import linear_model %}
+
+% Declare here some constants ...
+
+{% call domain(problem) %}
+
+    % Declare here input/output variables and constraints ...
+
+{% endcall %}
+
+{% set n_features %}
+
+    % Declare here the number of features ...
+
+{% endset %}
+
+{% call linear_model(problem, params, n_features) %}
+
+    % Declare here the features ...
+
+{% endcall %}
+
+{% set loss %}
+
+    % Declare here the structured loss ...
+
+{% endset %}
+
+{{ solve(problem, loss=loss) }}
+</pre></div>
+</div>
+<p>For now, we have not yet written a single MiniZinc line. The above code simply
+contain some Jinja macros imported from the shared templating library of
+Pyconstruct. In particular, we are going to use: the <code class="docutils literal notranslate"><span class="pre">domain</span></code> macro, which
+will contain the actual input and output variables, as well as the constraints;
+the <code class="docutils literal notranslate"><span class="pre">linear_model</span></code> macro, which takes care of declaring a linear model of the
+type <img class="math" src="_images/math/5ce41f0cc29357559f3a6e5427763bc586c5994a.svg" alt="\inner{\vw}{\vphi(x, y)}"/>, where <img class="math" src="_images/math/ecff84e03d4eea975888baa1aa1adccf14b3e638.svg" alt="\vw"/> is a vector of learned
+parameters passed by Pyconstruct and <img class="math" src="_images/math/0952bb512bcce87ed2b9692ce2f5e54e2b0b7d08.svg" alt="\vphi(x, y)"/> is a vector of features
+that we are going to declare; the <code class="docutils literal notranslate"><span class="pre">solve</span></code> macro, which takes care of selecting
+the right MiniZinc solve statement conditionally to the inference problem to
+solve.</p>
+<p>Let’s fill in the gaps. First of all, it is useful to add an explicit
+declaration of some contants that we have in this problem:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int: MAX_HEIGHT = 9;
+int: MAX_WIDTH = 9;
+set of int: HEIGHT = 1 .. MAX_HEIGHT;
+set of int: WIDTH = 1 .. MAX_WIDTH;
+
+% Set of symbols (labels). Digits are encoded as themselves.
+% Assume &#39;+&#39; and &#39;=&#39; are encoded respectively with 10 and 11.
+int: PLUS = 10;
+int: EQUAL = 11;
+int: N_SYMBOLS = 12;
+set of int: SYMBOLS = 0 .. N_SYMBOLS - 1;
+</pre></div>
+</div>
+<p>We just declared the constants encoding the maximum height and width of the
+images, the number and set of symbols, and the constants encoding the <code class="docutils literal notranslate"><span class="pre">+</span></code> and
+<code class="docutils literal notranslate"><span class="pre">=</span></code> signs in the sequence. These constants will turn useful later on when we
+will have to declare variables and constraints. Next, we need to declare the
+input and output variables. These go inside the call to the <code class="docutils literal notranslate"><span class="pre">domain</span></code> macro:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>% Input: Length of the sequence and images
+int: length;
+set of int: SEQUENCE = 1 .. length;
+array[SEQUENCE, HEIGHT, WIDTH] of {0, 1}: images;
+
+% Output: Sequence of symbols
+array[SEQUENCE] of var SYMBOLS: sequence;
+</pre></div>
+</div>
+<p>The above code is similiar to what we have seen before, but here we used the
+constants to declare the variables. Here we also imposed that the sequence has
+to take values in the <code class="docutils literal notranslate"><span class="pre">SYMBOLS</span></code> set, the simplest form of constraint.</p>
+<p>We now need to declare some features for the model. A standard choice when
+handling sequences is to use unary and pairwise features, like those used in a
+chain CRF. Unary features, also called emission features, correlate the input
+“attributes” of the elements of the sequence with the output labels of the
+sequence. For each attribute <img class="math" src="_images/math/ef864027c269dedbb94d28b0311d71d5b5985e01.svg" alt="a"/> and each label <img class="math" src="_images/math/3ff668150d2a42d05819693109a277916bd2c0d8.svg" alt="l"/>, the emission
+features sum the values of the attribute <img class="math" src="_images/math/ef864027c269dedbb94d28b0311d71d5b5985e01.svg" alt="a"/> for the <em>active</em> elements of
+the sequence, i.e. elements of the sequence that are being assigned the label
+<img class="math" src="_images/math/3ff668150d2a42d05819693109a277916bd2c0d8.svg" alt="l"/>. In the case of the handwritten equations, the input attributes
+correspond to the pixels of the images, while the labels are the output symbols.
+On the other hand, pairwise features correlate pairs of labels <img class="math" src="_images/math/60aec27c2f443c95fb354a72b8818a8981282ff9.svg" alt="(l_1,
+l_2)"/>, counting the number of times in the sequence the label <img class="math" src="_images/math/5433dc2b26796c0804e7003dc6b469c004e32b8b.svg" alt="l_1"/> is
+followed by the label <img class="math" src="_images/math/cfe307bd39f8c39e0679648376f1b409fd429759.svg" alt="l_2"/>.</p>
+<p>Pyconstruct provides utilities for handling this kind of features out of the
+box. These are included in the <code class="docutils literal notranslate"><span class="pre">chain.pmzn</span></code> file. What we need to do first is
+to flatten the images into a two-dimensional vector of attributes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>% Constants
+int: N_PIXELS = MAX_HEIGHT * MAX_WIDTH;
+set of int: PIXELS = 1 .. N_PIXELS;
+
+% Domain
+array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
+    images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+]);
+</pre></div>
+</div>
+<p>After defining the attribute vector, we can use the macros in the <code class="docutils literal notranslate"><span class="pre">chain.pmzn</span></code>
+library to define the features for our linear model:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% from &#39;chain.pmzn&#39; import
+    n_emission_features, emission_features,
+    n_transition_features, transition_features
+%}
+
+{% set n_features %}
+       {{
+           n_emission_features(n_attributes=&#39;N_PIXELS&#39;, n_labels=&#39;N_SYMBOLS&#39;)
+       }}
+       +
+       {{
+           n_transition_features(n_labels=&#39;N_SYMBOLS&#39;)
+       }}
+{% endset %}
+
+{% call linear_model(problem, params, n_features) %}
+    {{
+        emission_features(
+            attributes_var=&#39;pixels&#39;, attributes_set=&#39;PIXELS&#39;,
+            sequence_var=&#39;sequence&#39;, sequence_set=&#39;SEQUENCE&#39;,
+            labels_set=&#39;SYMBOLS&#39;
+        )
+    }}
+    ++
+    {{
+        transition_features(
+            sequence_var=&#39;sequence&#39;, sequence_set=&#39;SEQUENCE&#39;,
+            labels_set=&#39;SYMBOLS&#39;
+        )
+    }}
+{% endcall %}
+</pre></div>
+</div>
+<p>The above code will compile into something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int: N_FEATURES = N_PIXELS * N_SYMBOLS + N_SYMBOLS * N_SYMBOLS;
+set of int: FEATURES = 1 .. N_FEATURES;
+
+array[FEATURES] of var float: phi = [
+    sum(e in SEQUENCE)(pixels[e, a] * sequence[e] == l)) | a in PIXELS, l in SYMBOLS
+]
+++
+[
+    sum(e1, e2 in SEQUENCE where e1 &lt; e2)(sequence[e1] == l1 /\ sequence[e2] == l2) | l1, l2 in SYMBOLS
+];
+
+array[FEATURES] of float: w = [
+    % weights found in the model paramenters
+];
+
+var float: score = sum(e in SEQUENCE)(w[e] * phi[e]);
+</pre></div>
+</div>
+<p>Notice that we used the variables <code class="docutils literal notranslate"><span class="pre">problem</span></code> and <code class="docutils literal notranslate"><span class="pre">params</span></code>: these are standard
+global variables passed to all domains by Pyconstruct. The <code class="docutils literal notranslate"><span class="pre">params</span></code> variable,
+in particular, is a dictioray containing the parameters of the model, which can
+be used to define the model directly into the MiniZinc file. These are the same
+parameters that are returned by the <code class="docutils literal notranslate"><span class="pre">params</span></code> property of a <code class="docutils literal notranslate"><span class="pre">Model</span></code> instance.</p>
+<p>The last piece we need to add is the structured loss function. When learning a
+large margin model (Structured SVM), the inference oracle has to repeatedly
+solve the so-called <em>loss-augmented</em> inference problem, which is simply an
+optimization problem of the type <img class="math" src="_images/math/e378703f8060eaf30f50b0ed4ef46bd9be96d380.svg" alt="argmax_{y\in\calY} f(x_i, y) + \Delta(y,
+y_i)"/> for some input-output pair <img class="math" src="_images/math/fb100f7ce9008494ed7b62386a6f573df03e7b7b.svg" alt="(x_i, y_i)"/> in the training set. The
+function <img class="math" src="_images/math/880f07decc08526e9fa479f8109a661289436d15.svg" alt="\Delta(y, y_i)"/> is the structured loss, a problem-dependent
+metric that evaluates the goodness of the prediction <img class="math" src="_images/math/2598f8f785f755d20f88faea077b13d9ebdb45d4.svg" alt="y"/> agaist the true
+label <img class="math" src="_images/math/926aa9863cf01a9c11edd083461b7e52962bb10e.svg" alt="y_i"/>. When Pyconstruct needs to solve a loss-augmented inference,
+passes the value <code class="docutils literal notranslate"><span class="pre">loss_augmented_map</span></code> to the <code class="docutils literal notranslate"><span class="pre">problem</span></code> global variable and
+the <code class="docutils literal notranslate"><span class="pre">solve</span></code> macro takes care of the rest. The only information it requires is
+the actual definition of the loss. When solving a <code class="docutils literal notranslate"><span class="pre">loss_augmented_map</span></code>
+inference, Pyconstruct also passes a variable <code class="docutils literal notranslate"><span class="pre">y_true</span></code>, which contains the
+true label to be used for the loss-augmented inference. In order to access this
+variable in the MiniZinc code we need to add the following code to the domain:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% if problem == &#39;loss_aumented_map&#39; %}
+    array[SEQUENCE] of int: true_sequence = {{ y_true[&#39;sequence&#39;]|dzn }};
+{% endif %}
+</pre></div>
+</div>
+<p>In the above code we declared an array called <code class="docutils literal notranslate"><span class="pre">true_sequence</span></code> conditionally to
+the problem being a <code class="docutils literal notranslate"><span class="pre">loss_augmented_map</span></code>. In the above code we used the a
+Jinja filter <code class="docutils literal notranslate"><span class="pre">dzn</span></code> provided by the PyMzn library, which takes any python
+object and serializes it into dzn format.</p>
+<p>We now have to declare the loss. A standard loss for sequence prediction problem
+is the (normalized) Hamming loss. The Pyconstruct shared templating library
+provides an utility macro to compute the hamming loss of two sequences. We just
+need to import the macro <code class="docutils literal notranslate"><span class="pre">hamming</span></code> from the library <code class="docutils literal notranslate"><span class="pre">metrics.pmzn</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% from &#39;metrics.pmzn&#39; import hamming %}
+
+{% set loss %}
+    {{
+        hamming(
+            sequence_set=&#39;SEQUENCE&#39;, sequence=&#39;sequence&#39;,
+            true_sequence=&#39;true_sequence&#39;
+        )
+    }}
+{% endset %}
+</pre></div>
+</div>
+<p>The final model should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% from &#39;globals.pmzn&#39; import domain, solve %}
+{% from &#39;linear.pmzn&#39; import linear_model %}
+{% from &#39;chain.pmzn&#39; import
+    n_emission_features, emission_features,
+    n_transition_features, transition_features
+%}
+{% from &#39;metrics.pmzn&#39; import hamming %}
+
+int: MAX_HEIGHT = 9;
+int: MAX_WIDTH = 9;
+set of int: HEIGHT = 1 .. MAX_HEIGHT;
+set of int: WIDTH = 1 .. MAX_WIDTH;
+
+% Set of symbols (labels). Digits are encoded as themselves.
+% Assume &#39;+&#39; and &#39;=&#39; are encoded respectively with 10 and 11.
+int: PLUS = 10;
+int: EQUAL = 11;
+int: N_SYMBOLS = 12;
+set of int: SYMBOLS = 0 .. N_SYMBOLS - 1;
+
+% Constants
+int: N_PIXELS = MAX_HEIGHT * MAX_WIDTH;
+set of int: PIXELS = 1 .. N_PIXELS;
+
+{% call domain(problem) %}
+
+    % Input: Length of the sequence and images
+    int: length;
+    set of int: SEQUENCE = 1 .. length;
+    array[SEQUENCE, HEIGHT, WIDTH] of {0, 1}: images;
+
+    % Output: Sequence of symbols
+    array[SEQUENCE] of var SYMBOLS: sequence;
+
+    {% if problem == &#39;loss_aumented_map&#39; %}
+        array[SEQUENCE] of int: true_sequence = {{ y_true[&#39;sequence&#39;]|dzn }};
+    {% endif %}
+
+    array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
+        images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+    ]);
+
+{% endcall %}
+
+{% set n_features %}
+       {{
+           n_emission_features(n_attributes=&#39;N_PIXELS&#39;, n_labels=&#39;N_SYMBOLS&#39;)
+       }}
+       +
+       {{
+           n_transition_features(n_labels=&#39;N_SYMBOLS&#39;)
+       }}
+{% endset %}
+
+{% call linear_model(problem, params, n_features) %}
+    {{
+        emission_features(
+            attributes_var=&#39;pixels&#39;, attributes_set=&#39;PIXELS&#39;,
+            sequence_var=&#39;sequence&#39;, sequence_set=&#39;SEQUENCE&#39;,
+            labels_set=&#39;SYMBOLS&#39;
+        )
+    }}
+    ++
+    {{
+        transition_features(
+            sequence_var=&#39;sequence&#39;, sequence_set=&#39;SEQUENCE&#39;,
+            labels_set=&#39;SYMBOLS&#39;
+        )
+    }}
+{% endcall %}
+
+{% set loss %}
+    {{
+        hamming(
+            indexset=&#39;SEQUENCE&#39;, sequence=&#39;sequence&#39;,
+            true_sequence=&#39;true_sequence&#39;
+        )
+    }}
+{% endset %}
+
+{{ solve(problem, loss=loss) }}
+</pre></div>
+</div>
+<p>We are now ready to launch a learning algorithm over our domain. However, we
+have not really done with the domain yet. We still have not covered one of the
+main perks of using MiniZinc as a domain modeller: adding background knowledge
+as constraints. Adding constraints can speed-up learning and can drastically
+reduce the number of examples needed to learn an accurate model. In the OCR
+equations setting, we actually know several facts about our problem and the
+data, e.g. the numbers are positive integers, the plus always comes before the
+equal sign, and the equations are always valid.</p>
+<p>If you want to add constraints right away, check out the following section. If
+instead you want to go strait to learning a model with the model we have written
+so far, jump to the dedicated section further down.</p>
+</div>
+<div class="section" id="adding-background-knowledge-as-constraints">
+<h2>Adding background knowledge as constraints<a class="headerlink" href="#adding-background-knowledge-as-constraints" title="Permalink to this headline">¶</a></h2>
+<p>We are now going to add some constraints to the domain based on the facts we
+know about the OCR equations problem. Recall that the examples in the dataset
+are all valid equations of the form <img class="math" src="_images/math/fcdbedaed45a0ac18d6a59603f674163d51b38a3.svg" alt="a + b = c"/>, with positive <img class="math" src="_images/math/ef864027c269dedbb94d28b0311d71d5b5985e01.svg" alt="a"/>,
+<img class="math" src="_images/math/ff0020c19073604c9ca62d9c8807128c738cb53a.svg" alt="b"/> and <img class="math" src="_images/math/583c9d9df358733a6ff85bc5d47082ad0e96c3cf.svg" alt="c"/>. We are now going to encode this knowledge into the
+domain step-by-step.</p>
+<p>Let’s start by the fact that no matter how many digits the numbers have, there
+are always going to be exaclty one <img class="math" src="_images/math/d0c6ac9189858a2e8398f366710fe6f0fd85abbf.svg" alt="+"/> sign and exaclty one <img class="math" src="_images/math/138892b7ed259ac19fb419e57a60d17580c7c6bf.svg" alt="="/>
+sign. We can use the minizinc global constraint <code class="docutils literal notranslate"><span class="pre">count</span></code> for this. In order to
+use the global constraints we need to include the library <code class="docutils literal notranslate"><span class="pre">globals.mzn</span></code>
+first:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>% At the top
+include &quot;globals.mzn&quot;;
+
+% In the domain
+constraint count(sequence, PLUS, 1) /\ count(sequence, EQUAL, 1);
+</pre></div>
+</div>
+<p>About the operators, we also know that the plus sign always comes before the
+equal sign. To encode this constraint it is convenient to extract the indices of
+the two operators from the sequence:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>% Indices of the two operators
+array[1 .. 2] of var 2 .. length - 1: opr;
+
+constraint sequence[opr[1]] == PLUS /\ sequence[opr[2]] == EQUAL;
+constraint increasing(opr);
+</pre></div>
+</div>
+<p>The first of the above constraints enforces the variables <code class="docutils literal notranslate"><span class="pre">opr[1]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">opr[2]</span></code> to be indices corresponding to the sequence values <code class="docutils literal notranslate"><span class="pre">PLUS</span></code> and
+<code class="docutils literal notranslate"><span class="pre">EQUAL</span></code>. Together with the uniqueness contraint defined earlier, this ensures
+that the two variables are indeed the two indices of the two operators. The
+second constraint is a MiniZinc global constraint the operator indice to be
+ordered increasingly. Together with the previous constraint, this means that the
+<code class="docutils literal notranslate"><span class="pre">PLUS</span></code> value must come before the <code class="docutils literal notranslate"><span class="pre">EQUAL</span></code> value.</p>
+<p>We want now to impose the validity of the equations. To do so, we need to
+extract the actual numeric values encoded in the sequence of digits. This
+process is going to require a few advanced constructs from MiniZinc, so make
+sure you are confortable with them.</p>
+<p>To extract the values, we are going to sum the digits multiplied by the
+corresponding power of ten. We first need to make an assumption: we need to set
+the maximum number of digits in the numbers (can be arbitrary large). In the OCR
+equation dataset, the maximum is three digits per number. We then need to put
+the digits into a matrix of three zero-padded vectors of length <code class="docutils literal notranslate"><span class="pre">MAX_DIGITS</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int: MAX_DIGITS = 3;
+
+array[1 .. 4] of var 0 .. length+1: ext = [0, opr[1], opr[2], length+1];
+
+array[1 .. 3, 1 .. MAX_DIGITS] of var 0 .. 9: num_matrix = array2d(1 .. 3, 1 .. MAX_DIGITS, [
+    if ext[i] + MAX_DIGITS - k &lt; ext[j] then
+        sequence[ext[j] - MAX_DIGITS + k]
+    else
+        0
+    endif
+    | i, j in 1 .. 4 where i &lt; j, k in 0 .. MAX_DIGITS-1
+]);
+</pre></div>
+</div>
+<p>In the above code we declared an array <code class="docutils literal notranslate"><span class="pre">ext</span></code> of the extremes of each number,
+then, for each two consecutive extremes we extracted one vector iterating over
+<code class="docutils literal notranslate"><span class="pre">k</span></code>. The conditional statement makes sure the arrays are populated as we
+expect. For instance, for the sequence <code class="docutils literal notranslate"><span class="pre">34</span> <span class="pre">+</span> <span class="pre">56</span> <span class="pre">=</span> <span class="pre">90</span></code> we get:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>num_matrix = [| 0, 3, 4
+              | 0, 5, 6
+              | 0, 9, 0 |];
+</pre></div>
+</div>
+<p>We can then extract the three numbers by summing powers of ten:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int: MAX_NUM = pow(10, MAX_DIGITS + 1);
+
+array[1 .. 3] of var 0 .. MAX_NUM: num = [
+    sum(j in 1 .. MAX_DIGITS)(
+        pow(10, MAX_DIGITS - j) * num_matrix[i, j]
+    ) | i in 1 .. 3
+];
+</pre></div>
+</div>
+<p>Finally, we can impose the validity of the equation simply by adding the
+constraint:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>constraint num[1] + num[2] == num[3];
+</pre></div>
+</div>
+<p>This type of constraints is especially illustrative of the expressive power of
+MiniZinc. We just extracted the actual semantic meaning of the sequence of
+symbols and we <em>reasoned</em> over it. This is something that standard models (even
+structured ones) cannot do. This is especially useful in settings where there
+and very few examples to learn from and rich semantic knowledge.
+While this OCR equations setting is a very toy example, it is easy to see the
+potential in the Pyconstruct library for modelling very complex tasks like
+product configuration, planning, dialogue management and more.</p>
+</div>
+<div class="section" id="learning-and-evaulating-a-model">
+<h2>Learning and evaulating a model<a class="headerlink" href="#learning-and-evaulating-a-model" title="Permalink to this headline">¶</a></h2>
+<p>Whether or not you added the constraints to the domain, you now have your domain
+fully encoded in the file <code class="docutils literal notranslate"><span class="pre">equations.pmzn</span></code> and that is all it is needed to
+learn a predictive structured model. Pyconstruct can is pretty flexible, it
+allows to use the following code for learning with different domains. This also
+means that if you want to add some constraints to an existing model you only
+need to modify the MiniZinc file, without worrying about the python code for
+learning.</p>
+<p>Let’s go ahead and fit a model with the OCR equations data over the domain we
+just defined. In python we need to instantiate a <em class="xref py py-obj">Domain</em>, passing the path to
+our <code class="docutils literal notranslate"><span class="pre">equations.pmzn</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">Domain</span>
-<span class="n">ocr_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;ocr.pmzn&#39;</span><span class="p">)</span>
+<span class="n">eq_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;equations.pmzn&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If you know MiniZinc, the above code will probably look a bit odd. That is
-because Pyconstruct by default uses a superset of MiniZinc defined by the PyMzn
-library.  Essentially, that is MiniZinc with some tempating provided by the
-Jinja2 library. Check out PyMzn for an explanation on how to use fully it. Here
-we’ll explain the basics.</p>
-<p>The first line
-<em class="xref py py-obj">{% from ‘pyconstruct.pmzn’ import n_features, features, domain, solve %}</em>
-imports few useful macros from the <em class="xref py py-obj">pyconstruct.pmzn</em> file.</p>
-<p>The second line <em class="xref py py-obj">{{ n_features(‘16 * 8 * 26’) }}</em> calls the <em class="xref py py-obj">n_features</em> macro,
-which compiles into:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="p">:</span> <span class="n">N_FEATURES</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">26</span><span class="p">;</span>
-<span class="nb">set</span> <span class="n">of</span> <span class="nb">int</span><span class="p">:</span> <span class="n">FEATURES</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">N_FEATURES</span><span class="p">;</span>
+<p>Now, let’s instantiate a Learner. A learner is a Pyconstruct object that is able
+to learn a model using some learning algorithm. Pyconstruct learners work
+exaclty like Scikit-learn estimators: we first need to instantiate the learner
+with the hyper-parameters we want to use, and then call the <code class="docutils literal notranslate"><span class="pre">fit</span></code> function
+passing the data. One of the state-of-the-art learning algorithms for learning
+structured SVMs is Stochastic Subgradient Descent, also known as SSG. Let us use
+the <code class="docutils literal notranslate"><span class="pre">SSG</span></code> learner for estimating a linear model over the OCR equation domain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">SSG</span>
+<span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">eq_dom</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The MiniZinc code enclosed in the tags
-<em class="xref py py-obj">{% call domain(problem) %} … {% endcall %}</em> is processed on the basis of the
-value of <em class="xref py py-obj">problem</em> the domain is called with. The variable <em class="xref py py-obj">problem</em> is usually
-passed to the domain by an internal call of Pyconstruct through PyMzn. In this
-block goes the domain definition, including the variables and parameters of the
-objects, the constraints and the features. Notice that we have two MiniZinc
-parameters <em class="xref py py-obj">length</em> and <em class="xref py py-obj">images</em>, which match the attributes of the input
-objects of the OCR dataset, and one optimization variable <em class="xref py py-obj">sequence</em> which
-matches the attribute of the output objects of the OCR dataset. This is valid
-for any problem: the examples are the inputs that are provided as dzn data,
-whereas the targets are the outputs of the model, which translate into
-optimization variables when solving inference.</p>
-<p>Inside the domain call we also call the <em class="xref py py-obj">features</em> macro, which compiles into:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="nb">int</span><span class="p">:</span> <span class="n">phi</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="nb">sum</span><span class="p">(</span><span class="n">e</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">)(</span><span class="n">images</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">))</span>
-    <span class="o">|</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">16</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">8</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">26</span>
-<span class="p">];</span>
+<p>That is pretty much it. We passed the domain to the SSG constructor and then we
+called the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method, which will pass through the entire dataset and learn
+a model calling MiniZinc several times to make inference. After learning we can
+pass some batch of examples <code class="docutils literal notranslate"><span class="pre">X</span></code> to the <code class="docutils literal notranslate"><span class="pre">predict</span></code> function to get
+predictions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Y</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>These are typical features used in OCR, for each symbol <em class="xref py py-obj">s</em> and each pixel <em class="xref py py-obj">(i,
-j)</em> in the images containing the number of times in the sequence the <em class="xref py py-obj">(i, j)</em>
-pixel is active for characters labeled with symbol <em class="xref py py-obj">s</em>.</p>
-<p>The last line calls the <em class="xref py py-obj">solve</em> macro, which compiles to a different solve
-statement depending on the <em class="xref py py-obj">problem</em> and <em class="xref py py-obj">model</em>. Possible values for <em class="xref py py-obj">problem</em>
-are, for instance, <em class="xref py py-obj">map</em> to find the object with highest score (dot product
-between weights and features) or <em class="xref py py-obj">phi</em> to compute the feature vector given an
-input and an output object. The <em class="xref py py-obj">model</em> is a dictionary containing the model’s
-parameters, such as the weights <em class="xref py py-obj">w</em> for a <em class="xref py py-obj">LinearModel</em>. Also this object is
-usually passed to the domain by Pyconstruct.</p>
-<p>The above model is actually a partial example of the complete <em class="xref py py-obj">ocr</em> domain
-available in Pyconstruct out-of-the-box. You can load the domain by simply:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ocr_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;ocr&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>After defining the domain, using the predefined one or the <em class="xref py py-obj">ocr.pmzn</em> file, we
-can start learning. We first need to instantiate a learner, say a
-<em class="xref py py-obj">StructuredPerceptron</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">StructuredPerceptron</span>
-<span class="n">sp</span> <span class="o">=</span> <span class="n">StructuredPerceptron</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">ocr_dom</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Pyconstruct is built to be compatible with most of the available utilities in
-Scikit-learn. One thing one would like to do at this point is to shuffle and
-split the data into training and test set. We can use Scikit-learn like this:</p>
+<p>While the above code should cover many of the typical cases, Pyconstruct also
+let’s you have more control over the learning process. First of all, you would
+probably want to test the model after it is trained. Therefore we probably want
+to split the data into training and test set. We can use the utility from
+Scikit-learn for this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Pyconstruct has also its own utilities to deal with structured data. In order
-to use train the <em class="xref py py-obj">StructuredPerceptron</em> we will need to divide the data in
-mini-batches and use its <em class="xref py py-obj">partial_fit</em> method.:</p>
+<p>Another thing that you probably want to do is to evaluate the model on the
+training set while it is training. Most of Pyconstruct learners are online
+learners, so they can learn step-by-step from mini-batches of data. Online
+learners implement the <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code> method, which takes a mini-batch of data
+and updates the current parameters of the model. To split the dataset into
+batches and iterate over them, we can use the <code class="docutils literal notranslate"><span class="pre">batches</span></code> Pyconstruct utility:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.utils</span> <span class="k">import</span> <span class="n">batches</span>
 
-<span class="k">for</span> <span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
-    <span class="n">sp</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">ssg</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To evaluate the learner we will need a suitable metric. What it usually done
-used with OCR is the normalized Hamming loss. Pyconstruct has a Hamming loss
-function already available:</p>
+<p>We can now evaluate our model on the training set right before making a learning
+step on the batch. To evaluate our sequences we can use again the Hamming loss:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.metrics</span> <span class="k">import</span> <span class="n">hamming</span>
 
 <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_true</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">hamming</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_true</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">hamming</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_true</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <em class="xref py py-obj">hamming</em> function returns the Hamming distance between each pair of
-elements in the input arrays, so we take the mean. We can then compute the loss
-over the test set while training:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
-    <span class="n">sp</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">,</span> <span class="n">Y_batch</span><span class="p">)</span>
-    <span class="n">Y_pred</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loss = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loss</span><span class="p">(</span><span class="n">Y_pred</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">)))</span>
+<p>The above function computes the hamming loss over the <code class="docutils literal notranslate"><span class="pre">sequence</span></code> key of all
+the objects in the <code class="docutils literal notranslate"><span class="pre">Y_pred</span></code> and <code class="docutils literal notranslate"><span class="pre">Y_true</span></code> batches and returns a Numpy vector
+with all the values.</p>
+<p>We can now compute the losses on the training batches and print the average:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">Y_pred</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_b</span><span class="p">)</span>
+    <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">Y_b</span><span class="p">,</span> <span class="n">Y_pred</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loss </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avg_loss</span><span class="p">))</span>
+    <span class="n">ssg</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will take a while, depending on the computational resources you have. You
-can parallelize inference by passing <em class="xref py py-obj">n_jobs</em> to the <em class="xref py py-obj">Domain</em> constructor, as
-well as to the <em class="xref py py-obj">hamming</em> function. Additionally, if you need a quick benchmark,
-Pyconstruct also contains pretrained models for many domains and learners
-(link).</p>
+<p>This covers the basics of out to use Pyconstruct. Check out the reference manual
+to learn more about all the components and the ways you can tweak Pyconstruct to
+solve your structured prediction problem.</p>
+</div>
 </div>
 
 
@@ -334,7 +773,7 @@ Pyconstruct also contains pretrained models for many domains and learners
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reference/index.html" class="btn btn-neutral float-right" title="Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="structured.html" class="btn btn-neutral float-right" title="Structured prediction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install.html" class="btn btn-neutral" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -368,7 +807,7 @@ Pyconstruct also contains pretrained models for many domains and learners
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

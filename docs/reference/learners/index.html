@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Learners &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>Learners &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Manual" href="../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../index.html"/>
+        <link rel="up" title="Reference Manual" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.BaseLearner" href="generated/pyconstruct.learners.BaseLearner.html"/>
-        <link rel="prev" title="pyconstruct.domains.MiniZincDomain.phi" href="../domains/generated/pyconstruct.domains.MiniZincDomain.phi.html"/> 
+        <link rel="prev" title="pyconstruct.domains.MiniZincDomain.n_features" href="../domains/generated/pyconstruct.domains.MiniZincDomain.n_features.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Learners</a><ul>
@@ -155,7 +156,7 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../index.html">Manual</a> &raquo;</li>
+          <li><a href="../index.html">Reference Manual</a> &raquo;</li>
         
       <li>Learners</li>
     
@@ -184,22 +185,22 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.BaseLearner.html#pyconstruct.learners.BaseLearner" title="pyconstruct.learners.BaseLearner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseLearner</span></code></a>(*[,&nbsp;domain])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.BaseLearner.html#pyconstruct.learners.BaseLearner" title="pyconstruct.learners.BaseLearner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseLearner</span></code></a>([domain,&nbsp;model])</td>
 <td>A basic learning model class.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.BaseSSG.html#pyconstruct.learners.BaseSSG" title="pyconstruct.learners.BaseSSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseSSG</span></code></a>([domain,&nbsp;inference,&nbsp;structured_loss])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.BaseSSG.html#pyconstruct.learners.BaseSSG" title="pyconstruct.learners.BaseSSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseSSG</span></code></a>([domain,&nbsp;model,&nbsp;inference,&nbsp;alpha,&nbsp;…])</td>
 <td>Base implementation of a learner with the subgradient algorithm.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.SSG.html#pyconstruct.learners.SSG" title="pyconstruct.learners.SSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSG</span></code></a>(*[,&nbsp;domain,&nbsp;inference,&nbsp;alpha,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.SSG.html#pyconstruct.learners.SSG" title="pyconstruct.learners.SSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSG</span></code></a>([domain,&nbsp;model,&nbsp;inference,&nbsp;eta0,&nbsp;…])</td>
 <td>Learner implementing the standard subgradient algorithm.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.EG.html#pyconstruct.learners.EG" title="pyconstruct.learners.EG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EG</span></code></a>(*[,&nbsp;domain,&nbsp;inference,&nbsp;alpha,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.EG.html#pyconstruct.learners.EG" title="pyconstruct.learners.EG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EG</span></code></a>([domain,&nbsp;model,&nbsp;inference,&nbsp;eta0,&nbsp;…])</td>
 <td>Learner implementing the Exponentiate Gradient algorithm.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.StructuredPerceptron.html#pyconstruct.learners.StructuredPerceptron" title="pyconstruct.learners.StructuredPerceptron"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredPerceptron</span></code></a>(*[,&nbsp;domain])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.learners.StructuredPerceptron.html#pyconstruct.learners.StructuredPerceptron" title="pyconstruct.learners.StructuredPerceptron"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredPerceptron</span></code></a>([domain,&nbsp;model])</td>
 <td>A simple structured perceptron algorithm from <a href="#id3"><span class="problematic" id="id1">[1]_</span></a>.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.BlockCoordinateFrankWolfe.html#pyconstruct.learners.BlockCoordinateFrankWolfe" title="pyconstruct.learners.BlockCoordinateFrankWolfe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockCoordinateFrankWolfe</span></code></a>(*[,&nbsp;domain,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.learners.BlockCoordinateFrankWolfe.html#pyconstruct.learners.BlockCoordinateFrankWolfe" title="pyconstruct.learners.BlockCoordinateFrankWolfe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockCoordinateFrankWolfe</span></code></a>([domain,&nbsp;model,&nbsp;…])</td>
 <td>Learner using the Block-Coordinate Frank-Wolfe algorithm <a href="#id4"><span class="problematic" id="id2">[1]_</span></a>.</td>
 </tr>
 </tbody>
@@ -207,22 +208,30 @@
 <span class="target" id="module-pyconstruct.learners"></span><p>This package contains several learning algorithms to be used in conjunction with
 Pyconstruct domains. All the learners in Pyconstruct are agnostic to the type of
 structured objects the data contains, thanks to the fact that the domain takes
-care of both making inference and computing feature vectors.</p>
+care of making inference in a generic way.</p>
+<p>Here we use the “equations” example, available in the <a class="reference external" href="https://github.com/unitn-sml/pyconstruct">source code</a>, to show how Pyconstruct learners
+can be used.</p>
 <p>Learners in Pyconstruct follow the same interface as Scikit-learn estimators.
 Each learner needs first to be instanciated, passing a domain as argument to the
 constructor. For instance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">SSG</span><span class="p">,</span> <span class="n">Domain</span>
 
-<span class="n">ocr</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;ocr&#39;</span><span class="p">)</span>
-<span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">ocr</span><span class="p">)</span>
+<span class="n">eq</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;equations.pmzn&#39;</span><span class="p">)</span>
+<span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">eq</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The constructor usually accepts other hyper-parameters of the algorithm too.
-After being instantiated, the learner needs to be trained with data that is
-compatible with the domain passed to the learner instance. In this case, for
-instance, we can make use of data provided by Pyconstruct:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.datasets</span> <span class="k">import</span> <span class="n">load_ocr</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">load_ocr</span><span class="p">()</span>
+<p>Here we used <a class="reference internal" href="generated/pyconstruct.learners.SSG.html#pyconstruct.learners.SSG" title="pyconstruct.learners.SSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSG</span></code></a>, which is a learner using the stochastic subgradient method.
+A learner must be initialized with either a domain or an existing model
+containing a domain. If only a domain is passed, then the default model for the
+learner is used (a <em class="xref py py-obj">LinearModel</em> in the case of <a class="reference internal" href="generated/pyconstruct.learners.SSG.html#pyconstruct.learners.SSG" title="pyconstruct.learners.SSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSG</span></code></a>). If a model is also
+passed, it has to be compatible with the learner (<em class="xref py py-obj">LinearModel</em> or compatible
+subclasses for <a class="reference internal" href="generated/pyconstruct.learners.SSG.html#pyconstruct.learners.SSG" title="pyconstruct.learners.SSG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSG</span></code></a>).</p>
+<p>The constructor of the learner usually accepts other hyper-parameters of the
+algorithm as well. After being instantiated, the learner needs to be trained
+with data that is compatible with the domain passed to the learner instance. In
+this case, for instance, we can make use of data provided by Pyconstruct:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.datasets</span> <span class="k">import</span> <span class="n">load_equations</span>
+<span class="n">equations</span> <span class="o">=</span> <span class="n">load_equations</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Most of the learners in Pyconstruct are online learners, i.e. they can partially
@@ -235,7 +244,7 @@ Pyconstruct has a convenient utility to separate data into mini-batches, which
 in turn can then be used to train the model:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.utils</span> <span class="k">import</span> <span class="n">batches</span>
 
-<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">equations</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">equations</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
     <span class="n">ssg</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -243,7 +252,7 @@ in turn can then be used to train the model:</p>
 validate the model while training:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.metrics</span> <span class="k">import</span> <span class="n">hamming</span>
 
-<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">equations</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">equations</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
 
     <span class="c1"># Validate</span>
     <span class="n">Y_pred</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_b</span><span class="p">)</span>
@@ -255,12 +264,9 @@ validate the model while training:</p>
 </pre></div>
 </div>
 <p>Here the <em class="xref py py-obj">hamming</em> function takes a parameter <em class="xref py py-obj">key=’sequence’</em> because that is
-the name of the attribute in the OCR data that need to be compared.</p>
-<p>As said, most learners in Pyconstruct are meant to be used in this way, so in
-most cases they do not implement a <em class="xref py py-obj">fit</em> method over the full dataset; instead
-often <em class="xref py py-obj">fit</em> is an alias for <em class="xref py py-obj">partial_fit</em>. Check the documentation of each
-learner for more details. DO NOT try to <em class="xref py py-obj">fit</em> the full dataset, it would simply
-perform a gradient step using the full dataset.</p>
+the name of the attribute in the equations data that need to be compared.</p>
+<p>Learners also implement the <em class="xref py py-obj">fit</em> method, which divides the data in batches and
+the uses the <em class="xref py py-obj">partial_fit</em>, as shown above.</p>
 </div>
 
 
@@ -276,7 +282,7 @@ perform a gradient step using the full dataset.</p>
         <a href="generated/pyconstruct.learners.BaseLearner.html" class="btn btn-neutral float-right" title="pyconstruct.learners.BaseLearner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../domains/generated/pyconstruct.domains.MiniZincDomain.phi.html" class="btn btn-neutral" title="pyconstruct.domains.MiniZincDomain.phi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../domains/generated/pyconstruct.domains.MiniZincDomain.n_features.html" class="btn btn-neutral" title="pyconstruct.domains.MiniZincDomain.n_features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -307,7 +313,7 @@ perform a gradient step using the full dataset.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.SSG &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.learners.SSG &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.SSG.decision_function" href="pyconstruct.learners.SSG.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.BaseSSG.set_params" href="pyconstruct.learners.BaseSSG.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
@@ -106,6 +107,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.get_params.html">pyconstruct.learners.SSG.get_params</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.loss.html">pyconstruct.learners.SSG.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.partial_fit.html">pyconstruct.learners.SSG.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.phi.html">pyconstruct.learners.SSG.phi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.predict.html">pyconstruct.learners.SSG.predict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.score.html">pyconstruct.learners.SSG.score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.set_params.html">pyconstruct.learners.SSG.set_params</a></li>
@@ -165,7 +167,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Learners</a> &raquo;</li>
         
@@ -192,7 +194,7 @@
 <h1>pyconstruct.learners.SSG<a class="headerlink" href="#pyconstruct-learners-ssg" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.learners.SSG">
-<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">SSG</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>alpha=0.0001</em>, <em>train_loss='hinge'</em>, <em>projection='l2'</em>, <em>radius=1000.0</em>, <em>eta0=1.0</em>, <em>power_t=0.5</em>, <em>learning_rate='optimal'</em>, <em>structured_loss=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.SSG" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">SSG</code><span class="sig-paren">(</span><em>domain=None</em>, <em>model=None</em>, <em>*</em>, <em>inference='loss_augmented_map'</em>, <em>eta0=1.0</em>, <em>power_t=0.5</em>, <em>learning_rate='optimal'</em>, <em>radius=1000.0</em>, <em>projection='l2'</em>, <em>init_w='normal'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.SSG" title="Permalink to this definition">¶</a></dt>
 <dd><p>Learner implementing the standard subgradient algorithm.</p>
 <p>This learner performs the standard Stochastic Subgradient descent from <a class="footnote-reference" href="#id5" id="id1">[1]</a>.
 It also includes the options for:</p>
@@ -217,10 +219,7 @@ training loss that <em class="xref py py-obj">hinge</em>.</li>
 <li><strong>alpha</strong> (<em>float</em>) – The regularization coefficient.</li>
 <li><strong>train_loss</strong> (<em>str in</em><em> [</em><em>'hinge'</em><em>, </em><em>'logistic'</em><em>, </em><em>'exponential'</em><em>]</em>) – The training loss. The derivative of this loss is used to rescale the
 margin of the examples when making an update.</li>
-<li><strong>projection</strong> (<em>None</em><em> or </em><em>str in</em><em> [</em><em>'l1'</em><em>, </em><em>'l2'</em><em>]</em>) – If None, no projection is applied, otherwise, if ‘l1’ or ‘l2’ are given,
-the weights are projected back onto an L1 or an L2 ball respectively.</li>
-<li><strong>radius</strong> (<em>float</em>) – The radius of the ball onto which project the weights when using
-projection.</li>
+<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
 <li><strong>eta0</strong> (<em>float</em>) – The initial value of the learning rate.</li>
 <li><strong>power_t</strong> (<em>float</em>) – The power of the iteration index when using an <em class="xref py py-obj">invscaling</em>
 learning_rate.</li>
@@ -229,7 +228,13 @@ updates for <em class="xref py py-obj">eta0</em>; the <em class="xref py py-obj"
 iteration number raised to the <em class="xref py py-obj">power_t</em>; the <em class="xref py py-obj">optimal</em> strategy finds
 the best rate depending on <em class="xref py py-obj">alpha</em> and <em class="xref py py-obj">train_loss</em> (similar to
 Scikit-learn’s SGDRegressor <em class="xref py py-obj">optimal</em> learning rate).</li>
-<li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+<li><strong>radius</strong> (<em>float</em>) – The radius of the ball enclosing the parameter space.</li>
+<li><strong>projection</strong> (<em>None</em><em> or </em><em>str in</em><em> [</em><em>'l1'</em><em>, </em><em>'l2'</em><em>]</em>) – If None, no projection is applied, otherwise, if ‘l1’ or ‘l2’ are given,
+the weights are projected back onto an L1 or an L2 ball respectively.</li>
+<li><strong>init_w</strong> (<em>str in</em><em> [</em><em>'zeros'</em><em>, </em><em>'uniform'</em><em>, </em><em>'normal'</em><em>, </em><em>'laplace'</em><em>]</em>) – Initialization strategy for the parameter vector. ‘zeros’ initializes
+the vector to all zero values; ‘uniform’, ‘normal’ and ‘laplace’
+initialize the vector with random weights from, respectively, a uniform,
+normal, or Laplace distribution.</li>
 </ul>
 </td>
 </tr>
@@ -275,41 +280,32 @@ Artificial intelligence-Volume 1. AAAI Press, 2006.</td></tr>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.decision_function.html#pyconstruct.learners.SSG.decision_function" title="pyconstruct.learners.SSG.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.decision_function.html#pyconstruct.learners.SSG.decision_function" title="pyconstruct.learners.SSG.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.fit.html#pyconstruct.learners.SSG.fit" title="pyconstruct.learners.SSG.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.fit.html#pyconstruct.learners.SSG.fit" title="pyconstruct.learners.SSG.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
+<td>Fit a model with data (X, Y).</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.get_params.html#pyconstruct.learners.SSG.get_params" title="pyconstruct.learners.SSG.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.loss.html#pyconstruct.learners.SSG.loss" title="pyconstruct.learners.SSG.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.loss.html#pyconstruct.learners.SSG.loss" title="pyconstruct.learners.SSG.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y,&nbsp;Y_pred,&nbsp;**kwargs)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.partial_fit.html#pyconstruct.learners.SSG.partial_fit" title="pyconstruct.learners.SSG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.partial_fit.html#pyconstruct.learners.SSG.partial_fit" title="pyconstruct.learners.SSG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred,&nbsp;Y_phi,&nbsp;Y_pred_phi])</td>
+<td>Updates the current model with a mini-batch (X, Y).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.predict.html#pyconstruct.learners.SSG.predict" title="pyconstruct.learners.SSG.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.phi.html#pyconstruct.learners.SSG.phi" title="pyconstruct.learners.SSG.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
+<td>Computes the feature vector for the given input and output objects.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.predict.html#pyconstruct.learners.SSG.predict" title="pyconstruct.learners.SSG.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Computes the prediction of the current model for the given input.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.score.html#pyconstruct.learners.SSG.score" title="pyconstruct.learners.SSG.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y_true[,&nbsp;Y_pred])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.score.html#pyconstruct.learners.SSG.score" title="pyconstruct.learners.SSG.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
 <td>Compute the score as the average loss over the examples.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.SSG.set_params.html#pyconstruct.learners.SSG.set_params" title="pyconstruct.learners.SSG.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.SSG.set_params.html#pyconstruct.learners.SSG.set_params" title="pyconstruct.learners.SSG.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></td>
-<td>The predictive model the algorithm has learned.</td>
 </tr>
 </tbody>
 </table>
@@ -361,7 +357,7 @@ Artificial intelligence-Volume 1. AAAI Press, 2006.</td></tr>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

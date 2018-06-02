@@ -6,11 +6,12 @@ Domains
 .. toctree::
    :maxdepth: 2
 
-   predefined
+   share
 
 .. autosummary::
    :toctree: generated/
 
+   Domain
    BaseDomain
    MiniZincDomain
 

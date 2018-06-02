@@ -14,7 +14,6 @@ pyconstruct.domains.MiniZincDomain
    
       ~MiniZincDomain.infer
       ~MiniZincDomain.n_features
-      ~MiniZincDomain.phi
    
    
 

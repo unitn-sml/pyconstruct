@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Models &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>Models &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Manual" href="../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../index.html"/>
+        <link rel="up" title="Reference Manual" href="../index.html"/>
         <link rel="next" title="pyconstruct.models.BaseModel" href="generated/pyconstruct.models.BaseModel.html"/>
         <link rel="prev" title="pyconstruct.metrics.hamming" href="../metrics/generated/pyconstruct.metrics.hamming.html"/> 
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../learners/index.html">Learners</a></li>
@@ -151,7 +152,7 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../index.html">Manual</a> &raquo;</li>
+          <li><a href="../index.html">Reference Manual</a> &raquo;</li>
         
       <li>Models</li>
     
@@ -180,33 +181,36 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.models.BaseModel.html#pyconstruct.models.BaseModel" title="pyconstruct.models.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseModel</span></code></a>(domain)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/pyconstruct.models.BaseModel.html#pyconstruct.models.BaseModel" title="pyconstruct.models.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseModel</span></code></a>([domain])</td>
 <td>Base model.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.models.LinearModel.html#pyconstruct.models.LinearModel" title="pyconstruct.models.LinearModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinearModel</span></code></a>(domain,&nbsp;w)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/pyconstruct.models.LinearModel.html#pyconstruct.models.LinearModel" title="pyconstruct.models.LinearModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinearModel</span></code></a>([domain,&nbsp;w,&nbsp;features])</td>
 <td>A linear model.</td>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-pyconstruct.models"></span><p>Pyconstructi abstracts predictive models using a <em class="xref py py-obj">Model</em> class. A <em class="xref py py-obj">Model</em> is an
-object that holds some kind of parameters that can be used to make inference.</p>
+<span class="target" id="module-pyconstruct.models"></span><p>Pyconstructi abstracts predictive models using the <a class="reference internal" href="generated/pyconstruct.models.BaseModel.html#pyconstruct.models.BaseModel" title="pyconstruct.models.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseModel</span></code></a> class. Classes
+that inherit from <a class="reference internal" href="generated/pyconstruct.models.BaseModel.html#pyconstruct.models.BaseModel" title="pyconstruct.models.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseModel</span></code></a> are objects holding the parameters of some
+mathematical model and that can “communicate” with domains in order to make
+prediction by solving inference problems.</p>
 <p>When making inference, the model’s parameters are passed to the Domain, which
 needs to be able to interpret the semantics of the parameters. For instance, the
 standard model provided by Pyconstruct is a <a class="reference internal" href="generated/pyconstruct.models.LinearModel.html#pyconstruct.models.LinearModel" title="pyconstruct.models.LinearModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinearModel</span></code></a>, whose parameters
-consist in just a weight vector. Domains using the <em class="xref py py-obj">solve</em> macro from the
-<em class="xref py py-obj">pyconstruct.pmzn</em> file (see the <em class="xref py py-obj">MiniZincDomain</em> class documentation for
-details) are readily capable of interpreting this weight vector and use it to
-compute the dot product with the feature vector.</p>
+consist in just a weight vector (and some optional additional features). Domains
+using the <em class="xref py py-obj">linear_model</em> macro from the <em class="xref py py-obj">linear.pmzn</em> file (see the <em class="xref py py-obj">domains</em>
+module documentation for details) are readily capable of interpreting this
+weight vector and use it to compute the dot product with the feature vector.</p>
 <p>While linear models cover many of the cases in structured-output prediction, one
-can easily think of cases in which an ad-hoc <em class="xref py py-obj">Model</em> may be beneficial, e.g.
+can easily think of cases in which an ad-hoc model may be beneficial, e.g.
 when the model has some hyper-paramenters or when performing some sort of
 feature learning. That said, in most cases you should not need to manipulate
-<em class="xref py py-obj">Models</em> directly.</p>
-<p>The <em class="xref py py-obj">Model</em> is the middle-men between a <em class="xref py py-obj">Learner</em> and a <em class="xref py py-obj">Domain</em>. The learner
-fits a <em class="xref py py-obj">Model</em>, which is in turn then passed to the <em class="xref py py-obj">Domain</em> to perform
-inference. Usually a <em class="xref py py-obj">Learner</em> is only capable of learning one type of models,
-while a <em class="xref py py-obj">Domain</em> may usually be used with different <em class="xref py py-obj">Models</em> (if properly
-configured).</p>
+models directly.</p>
+<p>The model is the middle-men between a learner and a domain. The learner fits
+the parameter of a model, without knowing how inference is carried out. The
+domain, on the other hand, receives the model’s parameters, without knowing how
+these are learned. Usually a learner is only capable of learning one type of
+models (and derived ones), while a domain may conditionally be used with
+different models (if properly configured).</p>
 </div>
 
 
@@ -253,7 +257,7 @@ configured).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

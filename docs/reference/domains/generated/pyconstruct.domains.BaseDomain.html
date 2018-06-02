@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.domains.BaseDomain &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.domains.BaseDomain &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Domains" href="../index.html"/>
         <link rel="next" title="pyconstruct.domains.BaseDomain.infer" href="pyconstruct.domains.BaseDomain.infer.html"/>
-        <link rel="prev" title="Predefined domains" href="../predefined.html"/> 
+        <link rel="prev" title="pyconstruct.domains.Domain" href="pyconstruct.domains.Domain.html"/> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,14 +94,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Domains</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../predefined.html">Predefined domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../share.html">Shared templating library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.Domain.html">pyconstruct.domains.Domain</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">pyconstruct.domains.BaseDomain</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.BaseDomain.infer.html">pyconstruct.domains.BaseDomain.infer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.BaseDomain.n_features.html">pyconstruct.domains.BaseDomain.n_features</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyconstruct.domains.BaseDomain.phi.html">pyconstruct.domains.BaseDomain.phi</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.domains.MiniZincDomain.html">pyconstruct.domains.MiniZincDomain</a></li>
@@ -158,7 +159,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Domains</a> &raquo;</li>
         
@@ -186,16 +187,20 @@
 <dl class="class">
 <dt id="pyconstruct.domains.BaseDomain">
 <em class="property">class </em><code class="descclassname">pyconstruct.domains.</code><code class="descname">BaseDomain</code><span class="sig-paren">(</span><em>cache=None</em>, <em>n_jobs=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.domains.BaseDomain" title="Permalink to this definition">¶</a></dt>
-<dd><p>The objects domain.</p>
-<p>The domain is the description of the objects and their features, and
-provides oracles for computing inference problems.</p>
-<p>This is the basic class</p>
+<dd><p>The structured objects domain.</p>
+<p>The domain contain the description of the objects and provides oracles for
+computing inference problems.</p>
+<p>This is the basic class from which domains should inherit. In most cases,
+when working with MiniZinc domains, it should not be necessary to create a
+custom domain, but it is always possible to create a new Domain class for
+e.g. using an ad-hoc inference algorithm to make predictions more efficient.</p>
+<p>In the future we might introduce additional domains and inference methods.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cache</strong> (<em>dict-like</em>) – A dict-like cache like those from the cachetools library.</li>
+<li><strong>cache</strong> (<em>dict-like</em>) – A dict-like cache like those from the <code class="xref py py-obj docutils literal notranslate"><span class="pre">cachetools</span></code> library.</li>
 <li><strong>n_jobs</strong> (<em>int</em>) – The number of inference problems to solve in parallel.</li>
 </ul>
 </td>
@@ -214,9 +219,6 @@ provides oracles for computing inference problems.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="pyconstruct.domains.BaseDomain.n_features.html#pyconstruct.domains.BaseDomain.n_features" title="pyconstruct.domains.BaseDomain.n_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_features</span></code></a>(**kwargs)</td>
 <td>Return the number of features in the feature vector.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.domains.BaseDomain.phi.html#pyconstruct.domains.BaseDomain.phi" title="pyconstruct.domains.BaseDomain.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
-<td>The feature vector of input X and output Y.</td>
 </tr>
 </tbody>
 </table>
@@ -237,7 +239,7 @@ provides oracles for computing inference problems.</p>
         <a href="pyconstruct.domains.BaseDomain.infer.html" class="btn btn-neutral float-right" title="pyconstruct.domains.BaseDomain.infer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../predefined.html" class="btn btn-neutral" title="Predefined domains" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pyconstruct.domains.Domain.html" class="btn btn-neutral" title="pyconstruct.domains.Domain" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -268,7 +270,7 @@ provides oracles for computing inference problems.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

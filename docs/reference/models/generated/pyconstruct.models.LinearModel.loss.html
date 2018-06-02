@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.models.LinearModel.loss &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.models.LinearModel.loss &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="pyconstruct.models.LinearModel" href="pyconstruct.models.LinearModel.html"/>
         <link rel="next" title="pyconstruct.models.LinearModel.margin" href="pyconstruct.models.LinearModel.margin.html"/>
-        <link rel="prev" title="pyconstruct.models.LinearModel.decision_function" href="pyconstruct.models.LinearModel.decision_function.html"/> 
+        <link rel="prev" title="pyconstruct.models.LinearModel.keys" href="pyconstruct.models.LinearModel.keys.html"/> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learners/index.html">Learners</a></li>
@@ -102,11 +103,22 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Models</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="pyconstruct.models.BaseModel.html">pyconstruct.models.BaseModel</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyconstruct.models.LinearModel.html">pyconstruct.models.LinearModel</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.clear.html">pyconstruct.models.LinearModel.clear</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.copy.html">pyconstruct.models.LinearModel.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.decision_function.html">pyconstruct.models.LinearModel.decision_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.fromkeys.html">pyconstruct.models.LinearModel.fromkeys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.get.html">pyconstruct.models.LinearModel.get</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.items.html">pyconstruct.models.LinearModel.items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.keys.html">pyconstruct.models.LinearModel.keys</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyconstruct.models.LinearModel.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.margin.html">pyconstruct.models.LinearModel.margin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.phi.html">pyconstruct.models.LinearModel.phi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.pop.html">pyconstruct.models.LinearModel.pop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.popitem.html">pyconstruct.models.LinearModel.popitem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.predict.html">pyconstruct.models.LinearModel.predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.setdefault.html">pyconstruct.models.LinearModel.setdefault</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.update.html">pyconstruct.models.LinearModel.update</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.models.LinearModel.values.html">pyconstruct.models.LinearModel.values</a></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +170,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Models</a> &raquo;</li>
         
@@ -187,7 +199,7 @@
 <h1>pyconstruct.models.LinearModel.loss<a class="headerlink" href="#pyconstruct-models-linearmodel-loss" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyconstruct.models.LinearModel.loss">
-<code class="descclassname">LinearModel.</code><code class="descname">loss</code><span class="sig-paren">(</span><em>X</em>, <em>Y_true</em>, <em>Y_pred</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.models.LinearModel.loss" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">LinearModel.</code><code class="descname">loss</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Y_pred</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.models.LinearModel.loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the loss of the predictions with respect the model.</p>
 </dd></dl>
 
@@ -206,7 +218,7 @@
         <a href="pyconstruct.models.LinearModel.margin.html" class="btn btn-neutral float-right" title="pyconstruct.models.LinearModel.margin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pyconstruct.models.LinearModel.decision_function.html" class="btn btn-neutral" title="pyconstruct.models.LinearModel.decision_function" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pyconstruct.models.LinearModel.keys.html" class="btn btn-neutral" title="pyconstruct.models.LinearModel.keys" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -237,7 +249,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

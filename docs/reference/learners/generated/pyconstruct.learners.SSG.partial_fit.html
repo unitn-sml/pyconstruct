@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.SSG.partial_fit &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.learners.SSG.partial_fit &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="pyconstruct.learners.SSG" href="pyconstruct.learners.SSG.html"/>
-        <link rel="next" title="pyconstruct.learners.SSG.predict" href="pyconstruct.learners.SSG.predict.html"/>
+        <link rel="next" title="pyconstruct.learners.SSG.phi" href="pyconstruct.learners.SSG.phi.html"/>
         <link rel="prev" title="pyconstruct.learners.SSG.loss" href="pyconstruct.learners.SSG.loss.html"/> 
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
@@ -106,6 +107,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.get_params.html">pyconstruct.learners.SSG.get_params</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.loss.html">pyconstruct.learners.SSG.loss</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyconstruct.learners.SSG.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.phi.html">pyconstruct.learners.SSG.phi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.predict.html">pyconstruct.learners.SSG.predict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.score.html">pyconstruct.learners.SSG.score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.SSG.set_params.html">pyconstruct.learners.SSG.set_params</a></li>
@@ -165,7 +167,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Learners</a> &raquo;</li>
         
@@ -194,8 +196,8 @@
 <h1>pyconstruct.learners.SSG.partial_fit<a class="headerlink" href="#pyconstruct-learners-ssg-partial-fit" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyconstruct.learners.SSG.partial_fit">
-<code class="descclassname">SSG.</code><code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Y_pred=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.SSG.partial_fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the current model with data (X, Y).</p>
+<code class="descclassname">SSG.</code><code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Y_pred=None</em>, <em>Y_phi=None</em>, <em>Y_pred_phi=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.SSG.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the current model with a mini-batch (X, Y).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -232,7 +234,7 @@ needed or done internally.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pyconstruct.learners.SSG.predict.html" class="btn btn-neutral float-right" title="pyconstruct.learners.SSG.predict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pyconstruct.learners.SSG.phi.html" class="btn btn-neutral float-right" title="pyconstruct.learners.SSG.phi" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="pyconstruct.learners.SSG.loss.html" class="btn btn-neutral" title="pyconstruct.learners.SSG.loss" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -266,7 +268,7 @@ needed or done internally.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

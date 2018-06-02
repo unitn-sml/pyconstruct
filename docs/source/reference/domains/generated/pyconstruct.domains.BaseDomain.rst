@@ -14,7 +14,6 @@ pyconstruct.domains.BaseDomain
    
       ~BaseDomain.infer
       ~BaseDomain.n_features
-      ~BaseDomain.phi
    
    
 

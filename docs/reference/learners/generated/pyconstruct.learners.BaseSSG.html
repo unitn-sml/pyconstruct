@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.BaseSSG &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.learners.BaseSSG &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.BaseSSG.decision_function" href="pyconstruct.learners.BaseSSG.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.BaseLearner.set_params" href="pyconstruct.learners.BaseLearner.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
@@ -105,6 +106,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.get_params.html">pyconstruct.learners.BaseSSG.get_params</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.loss.html">pyconstruct.learners.BaseSSG.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.partial_fit.html">pyconstruct.learners.BaseSSG.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.phi.html">pyconstruct.learners.BaseSSG.phi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.predict.html">pyconstruct.learners.BaseSSG.predict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.score.html">pyconstruct.learners.BaseSSG.score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BaseSSG.set_params.html">pyconstruct.learners.BaseSSG.set_params</a></li>
@@ -165,7 +167,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Learners</a> &raquo;</li>
         
@@ -192,7 +194,7 @@
 <h1>pyconstruct.learners.BaseSSG<a class="headerlink" href="#pyconstruct-learners-basessg" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.learners.BaseSSG">
-<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BaseSSG</code><span class="sig-paren">(</span><em>domain=None</em>, <em>inference='loss_augmented_map'</em>, <em>structured_loss=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BaseSSG" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BaseSSG</code><span class="sig-paren">(</span><em>domain=None</em>, <em>model=None</em>, <em>*</em>, <em>inference='loss_augmented_map'</em>, <em>alpha=0.0001</em>, <em>train_loss='hinge'</em>, <em>structured_loss=None</em>, <em>n_jobs=1</em>, <em>shuffle=True</em>, <em>warm_start=False</em>, <em>verbose=True</em>, <em>batch_size=None</em>, <em>validate=True</em>, <em>random_state=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BaseSSG" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base implementation of a learner with the subgradient algorithm.</p>
 <p>This class implements the backbone of a learner that uses the Stochastic
 Subgradient descent method <a class="footnote-reference" href="#id2" id="id1">[1]</a> for updating the weights of a linear model.
@@ -206,7 +208,20 @@ different methods for making a gradient step.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>domain</strong> (<a class="reference internal" href="../../domains/generated/pyconstruct.domains.BaseDomain.html#pyconstruct.domains.BaseDomain" title="pyconstruct.domains.BaseDomain"><em>BaseDomain</em></a>) – The domain of the data.</li>
 <li><strong>inference</strong> (<em>str in</em><em> [</em><em>'map'</em><em>, </em><em>'loss_augmented_map'</em><em>]</em>) – Which type of inference to perform when learning.</li>
+<li><strong>alpha</strong> (<em>float</em>) – The regularization coefficient.</li>
+<li><strong>train_loss</strong> (<em>str in</em><em> [</em><em>'hinge'</em><em>, </em><em>'logistic'</em><em>, </em><em>'exponential'</em><em>]</em>) – The training loss. The derivative of this loss is used to rescale the
+margin of the examples when making an update.</li>
 <li><strong>structured_loss</strong> (<em>function</em><em> (</em><em>y</em><em>, </em><em>y</em><em>) </em><em>-&gt; float</em>) – The structured loss to compute on the objects.</li>
+<li><strong>n_jobs</strong> (<em>int</em>) – The number of parallel jobs used when calculating the gradient steps.</li>
+<li><strong>shuffle</strong> (<em>bool</em>) – Wheter to shuffle the data prior to fitting.</li>
+<li><strong>warm_start</strong> (<em>bool</em>) – If True, the model is not reinitialized upon a second call to the fit
+method, and the parameters of the fit method are reused.</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Whether to print the training losses when fitting.</li>
+<li><strong>batch_size</strong> (<em>None</em><em> or </em><em>int</em>) – The size of the batches used when fitting the data. If None, the batch
+size will be equal to <em class="xref py py-obj">n_jobs</em>.</li>
+<li><strong>validate</strong> (<em>bool</em>) – Whether to validate the model using the training examples prior to the
+update. Only used when <em class="xref py py-obj">verbose</em> is True.</li>
+<li><strong>random_state</strong> (<em>None</em><em>, </em><em>int</em><em>, </em><em>RandomState</em>) – The random number generator seed.</li>
 </ul>
 </td>
 </tr>
@@ -228,41 +243,32 @@ Intelligence and Statistics. 2007.</td></tr>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.decision_function.html#pyconstruct.learners.BaseSSG.decision_function" title="pyconstruct.learners.BaseSSG.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.decision_function.html#pyconstruct.learners.BaseSSG.decision_function" title="pyconstruct.learners.BaseSSG.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.fit.html#pyconstruct.learners.BaseSSG.fit" title="pyconstruct.learners.BaseSSG.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.fit.html#pyconstruct.learners.BaseSSG.fit" title="pyconstruct.learners.BaseSSG.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
+<td>Fit a model with data (X, Y).</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.get_params.html#pyconstruct.learners.BaseSSG.get_params" title="pyconstruct.learners.BaseSSG.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.loss.html#pyconstruct.learners.BaseSSG.loss" title="pyconstruct.learners.BaseSSG.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y_true,&nbsp;Y_pred)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.loss.html#pyconstruct.learners.BaseSSG.loss" title="pyconstruct.learners.BaseSSG.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a>(X,&nbsp;Y,&nbsp;Y_pred,&nbsp;**kwargs)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.partial_fit.html#pyconstruct.learners.BaseSSG.partial_fit" title="pyconstruct.learners.BaseSSG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.partial_fit.html#pyconstruct.learners.BaseSSG.partial_fit" title="pyconstruct.learners.BaseSSG.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred,&nbsp;Y_phi,&nbsp;Y_pred_phi])</td>
+<td>Updates the current model with a mini-batch (X, Y).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.predict.html#pyconstruct.learners.BaseSSG.predict" title="pyconstruct.learners.BaseSSG.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.phi.html#pyconstruct.learners.BaseSSG.phi" title="pyconstruct.learners.BaseSSG.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
+<td>Computes the feature vector for the given input and output objects.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.predict.html#pyconstruct.learners.BaseSSG.predict" title="pyconstruct.learners.BaseSSG.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Computes the prediction of the current model for the given input.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.score.html#pyconstruct.learners.BaseSSG.score" title="pyconstruct.learners.BaseSSG.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y_true[,&nbsp;Y_pred])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.score.html#pyconstruct.learners.BaseSSG.score" title="pyconstruct.learners.BaseSSG.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
 <td>Compute the score as the average loss over the examples.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.set_params.html#pyconstruct.learners.BaseSSG.set_params" title="pyconstruct.learners.BaseSSG.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BaseSSG.set_params.html#pyconstruct.learners.BaseSSG.set_params" title="pyconstruct.learners.BaseSSG.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></td>
-<td>The predictive model the algorithm has learned.</td>
 </tr>
 </tbody>
 </table>
@@ -314,7 +320,7 @@ Intelligence and Statistics. 2007.</td></tr>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

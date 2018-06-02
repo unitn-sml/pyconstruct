@@ -17,6 +17,7 @@ pyconstruct.learners.StructuredPerceptron
       ~StructuredPerceptron.get_params
       ~StructuredPerceptron.loss
       ~StructuredPerceptron.partial_fit
+      ~StructuredPerceptron.phi
       ~StructuredPerceptron.predict
       ~StructuredPerceptron.score
       ~StructuredPerceptron.set_params
@@ -24,11 +25,5 @@ pyconstruct.learners.StructuredPerceptron
    
 
    
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~StructuredPerceptron.model
    
    

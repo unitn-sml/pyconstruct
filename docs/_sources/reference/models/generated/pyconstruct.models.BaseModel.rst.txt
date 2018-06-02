@@ -12,11 +12,22 @@ pyconstruct.models.BaseModel
    .. autosummary::
       :toctree:
    
+      ~BaseModel.clear
+      ~BaseModel.copy
       ~BaseModel.decision_function
+      ~BaseModel.fromkeys
+      ~BaseModel.get
+      ~BaseModel.items
+      ~BaseModel.keys
       ~BaseModel.loss
       ~BaseModel.margin
       ~BaseModel.phi
+      ~BaseModel.pop
+      ~BaseModel.popitem
       ~BaseModel.predict
+      ~BaseModel.setdefault
+      ~BaseModel.update
+      ~BaseModel.values
    
    
 
@@ -26,6 +37,6 @@ pyconstruct.models.BaseModel
 
    .. autosummary::
    
-      ~BaseModel.parameters
+      ~BaseModel.params
    
    

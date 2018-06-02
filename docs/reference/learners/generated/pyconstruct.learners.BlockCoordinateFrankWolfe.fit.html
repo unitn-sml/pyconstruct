@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.BlockCoordinateFrankWolfe.fit &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.learners.BlockCoordinateFrankWolfe.fit &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="pyconstruct.learners.BlockCoordinateFrankWolfe" href="pyconstruct.learners.BlockCoordinateFrankWolfe.html"/>
         <link rel="next" title="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html"/>
         <link rel="prev" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
@@ -109,6 +110,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.get_params</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.loss.html">pyconstruct.learners.BlockCoordinateFrankWolfe.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit.html">pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.phi.html">pyconstruct.learners.BlockCoordinateFrankWolfe.phi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html">pyconstruct.learners.BlockCoordinateFrankWolfe.predict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html">pyconstruct.learners.BlockCoordinateFrankWolfe.score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.set_params</a></li>
@@ -165,7 +167,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Learners</a> &raquo;</li>
         
@@ -195,7 +197,7 @@
 <dl class="method">
 <dt id="pyconstruct.learners.BlockCoordinateFrankWolfe.fit">
 <code class="descclassname">BlockCoordinateFrankWolfe.</code><code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Y_pred=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the current model with data (X, Y).</p>
+<dd><p>Updates the current model with a mini-batch (X, Y).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -266,7 +268,7 @@ needed or done internally.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

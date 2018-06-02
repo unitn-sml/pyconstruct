@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.learners.BlockCoordinateFrankWolfe &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>pyconstruct.learners.BlockCoordinateFrankWolfe &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="../../../index.html"/>
         <link rel="up" title="Learners" href="../index.html"/>
         <link rel="next" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html"/>
         <link rel="prev" title="pyconstruct.learners.StructuredPerceptron.set_params" href="pyconstruct.learners.StructuredPerceptron.set_params.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -94,7 +94,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Manual</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../structured.html">Structured prediction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../domains/index.html">Domains</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Learners</a><ul class="current">
@@ -109,6 +110,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.get_params</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.loss.html">pyconstruct.learners.BlockCoordinateFrankWolfe.loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit.html">pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.phi.html">pyconstruct.learners.BlockCoordinateFrankWolfe.phi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html">pyconstruct.learners.BlockCoordinateFrankWolfe.predict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html">pyconstruct.learners.BlockCoordinateFrankWolfe.score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html">pyconstruct.learners.BlockCoordinateFrankWolfe.set_params</a></li>
@@ -165,7 +167,7 @@
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Manual</a> &raquo;</li>
+          <li><a href="../../index.html">Reference Manual</a> &raquo;</li>
         
           <li><a href="../index.html">Learners</a> &raquo;</li>
         
@@ -192,7 +194,7 @@
 <h1>pyconstruct.learners.BlockCoordinateFrankWolfe<a class="headerlink" href="#pyconstruct-learners-blockcoordinatefrankwolfe" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.learners.BlockCoordinateFrankWolfe">
-<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BlockCoordinateFrankWolfe</code><span class="sig-paren">(</span><em>*</em>, <em>domain=None</em>, <em>structured_loss=None</em>, <em>dataset_size=1</em>, <em>alpha=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyconstruct.learners.</code><code class="descname">BlockCoordinateFrankWolfe</code><span class="sig-paren">(</span><em>domain=None</em>, <em>model=None</em>, <em>structured_loss=None</em>, <em>dataset_size=1</em>, <em>alpha=0.0001</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.learners.BlockCoordinateFrankWolfe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Learner using the Block-Coordinate Frank-Wolfe algorithm <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
 <p>This implementation is still a bit experimental. Should work fine but still
 has not been made parallel, so it will take much more than necessary on most
@@ -236,11 +238,11 @@ Learning (ICML 2016). 2016.</td></tr>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html#pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function.html#pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function" title="pyconstruct.learners.BlockCoordinateFrankWolfe.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.fit.html#pyconstruct.learners.BlockCoordinateFrankWolfe.fit" title="pyconstruct.learners.BlockCoordinateFrankWolfe.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<td>Updates the current model with a mini-batch (X, Y).</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params.html#pyconstruct.learners.BlockCoordinateFrankWolfe.get_params" title="pyconstruct.learners.BlockCoordinateFrankWolfe.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
@@ -249,15 +251,18 @@ Learning (ICML 2016). 2016.</td></tr>
 <td></td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit.html#pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit" title="pyconstruct.learners.BlockCoordinateFrankWolfe.partial_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_fit</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
-<td>Updates the current model with data (X, Y).</td>
+<td>Updates the current model with a mini-batch (X, Y).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html#pyconstruct.learners.BlockCoordinateFrankWolfe.predict" title="pyconstruct.learners.BlockCoordinateFrankWolfe.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.phi.html#pyconstruct.learners.BlockCoordinateFrankWolfe.phi" title="pyconstruct.learners.BlockCoordinateFrankWolfe.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(X,&nbsp;Y,&nbsp;**kwargs)</td>
+<td>Computes the feature vector for the given input and output objects.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.predict.html#pyconstruct.learners.BlockCoordinateFrankWolfe.predict" title="pyconstruct.learners.BlockCoordinateFrankWolfe.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Computes the prediction of the current model for the given input.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html#pyconstruct.learners.BlockCoordinateFrankWolfe.score" title="pyconstruct.learners.BlockCoordinateFrankWolfe.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y_true[,&nbsp;Y_pred])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.score.html#pyconstruct.learners.BlockCoordinateFrankWolfe.score" title="pyconstruct.learners.BlockCoordinateFrankWolfe.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;Y[,&nbsp;Y_pred])</td>
 <td>Compute the score as the average loss over the examples.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html#pyconstruct.learners.BlockCoordinateFrankWolfe.set_params" title="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params.html#pyconstruct.learners.BlockCoordinateFrankWolfe.set_params" title="pyconstruct.learners.BlockCoordinateFrankWolfe.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
@@ -271,9 +276,6 @@ Learning (ICML 2016). 2016.</td></tr>
 <tbody valign="top">
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">dual_gap</span></code></td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></td>
-<td>The predictive model the algorithm has learned.</td>
 </tr>
 </tbody>
 </table>
@@ -325,7 +327,7 @@ Learning (ICML 2016). 2016.</td></tr>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -17,6 +17,7 @@ pyconstruct.learners.EG
       ~EG.get_params
       ~EG.loss
       ~EG.partial_fit
+      ~EG.phi
       ~EG.predict
       ~EG.score
       ~EG.set_params
@@ -24,11 +25,5 @@ pyconstruct.learners.EG
    
 
    
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~EG.model
    
    

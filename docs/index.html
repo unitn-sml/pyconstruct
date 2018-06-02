@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pyconstruct &mdash; Pyconstruct 0.1.0 documentation</title>
+  <title>Pyconstruct &mdash; Pyconstruct 0.1.11 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Pyconstruct 0.1.0 documentation" href="#"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="#"/>
         <link rel="next" title="Install" href="install.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.11
               </div>
             
           
@@ -92,7 +92,8 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structured.html">Structured prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Manual</a></li>
 </ul>
 
             
@@ -158,7 +159,7 @@
             
   <div class="section" id="pyconstruct">
 <h1>Pyconstruct<a class="headerlink" href="#pyconstruct" title="Permalink to this headline">¶</a></h1>
-<p>Welcome to the documentation of the Pyconstruct project.</p>
+<p>Welcome to the documentation of Pyconstruct.</p>
 <span class="target" id="module-pyconstruct"></span><p>Pyconstruct is a Python library for declarative, constrained, structured-output
 prediction. When using Pyconstruct, the problem specification can be encoded in
 MiniZinc, a high-level constraint programming language. This means that domain
@@ -171,8 +172,16 @@ constraints over the optimization variables.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Manual</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html#ocr-equations-prediction">OCR Equations prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html#intermezzo-minizinc-for-pyconstruct">Intermezzo: MiniZinc for Pyconstruct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html#fleshing-out-the-domain">Fleshing out the domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html#adding-background-knowledge-as-constraints">Adding background knowledge as constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html#learning-and-evaulating-a-model">Learning and evaulating a model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="structured.html">Structured prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Manual</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/datasets/index.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/domains/index.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/learners/index.html">Learners</a></li>
@@ -190,8 +199,8 @@ constraints over the optimization variables.</p>
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
 </ul>
 </div>
-<div class="section" id="author">
-<h1>Author<a class="headerlink" href="#author" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="authors">
+<h1>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="http://paolodragone.com">Paolo Dragone</a>, University of Trento.</p>
 <p><a class="reference external" href="http://disi.unitn.it/~teso/">Stefano Teso</a>, KU Leuven.</p>
 <p><a class="reference external" href="http://disi.unitn.it/~passerini/">Andrea Passerini</a>, University of Trento.</p>
@@ -239,7 +248,7 @@ constraints over the optimization variables.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.1.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -12,11 +12,22 @@ pyconstruct.models.LinearModel
    .. autosummary::
       :toctree:
    
+      ~LinearModel.clear
+      ~LinearModel.copy
       ~LinearModel.decision_function
+      ~LinearModel.fromkeys
+      ~LinearModel.get
+      ~LinearModel.items
+      ~LinearModel.keys
       ~LinearModel.loss
       ~LinearModel.margin
       ~LinearModel.phi
+      ~LinearModel.pop
+      ~LinearModel.popitem
       ~LinearModel.predict
+      ~LinearModel.setdefault
+      ~LinearModel.update
+      ~LinearModel.values
    
    
 
@@ -26,6 +37,6 @@ pyconstruct.models.LinearModel
 
    .. autosummary::
    
-      ~LinearModel.parameters
+      ~LinearModel.params
    
    

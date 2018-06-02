@@ -17,6 +17,7 @@ pyconstruct.learners.SSG
       ~SSG.get_params
       ~SSG.loss
       ~SSG.partial_fit
+      ~SSG.phi
       ~SSG.predict
       ~SSG.score
       ~SSG.set_params
@@ -24,11 +25,5 @@ pyconstruct.learners.SSG
    
 
    
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~SSG.model
    
    

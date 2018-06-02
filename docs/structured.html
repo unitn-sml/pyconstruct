@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Structured prediction &mdash; Pyconstruct 0.1.11 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Pyconstruct 0.1.11 documentation" href="index.html"/>
+        <link rel="next" title="Reference Manual" href="reference/index.html"/>
+        <link rel="prev" title="Quick Start" href="quick_start.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Pyconstruct
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.11
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Structured prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyconstruct</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Structured prediction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/structured.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="structured-prediction">
+<h1>Structured prediction<a class="headerlink" href="#structured-prediction" title="Permalink to this headline">¶</a></h1>
+<p>Structured-output prediction is the branch of machine learning that deals with
+<em>structured</em> objects. Structured-output models are needed when the outcome that
+we want to predict is not just a <img class="math" src="_images/math/92f533fda6a7b89ed440f42dd6520f7ee32604a5.svg" alt="\{0, 1\}"/> label (classification) or a
+numerical value (regression), but rather a more complex object, most often
+comprised of several interdependent variables, such as a sequence, a tree or a
+graph. The classical applications include predicting spoken words in speech
+recognition, predicting a syntactic tree in text parsing, and predicting the
+segmentation of an image into e.g. background and foreground.</p>
+<p>As typical in machine learning, we try to estimate a model <img class="math" src="_images/math/8715addcf7c7948fb2afabdded6ecd76b6781e26.svg" alt="f(x)"/> that
+given an input <img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/> (usually a vector of features) predicts an output
+<img class="math" src="_images/math/279c44ba4a78b1ff66faa2d8a81061846ae1da3e.svg" alt="y = f(x)"/> (also usually a vector). In standard classification and
+regression, the assumption is that variables making up the output vectors
+<img class="math" src="_images/math/2598f8f785f755d20f88faea077b13d9ebdb45d4.svg" alt="y"/> are independent from one another, and they are only directly dependent
+on the input variable <img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/>. In structure prediction, instead, the output
+variables may dependent from other output variables, and thus we need to model
+this dependency explicitly. In particular, this is often accomplished by
+learning a <em>scoring</em> function <img class="math" src="_images/math/84952ae5b3cb928ccf3f35ffc8f77f49be62b02b.svg" alt="f(x, y)"/>, which ranks higher pairs
+<img class="math" src="_images/math/01691ea412c11550759b93a69dcbd0de986a1534.svg" alt="(x, y)"/> for which <img class="math" src="_images/math/2598f8f785f755d20f88faea077b13d9ebdb45d4.svg" alt="y"/> is a good prediction for input <img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/>.
+With a model of this type, making a prediction when given an input <img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/>
+consists in finding the object <img class="math" src="_images/math/4776bbda26f3a45c9e55ace6dc968c6d814d9632.svg" alt="\hat{y}"/> maximizing <img class="math" src="_images/math/84952ae5b3cb928ccf3f35ffc8f77f49be62b02b.svg" alt="f(x, y)"/>.</p>
+<p>More formally, given a structured-output model <img class="math" src="_images/math/3b74b5426ed33d56bc162b10b0bcc9906aaed4a7.svg" alt="f(x, y; \theta)"/>,
+parametrized with some parameter vector <img class="math" src="_images/math/1a21b13b7181cde532171923cd19f87266f48751.svg" alt="\theta"/>, ranking input-output
+pairs <img class="math" src="_images/math/d882a2e4b34eec467bee7c2e1733cde29077a5cd.svg" alt="(x, y) \in \calX \times \calY"/>, the prediction <img class="math" src="_images/math/4776bbda26f3a45c9e55ace6dc968c6d814d9632.svg" alt="\hat{y}"/> for
+an input <img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/> is found by solving the following optimization problem:</p>
+<div class="math">
+<p><img src="_images/math/684f7b1fa5e235a3896728fea2e0245a83badfef.svg" alt="\hat{y} = \argmax_{y\in\calY} f(x, y; \theta)"/></p>
+</div><p>In Pyconstruct, the combination of the input space <img class="math" src="_images/math/5052fd42958ec78f4228f894ee80e4bc002e8fb8.svg" alt="\calX"/> and output
+space <img class="math" src="_images/math/1a3d6f49f51f6a223e6e6b8f662fc10344fe081a.svg" alt="\calY"/> is called the <em>domain</em> of the structured prediction problem.
+The domain also comes with an inference procedure that, given some input
+<img class="math" src="_images/math/8de302a0445e9b0c95ce7f5f185397ac7dd206de.svg" alt="x"/> and a model <img class="math" src="_images/math/da54a8f9be0655bfea4f4e999a01590fa7cc0104.svg" alt="f(\cdot; \theta)"/>, is able to solve the above
+optimization problem to find a prediction <img class="math" src="_images/math/4776bbda26f3a45c9e55ace6dc968c6d814d9632.svg" alt="\hat{y}"/>.</p>
+<p>The model <img class="math" src="_images/math/9e6060a348e1a884685d8062c89184d3ae8d323f.svg" alt="f"/> also depends on some parameters <img class="math" src="_images/math/1a21b13b7181cde532171923cd19f87266f48751.svg" alt="\theta"/>, which are
+usually estimated from data using some learning algorithm (or simply <em>learner</em>).
+Given a dataset <img class="math" src="_images/math/d895bdf6ae98f5a0e728c18758a228a8cf5561d3.svg" alt="\calD = [(x_i, y_i)]_{i=1}^n"/>, a structured learning
+algorithm <img class="math" src="_images/math/efea2833ad2ecbb07880a8b1b06524d4aa00a793.svg" alt="\calA"/> finds the best estimate of the parameters for that
+dataset <img class="math" src="_images/math/b90f3af5647952770150285589e75fb4994ee523.svg" alt="\hat{\theta} = \calA(\calD)"/>. To do so, learning algorithms
+usually rely on the inference oracles during training to make prediction on the
+intermediate parameter estimates.</p>
+<p>An interesting aspect of the structured-output framework is that learners and
+domains are nicely decoupled: learners do not care about the structure of the
+objects, as long as there is an inference oracle making the predictions, and
+domains do not care about how the parameters of the model are estimated. This
+means that the same domain can be used to estimate different models using
+different learning algorithms. This fact is summarized by the following
+image, where the domain is represented by the blue box, different models are
+represented by the green boxes, while the red boxes represent different learning
+algorithms:</p>
+<img alt="_images/schema.png" src="_images/schema.png" />
+<p>Pyconstruct follows this simple design schema:</p>
+<ul class="simple">
+<li>A <code class="docutils literal notranslate"><span class="pre">Domain</span></code> handles the input and output objects and exposes an <em>inference</em>
+function which accepts a model and returns an output object;</li>
+<li>A <code class="docutils literal notranslate"><span class="pre">Model</span></code> object holds some parameters and provides the actual scoring
+function to be optimized by the model;</li>
+<li>A <code class="docutils literal notranslate"><span class="pre">Learner</span></code> estimates the parameters of a model from data; it takes a
+dataset and uses the domain as a black-box to get intermediate predictions and
+estimate progressively better parameters for the learned model.</li>
+</ul>
+<p>The line between the domain and model is a bit blurry: sometimes it is more
+convenient to encode the actual function to optimize inside the domain and
+simply take the parameters to use from the model. Nonetheless, the domain can be
+conditionally interfaced with several models.</p>
+<p>While Pyconstruct is built using this generic schema (for easy extensibility),
+our focus is on one particular type of structured models: large-margin linear
+models of the type <img class="math" src="_images/math/6d12ac978e649c26fc1c9302e63ab4232e18ef87.svg" alt="f(x, y; \vw) = \inner{\vw}{\vphi(x, y)}"/>. Here
+<img class="math" src="_images/math/a0dd716a744e8a947415b305b7ebc5a08054dc86.svg" alt="\vphi : \calX\times\calY \to \bbR"/> is a given joint input-output feature
+map and <img class="math" src="_images/math/129acf7a8455a7dc42ab640f6a5df7d977f5d8ec.svg" alt="\vw\in\bbR"/> is some learned vector of weights. The reason is that
+this kind of models plays well with the type of generic solvers Pyconstruct uses
+for performing generic inference.</p>
+<p>Pyconstruct’s goal is to make structured-output prediction possible on
+non-standard objects by making the inference oracle <strong>programmable</strong> through
+MiniZinc. Most MiniZinc solvers (at least those that can scale to problems of
+reasonable size) are made for handling mixed integer linear programs (MILP).
+A constraint problem is MILP when the function to optimize is <em>linear</em> in the
+output variables and the output space is defined by <em>linear</em> constraints.
+With a linear model <img class="math" src="_images/math/5ce41f0cc29357559f3a6e5427763bc586c5994a.svg" alt="\inner{\vw}{\vphi(x, y)}"/>, when the features
+<img class="math" src="_images/math/0952bb512bcce87ed2b9692ce2f5e54e2b0b7d08.svg" alt="\vphi(x, y)"/> are linear in <img class="math" src="_images/math/2598f8f785f755d20f88faea077b13d9ebdb45d4.svg" alt="y"/> and the output space <img class="math" src="_images/math/1a3d6f49f51f6a223e6e6b8f662fc10344fe081a.svg" alt="\calY"/>
+is defined by linear constraints, inference can be solved using an MILP solver.
+The class of MILP problems is much larger than that handled by standard models
+(e.g. conditional random fields). This gives unprecedented expessiveness to
+structured-output prediction, which can now be used for a wide range of complex
+scenarios.</p>
+<p>Clearly, more expessiveness implies sometimes less efficiency for solving
+specific problems. Nonetheless, Pyconstruct is useful in a number of ways:</p>
+<ul class="simple">
+<li>Handling settings that cannot be reduced to standard models;</li>
+<li>Handling scenarios with scarce training data available;</li>
+<li>Handling scenarios with a lot of semantic knowledge available;</li>
+<li>Fast prototyping before implementing a more efficient yet laborious solution.</li>
+</ul>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference/index.html" class="btn btn-neutral float-right" title="Reference Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quick_start.html" class="btn btn-neutral" title="Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Paolo Dragone (MIT Licence).
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.11',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

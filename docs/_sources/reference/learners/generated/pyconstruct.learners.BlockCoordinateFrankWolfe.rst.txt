@@ -17,6 +17,7 @@ pyconstruct.learners.BlockCoordinateFrankWolfe
       ~BlockCoordinateFrankWolfe.get_params
       ~BlockCoordinateFrankWolfe.loss
       ~BlockCoordinateFrankWolfe.partial_fit
+      ~BlockCoordinateFrankWolfe.phi
       ~BlockCoordinateFrankWolfe.predict
       ~BlockCoordinateFrankWolfe.score
       ~BlockCoordinateFrankWolfe.set_params
@@ -30,6 +31,5 @@ pyconstruct.learners.BlockCoordinateFrankWolfe
    .. autosummary::
    
       ~BlockCoordinateFrankWolfe.dual_gap
-      ~BlockCoordinateFrankWolfe.model
    
    

@@ -17,6 +17,7 @@ pyconstruct.learners.BaseLearner
       ~BaseLearner.get_params
       ~BaseLearner.loss
       ~BaseLearner.partial_fit
+      ~BaseLearner.phi
       ~BaseLearner.predict
       ~BaseLearner.score
       ~BaseLearner.set_params
@@ -24,11 +25,5 @@ pyconstruct.learners.BaseLearner
    
 
    
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~BaseLearner.model
    
    
