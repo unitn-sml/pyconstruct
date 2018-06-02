@@ -54,6 +54,7 @@ clean:
 	rm $(BUILDDIR)/*.js
 	rm -rf $(BUILDDIR)/reference
 	rm -rf $(BUILDDIR)/doctrees
+	rm -rf $(BUILDDIR)/_images/math
 	rm -rf $(BUILDDIR)/_sources
 	rm -rf $(BUILDDIR)/source/reference/generated
 	rm -rf $(BUILDDIR)/source/reference/datasets/generated
