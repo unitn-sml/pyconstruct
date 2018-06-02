@@ -36,6 +36,23 @@ extensions = [
 autosummary_generate = True
 # numpydoc_show_class_members = False
 
+imgmath_image_format = 'svg'
+imgmath_latex_preamble = r"""
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\inner}[2]{\langle#1,#2\rangle}
+\newcommand{\vect}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\vw}{\vect{w}}
+\newcommand{\vphi}{\vect{\phi}}
+\newcommand{\calA}{\ensuremath{\mathcal{A}}}
+\newcommand{\calD}{\ensuremath{\mathcal{D}}}
+\newcommand{\calX}{\ensuremath{\mathcal{X}}}
+\newcommand{\calY}{\ensuremath{\mathcal{Y}}}
+\newcommand{\bbR}{\ensuremath{\mathbb{R}}}
+"""
+
 templates_path = ['_templates']
 exclude_patterns = []
 
