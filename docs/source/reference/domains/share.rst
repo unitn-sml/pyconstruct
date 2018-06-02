@@ -1,7 +1,7 @@
-Predefined domains
-------------------
+Shared templating library
+-------------------------
 
-.. currentmodule:: pyconstruct.domains.predefined
+.. currentmodule:: pyconstruct.domains.share
 
-.. automodule:: pyconstruct.domains.predefined
+.. automodule:: pyconstruct.domains.share
 
