@@ -60,6 +60,8 @@ clean:
 	rm -rf $(BUILDDIR)/source/reference/datasets/generated
 	rm -rf $(BUILDDIR)/source/reference/domains/generated
 	rm -rf $(BUILDDIR)/source/reference/learners/generated
+	rm -rf $(BUILDDIR)/source/reference/metrics/generated
+	rm -rf $(BUILDDIR)/source/reference/models/generated
 	rm -rf $(BUILDDIR)/source/reference/utils/generated
 
 .PHONY: html
