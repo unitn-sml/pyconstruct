@@ -19,15 +19,15 @@
     USAGE
     -----
     Only fixed domain features:
-        {% call n_features() %}
+        {% call feature_set() %}
             N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
         {% endcall %}
 
     Only model-dependent features:
-        {{ call n_features(params) }}
+        {{ call feature_set(params) }}
 
     Combination of both:
-        {% call n_features(params) %}
+        {% call feature_set(params) %}
             N_FEATURE_SET_1 + N_FEATURE_SET_2 + 5
         {% endcall %}
     #}
