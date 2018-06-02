@@ -1,0 +1,83 @@
+
+{% macro n_emission_features(
+    n_attributes='N_ATTRIBUTES', n_labels='N_LABELS'
+) %}
+    {# Prints the number of emission feautures.
+
+    PARAMETERS
+    ----------
+    n_attributes : str
+        The value or variable name containing the number of input attributes.
+    n_labels : str
+        The value or variable name containing the number of output labels.
+    #}
+
+    {{ n_attributes }} * {{ n_labels }}
+
+{% endmacro %}
+
+
+{% macro emission_features(
+    attributes_var='attributes', sequence_var='sequence',
+    attributes_set='ATTRIBUTES', sequence_set='SEQUENCE', labels_set='LABELS'
+) %}
+    {# Prints the emission feautures.
+
+    PARAMETERS
+    ----------
+    attributes_var : str
+        The variable name of the attribute matrix. Default 'attributes'.
+    sequence_var : str
+        The variable name of the sequence array. Default 'sequence'.
+    attributes_set : str
+        The value or variable name containing the indexset of input attributes.
+    sequence_set : str
+        The value or variable name containing the indexset of output labels.
+    labels_set : str
+        The value or variable name containing the set of label symbols.
+    #}
+
+    [
+        sum(e in {{ sequence_set }})({{attributes_var}}[e, a] * ({{ sequence_var }}[e] == l))
+        | a in {{ attributes_set }}, l in {{ labels_set }}
+    ]
+
+{% endmacro %}
+
+
+{% macro n_transition_features(n_labels='N_LABELS') %}
+    {# Prints the number of transition feautures.
+
+    PARAMETERS
+    ----------
+    n_labels : str
+        The value or variable name containing the number of output labels.
+    #}
+
+    {{ n_labels }} * {{ n_labels }}
+
+{% endmacro %}
+
+
+{% macro transition_features(
+    sequence_var='sequence', sequence_set='SEQUENCE', labels_set='LABELS'
+) %}
+    {# Prints the transition feautures.
+
+    PARAMETERS
+    ----------
+    sequence_var : str
+        The variable name of the sequence array. Default 'sequence'.
+    sequence_set : str
+        The value or variable name containing the indexset of output labels.
+    labels_set : str
+        The value or variable name containing the set of label symbols.
+    #}
+
+    [
+        sum(e1, e2 in {{ sequence_set }} where e1 < e2)({{ sequence_var }}[e1] == l1 /\ {{ sequence_var }}[e2] == l2)
+        | l1, l2 in {{ labels_set }}
+    ]
+
+{% endmacro %}
+
