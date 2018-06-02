@@ -1,5 +1,5 @@
-Manual
-======
+Reference Manual
+================
 
 This is the reference manual of Weaver.
 
