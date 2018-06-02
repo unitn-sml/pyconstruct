@@ -114,6 +114,7 @@ be able to solve (in order to work with LinearModels):
 
 from .base import *
 from .minizinc import *
+from .share import *
 
 
 def Domain(domain, **kwargs):
@@ -123,5 +124,5 @@ def Domain(domain, **kwargs):
     raise ValueError('domain not recognized')
 
 
-__all__ = base.__all__ + minizinc.__all__ + ['Domain']
+__all__ = base.__all__ + minizinc.__all__ + ['Domain', 'share']
 
