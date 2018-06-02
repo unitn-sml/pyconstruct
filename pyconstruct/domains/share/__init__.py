@@ -1,9 +1,11 @@
 """\
-Pyconstruct provides a shared Jinja2 templating API with number of utilities for
-building domains.
+Pyconstruct provides a shared Jinja2 templating API with a number of utilities
+for building domains.
 
 To use the available macros, simply import them from the available libraries,
-e.g.::
+e.g.:
+
+.. code-block:: none
 
     {% from 'globals.pmzn' import domain, solve %}
     {% from 'linear.pmzn' import linear_model %}
@@ -30,7 +32,10 @@ loss_augmented_map
 
 
 CONSTANTS
-=========
+---------
+
+.. code-block:: none
+
     BOOL_SET
         An integer set of boolean values {0, 1}.
     INT_SET
@@ -40,7 +45,9 @@ CONSTANTS
 
 
 MACROS
-======
+------
+
+.. code-block:: none
 
     domain(
         problem, allowed=('phi', 'map', 'loss_augmented_map')
@@ -90,7 +97,9 @@ linear.pmzn
 ~~~~~~~~~~~
 
 MACROS
-======
+------
+
+.. code-block:: none
 
     feature_set(
         params=none, n_features_var='N_FEATURES', feature_set_var='FEATURES'
@@ -204,7 +213,9 @@ metrics.pmzn
 ~~~~~~~~~~~~
 
 MACROS
-======
+------
+
+.. code-block:: none
 
     hamming(
         sequence_set='SEQUENCE', sequence='sequence', true_sequence='true_sequence'
