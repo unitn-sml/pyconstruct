@@ -85,7 +85,9 @@ integer) as well as the list of images (Numpy array). The output is a list of
 integers of the same length of the input representing the symbols.
 
 Inputs in MiniZinc are specified through "dzn" parameter variables, while the
-outputs are the optimiziation variables. In the equations case we would have::
+outputs are the optimiziation variables. In the equations case we would have:
+
+.. code-block:: none
 
     int: length;
     array[1 .. length, 1 .. 9, 1 .. 9] of int: images;
@@ -98,7 +100,9 @@ making a prediction.
 MiniZinc also allows us to easily add constraints into the mix. For example, we
 know for a fact that the output sequence should contain exactly one :math:`10`
 (associated to the symbol :math:`+`) and exactly one :math:`11` (associated to
-the symbol :math:`=`), which can be easily stated in MiniZinc like::
+the symbol :math:`=`), which can be easily stated in MiniZinc like:
+
+.. code-block:: none
 
     constraint count(sequence, 10, 1) /\ count(sequence, 11, 1);
 
@@ -107,7 +111,9 @@ Pyconstruct actually employs a dialect of MiniZinc defined by the `PyMzn
 the MiniZinc compiler and the solvers. The PyMzn code is simply MiniZinc with
 some templating bits following the `Jinja2 format <http://jinja.pocoo.org/>`_.
 This templating language allows us to do things like conditionally decide what
-solving method use and which function to optimize, e.g.::
+solving method use and which function to optimize, e.g.:
+
+.. code-block:: none
 
     {% if problem == 'map' %}
         solve maximize {{ model }};
@@ -127,7 +133,9 @@ quite a few modules containing reusable macros that can be used to easily define
 structured prediction problems with MiniZinc. For instance, the above piece of
 code generating a solve statement conditionally to the value of the ``problem``
 parameter is similar to what is done by the ``solve`` macro in the Pyconstruct
-shared templating library::
+shared templating library:
+
+.. code-block:: none
 
     {% from 'globals.pmzn' import solve %}
 
