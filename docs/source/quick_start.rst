@@ -63,7 +63,7 @@ attribute ``sequence``, a list of integers representing the symbols associated
 to each image in the equation. For instance::
 
     print(eq.data[0])
-    print(eq.targets[0])
+    print(eq.target[0])
 
 We now have to represent our data into a MiniZinc program, which is then going
 to be used by Pyconstruct to generate predictions. Before coding our problem, it
@@ -263,7 +263,7 @@ to flatten the images into a two-dimensional vector of attributes:
 
     % Domain
     array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
-        images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+        images[s, i, j] | s in SEQUENCE, i in HEIGHT, j in WIDTH
     ]);
 
 After defining the attribute vector, we can use the macros in the ``chain.pmzn``
@@ -417,7 +417,7 @@ The final model should look like this:
         {% endif %}
 
         array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
-            images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+            images[s, i, j] | s in SEQUENCE, i in HEIGHT, j in WIDTH
         ]);
 
     {% endcall %}
@@ -452,7 +452,7 @@ The final model should look like this:
     {% set loss %}
         {{
             hamming(
-                indexset='SEQUENCE', sequence='sequence',
+                sequence_set='SEQUENCE', sequence='sequence',
                 true_sequence='true_sequence'
             )
         }}
@@ -508,6 +508,7 @@ the two operators from the sequence:
 
     constraint sequence[opr[1]] == PLUS /\ sequence[opr[2]] == EQUAL;
     constraint increasing(opr);
+    constraint opr[1] + 1 < opr[2];
 
 The first of the above constraints enforces the variables ``opr[1]`` and
 ``opr[2]`` to be indices corresponding to the sequence values ``PLUS`` and
@@ -515,7 +516,8 @@ The first of the above constraints enforces the variables ``opr[1]`` and
 that the two variables are indeed the two indices of the two operators. The
 second constraint is a MiniZinc global constraint the operator indice to be
 ordered increasingly. Together with the previous constraint, this means that the
-``PLUS`` value must come before the ``EQUAL`` value.
+``PLUS`` value must come before the ``EQUAL`` value. The third constraint
+forces the number inbetween the two operators to have at least one digit.
 
 We want now to impose the validity of the equations. To do so, we need to
 extract the actual numeric values encoded in the sequence of digits. This
@@ -534,19 +536,25 @@ the digits into a matrix of three zero-padded vectors of length ``MAX_DIGITS``:
 
     array[1 .. 4] of var 0 .. length+1: ext = [0, opr[1], opr[2], length+1];
 
+    constraint forall(i in 1 .. 3)(ext[i+1] - ext[i] <= MAX_DIGITS + 1);
+    constraint forall(i in 1 .. 3)(sequence[ext[i] + 1] != 0);
+
     array[1 .. 3, 1 .. MAX_DIGITS] of var 0 .. 9: num_matrix = array2d(1 .. 3, 1 .. MAX_DIGITS, [
-        if ext[i] + MAX_DIGITS - k < ext[j] then
-            sequence[ext[j] - MAX_DIGITS + k]
+        if ext[i] + MAX_DIGITS - k < ext[i+1] then
+            sequence[ext[i+1] - MAX_DIGITS + k]
         else
             0
         endif
-        | i, j in 1 .. 4 where i < j, k in 0 .. MAX_DIGITS-1
+        | i in 1 .. 3, k in 0 .. MAX_DIGITS-1
     ]);
 
-In the above code we declared an array ``ext`` of the extremes of each number,
-then, for each two consecutive extremes we extracted one vector iterating over
-``k``. The conditional statement makes sure the arrays are populated as we
-expect. For instance, for the sequence ``34 + 56 = 90`` we get:
+In the above code we declared an array ``ext`` of the extremes of each number.
+The two following constraints enforce the length of each number to be lower than
+``MAX_DIGITS`` and the first digit of each number to be different from zero.
+Then, for each two consecutive extremes we extracted one vector containing the
+zero-padded numbers, iterating over ``k``. The conditional statement makes sure
+the arrays are populated as we expect. For instance, for the sequence ``34 + 56
+= 90`` we get:
 
 .. code-block:: none
 
@@ -610,7 +618,18 @@ structured SVMs is Stochastic Subgradient Descent, also known as SSG. Let us use
 the ``SSG`` learner for estimating a linear model over the OCR equation domain::
 
     from pyconstruct import SSG
-    ssg = SSG(eq_dom).fit(eq.data, eq.target)
+    ssg = SSG(eq_dom)
+
+If you need to set some configuration for PyMzn, now is the time. For instance,
+if you want to set Gurobi as the solver used by Pyconstruct, you can do so by
+setting the default solver in PyMzn::
+
+    import pymzn
+    pymzn.config.set('solver', pymzn.gurobi)
+
+At this point we are ready to start the fitting process::
+
+    ssg.fit(eq.data, eq.target)
 
 That is pretty much it. We passed the domain to the SSG constructor and then we
 called the ``fit`` method, which will pass through the entire dataset and learn
@@ -620,6 +639,27 @@ predictions::
 
     Y = ssg.predict(X)
 
+This process will take some time depending on your machine and the solver used.
+To speed-up things a bit, you can make inference over a batch of data in
+parallel. This can be done by setting the parameter ``n_jobs`` in the domain
+instance::
+
+    eq_dom = Domain('equations.pmzn', n_jobs=4)
+
+Also, we can parallelize the computation of the gradient steps in the ``SSG``
+learner::
+
+    ssg = SSG(eq_dom, n_jobs=4)
+
+Another common strategy is to use approximate inference. A very simple way to
+have approximate inference is to set a timeout to the solver and get the
+best-so-far solution. This can be done by setting the timeout in the PyMzn
+configs::
+
+    pymzn.config.set('timeout', 5)    # timeout 5 seconds
+
+Now the training should be smoother even on low-end machines.
+
 While the above code should cover many of the typical cases, Pyconstruct also
 let's you have more control over the learning process. First of all, you would
 probably want to test the model after it is trained. Therefore we probably want
@@ -627,7 +667,7 @@ to split the data into training and test set. We can use the utility from
 Scikit-learn for this::
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, Y_train, Y_test = train_test_split(ocr.data, ocr.target, test_size=0.2)
+    X_train, X_test, Y_train, Y_test = train_test_split(eq.data, eq.target, test_size=0.2)
 
 Another thing that you probably want to do is to evaluate the model on the
 training set while it is training. Most of Pyconstruct learners are online
@@ -638,7 +678,7 @@ batches and iterate over them, we can use the ``batches`` Pyconstruct utility::
 
     from pyconstruct.utils import batches
 
-    for X_b, Y_b in batches(X_train, Y_train, size=50):
+    for X_b, Y_b in batches(X_train, Y_train, batch_size=10):
         ssg.partial_fit(X_b, Y_b)
 
 We can now evaluate our model on the training set right before making a learning
@@ -655,11 +695,17 @@ with all the values.
 
 We can now compute the losses on the training batches and print the average::
 
-    for X_b, Y_b in batches(X_train, Y_train, size=50):
+    for X_b, Y_b in batches(X_train, Y_train, batch_size=10):
         Y_pred = ssg.predict(X_b)
         avg_loss = loss(Y_b, Y_pred).mean()
-        print('Loss {}'.format(avg_loss))
+        print('Training loss {}'.format(avg_loss))
         ssg.partial_fit(X_b, Y_b)
+
+Finally we can test the model learned by ``SSG`` on the test set::
+
+    Y_pred = ssg.predict(X_test)
+    avg_loss = loss(Y_test, Y_pred).mean()
+    print('Test loss {}'.format(avg_loss))
 
 This covers the basics of out to use Pyconstruct. Check out the `reference
 manual <reference/index.html>`_ to learn more about all the components and the
