@@ -173,7 +173,7 @@ problem is a machine learning task in which we want to predict some <em>structur
 object, e.g. a sequence, a tree or a graph. Structured prediction problems arise
 often when dealing with images, text and other types of structured data. If you
 have at least some idea of what structured prediction is go ahead reading,
-otherwise check out our <a class="reference external" href="structured.htm">introduction</a> first.</p>
+otherwise check out our <a class="reference external" href="structured.html">introduction</a> first.</p>
 <p>Using Pyconstruct we can represent
 arbitrary structured objects as key-value assignments (i.e. dictionaries) with
 integer, float or list values. For instance, a sequence object can be
@@ -220,7 +220,7 @@ The <code class="docutils literal notranslate"><span class="pre">target</span></
 attribute <code class="docutils literal notranslate"><span class="pre">sequence</span></code>, a list of integers representing the symbols associated
 to each image in the equation. For instance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>We now have to represent our data into a MiniZinc program, which is then going
@@ -240,9 +240,9 @@ integer) as well as the list of images (Numpy array). The output is a list of
 integers of the same length of the input representing the symbols.</p>
 <p>Inputs in MiniZinc are specified through “dzn” parameter variables, while the
 outputs are the optimiziation variables. In the equations case we would have:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span><span class="p">:</span> <span class="n">length</span><span class="p">;</span>
-<span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">9</span><span class="p">]</span> <span class="n">of</span> <span class="nb">int</span><span class="p">:</span> <span class="n">images</span><span class="p">;</span>
-<span class="n">array</span><span class="p">[</span><span class="mi">1</span> <span class="o">..</span> <span class="n">length</span><span class="p">]</span> <span class="n">of</span> <span class="n">var</span> <span class="nb">int</span><span class="p">:</span> <span class="n">sequence</span><span class="p">;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int: length;
+array[1 .. length, 1 .. 9, 1 .. 9] of int: images;
+array[1 .. length] of var int: sequence;
 </pre></div>
 </div>
 <p>The parameters <code class="docutils literal notranslate"><span class="pre">length</span></code> and <code class="docutils literal notranslate"><span class="pre">images</span></code> match the attributes provided in the
@@ -252,7 +252,7 @@ making a prediction.</p>
 know for a fact that the output sequence should contain exactly one <img class="math" src="_images/math/0503be0a4ccfddbe9aeed9ee829e8a85eb071e06.svg" alt="10"/>
 (associated to the symbol <img class="math" src="_images/math/d0c6ac9189858a2e8398f366710fe6f0fd85abbf.svg" alt="+"/>) and exactly one <img class="math" src="_images/math/3ce84ebd2801875f2fe166072501eab257fb93c1.svg" alt="11"/> (associated to
 the symbol <img class="math" src="_images/math/138892b7ed259ac19fb419e57a60d17580c7c6bf.svg" alt="="/>), which can be easily stated in MiniZinc like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">constraint</span> <span class="n">count</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span>\ <span class="n">count</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>constraint count(sequence, 10, 1) /\ count(sequence, 11, 1);
 </pre></div>
 </div>
 <p>Pyconstruct actually employs a dialect of MiniZinc defined by the <a class="reference external" href="http://paolodragone.com/pymzn">PyMzn</a> library, which it uses underneath to execute
@@ -260,11 +260,11 @@ the MiniZinc compiler and the solvers. The PyMzn code is simply MiniZinc with
 some templating bits following the <a class="reference external" href="http://jinja.pocoo.org/">Jinja2 format</a>.
 This templating language allows us to do things like conditionally decide what
 solving method use and which function to optimize, e.g.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">problem</span> <span class="o">==</span> <span class="s1">&#39;map&#39;</span> <span class="o">%</span><span class="p">}</span>
-    <span class="n">solve</span> <span class="n">maximize</span> <span class="p">{{</span> <span class="n">model</span> <span class="p">}};</span>
-<span class="p">{</span><span class="o">%</span> <span class="k">else</span> <span class="o">%</span><span class="p">}</span>
-    <span class="n">solve</span> <span class="n">satisfy</span><span class="p">;</span>
-<span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% if problem == &#39;map&#39; %}
+    solve maximize {{ model }};
+{% else %}
+    solve satisfy;
+{% endif %}
 </pre></div>
 </div>
 <p>When Pyconstruct wants to solve a MAP problem (finding the object maximizing the
@@ -279,9 +279,9 @@ structured prediction problems with MiniZinc. For instance, the above piece of
 code generating a solve statement conditionally to the value of the <code class="docutils literal notranslate"><span class="pre">problem</span></code>
 parameter is similar to what is done by the <code class="docutils literal notranslate"><span class="pre">solve</span></code> macro in the Pyconstruct
 shared templating library:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">from</span> <span class="s1">&#39;globals.pmzn&#39;</span> <span class="kn">import</span> <span class="nn">solve</span> <span class="o">%</span><span class="p">}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{% from &#39;globals.pmzn&#39; import solve %}
 
-<span class="p">{{</span> <span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="p">}}</span>
+{{ solve(problem, model) }}
 </pre></div>
 </div>
 </div>
@@ -392,7 +392,7 @@ set of int: PIXELS = 1 .. N_PIXELS;
 
 % Domain
 array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
-    images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+    images[s, i, j] | s in SEQUENCE, i in HEIGHT, j in WIDTH
 ]);
 </pre></div>
 </div>
@@ -534,7 +534,7 @@ set of int: PIXELS = 1 .. N_PIXELS;
     {% endif %}
 
     array[SEQUENCE, PIXELS] of {0, 1}: pixels = array2d(SEQUENCE, PIXELS, [
-        images[s, i, j] | s in SEQUENCE, i, j in HEIGHT, WIDTH
+        images[s, i, j] | s in SEQUENCE, i in HEIGHT, j in WIDTH
     ]);
 
 {% endcall %}
@@ -569,7 +569,7 @@ set of int: PIXELS = 1 .. N_PIXELS;
 {% set loss %}
     {{
         hamming(
-            indexset=&#39;SEQUENCE&#39;, sequence=&#39;sequence&#39;,
+            sequence_set=&#39;SEQUENCE&#39;, sequence=&#39;sequence&#39;,
             true_sequence=&#39;true_sequence&#39;
         )
     }}
@@ -617,6 +617,7 @@ array[1 .. 2] of var 2 .. length - 1: opr;
 
 constraint sequence[opr[1]] == PLUS /\ sequence[opr[2]] == EQUAL;
 constraint increasing(opr);
+constraint opr[1] + 1 &lt; opr[2];
 </pre></div>
 </div>
 <p>The first of the above constraints enforces the variables <code class="docutils literal notranslate"><span class="pre">opr[1]</span></code> and
@@ -625,7 +626,8 @@ constraint increasing(opr);
 that the two variables are indeed the two indices of the two operators. The
 second constraint is a MiniZinc global constraint the operator indice to be
 ordered increasingly. Together with the previous constraint, this means that the
-<code class="docutils literal notranslate"><span class="pre">PLUS</span></code> value must come before the <code class="docutils literal notranslate"><span class="pre">EQUAL</span></code> value.</p>
+<code class="docutils literal notranslate"><span class="pre">PLUS</span></code> value must come before the <code class="docutils literal notranslate"><span class="pre">EQUAL</span></code> value. The third constraint
+forces the number inbetween the two operators to have at least one digit.</p>
 <p>We want now to impose the validity of the equations. To do so, we need to
 extract the actual numeric values encoded in the sequence of digits. This
 process is going to require a few advanced constructs from MiniZinc, so make
@@ -639,20 +641,26 @@ the digits into a matrix of three zero-padded vectors of length <code class="doc
 
 array[1 .. 4] of var 0 .. length+1: ext = [0, opr[1], opr[2], length+1];
 
+constraint forall(i in 1 .. 3)(ext[i+1] - ext[i] &lt;= MAX_DIGITS + 1);
+constraint forall(i in 1 .. 3)(sequence[ext[i] + 1] != 0);
+
 array[1 .. 3, 1 .. MAX_DIGITS] of var 0 .. 9: num_matrix = array2d(1 .. 3, 1 .. MAX_DIGITS, [
-    if ext[i] + MAX_DIGITS - k &lt; ext[j] then
-        sequence[ext[j] - MAX_DIGITS + k]
+    if ext[i] + MAX_DIGITS - k &lt; ext[i+1] then
+        sequence[ext[i+1] - MAX_DIGITS + k]
     else
         0
     endif
-    | i, j in 1 .. 4 where i &lt; j, k in 0 .. MAX_DIGITS-1
+    | i in 1 .. 3, k in 0 .. MAX_DIGITS-1
 ]);
 </pre></div>
 </div>
-<p>In the above code we declared an array <code class="docutils literal notranslate"><span class="pre">ext</span></code> of the extremes of each number,
-then, for each two consecutive extremes we extracted one vector iterating over
-<code class="docutils literal notranslate"><span class="pre">k</span></code>. The conditional statement makes sure the arrays are populated as we
-expect. For instance, for the sequence <code class="docutils literal notranslate"><span class="pre">34</span> <span class="pre">+</span> <span class="pre">56</span> <span class="pre">=</span> <span class="pre">90</span></code> we get:</p>
+<p>In the above code we declared an array <code class="docutils literal notranslate"><span class="pre">ext</span></code> of the extremes of each number.
+The two following constraints enforce the length of each number to be lower than
+<code class="docutils literal notranslate"><span class="pre">MAX_DIGITS</span></code> and the first digit of each number to be different from zero.
+Then, for each two consecutive extremes we extracted one vector containing the
+zero-padded numbers, iterating over <code class="docutils literal notranslate"><span class="pre">k</span></code>. The conditional statement makes sure
+the arrays are populated as we expect. For instance, for the sequence <code class="docutils literal notranslate"><span class="pre">34</span> <span class="pre">+</span> <span class="pre">56</span>
+<span class="pre">=</span> <span class="pre">90</span></code> we get:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>num_matrix = [| 0, 3, 4
               | 0, 5, 6
               | 0, 9, 0 |];
@@ -706,7 +714,18 @@ passing the data. One of the state-of-the-art learning algorithms for learning
 structured SVMs is Stochastic Subgradient Descent, also known as SSG. Let us use
 the <code class="docutils literal notranslate"><span class="pre">SSG</span></code> learner for estimating a linear model over the OCR equation domain:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct</span> <span class="k">import</span> <span class="n">SSG</span>
-<span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">eq_dom</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+<span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">eq_dom</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you need to set some configuration for PyMzn, now is the time. For instance,
+if you want to set Gurobi as the solver used by Pyconstruct, you can do so by
+setting the default solver in PyMzn:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pymzn</span>
+<span class="n">pymzn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;solver&#39;</span><span class="p">,</span> <span class="n">pymzn</span><span class="o">.</span><span class="n">gurobi</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this point we are ready to start the fitting process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>That is pretty much it. We passed the domain to the SSG constructor and then we
@@ -717,13 +736,33 @@ predictions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Y</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>This process will take some time depending on your machine and the solver used.
+To speed-up things a bit, you can make inference over a batch of data in
+parallel. This can be done by setting the parameter <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> in the domain
+instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eq_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;equations.pmzn&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also, we can parallelize the computation of the gradient steps in the <code class="docutils literal notranslate"><span class="pre">SSG</span></code>
+learner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssg</span> <span class="o">=</span> <span class="n">SSG</span><span class="p">(</span><span class="n">eq_dom</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another common strategy is to use approximate inference. A very simple way to
+have approximate inference is to set a timeout to the solver and get the
+best-so-far solution. This can be done by setting the timeout in the PyMzn
+configs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymzn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>    <span class="c1"># timeout 5 seconds</span>
+</pre></div>
+</div>
+<p>Now the training should be smoother even on low-end machines.</p>
 <p>While the above code should cover many of the typical cases, Pyconstruct also
 let’s you have more control over the learning process. First of all, you would
 probably want to test the model after it is trained. Therefore we probably want
 to split the data into training and test set. We can use the utility from
 Scikit-learn for this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">ocr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ocr</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Another thing that you probably want to do is to evaluate the model on the
@@ -734,7 +773,7 @@ and updates the current parameters of the model. To split the dataset into
 batches and iterate over them, we can use the <code class="docutils literal notranslate"><span class="pre">batches</span></code> Pyconstruct utility:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyconstruct.utils</span> <span class="k">import</span> <span class="n">batches</span>
 
-<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="n">ssg</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -750,16 +789,22 @@ step on the batch. To evaluate our sequences we can use again the Hamming loss:<
 the objects in the <code class="docutils literal notranslate"><span class="pre">Y_pred</span></code> and <code class="docutils literal notranslate"><span class="pre">Y_true</span></code> batches and returns a Numpy vector
 with all the values.</p>
 <p>We can now compute the losses on the training batches and print the average:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="n">Y_pred</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_b</span><span class="p">)</span>
     <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">Y_b</span><span class="p">,</span> <span class="n">Y_pred</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loss </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avg_loss</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training loss </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avg_loss</span><span class="p">))</span>
     <span class="n">ssg</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_b</span><span class="p">,</span> <span class="n">Y_b</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This covers the basics of out to use Pyconstruct. Check out the reference manual
-to learn more about all the components and the ways you can tweak Pyconstruct to
-solve your structured prediction problem.</p>
+<p>Finally we can test the model learned by <code class="docutils literal notranslate"><span class="pre">SSG</span></code> on the test set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Y_pred</span> <span class="o">=</span> <span class="n">ssg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">avg_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">Y_test</span><span class="p">,</span> <span class="n">Y_pred</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test loss </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avg_loss</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This covers the basics of out to use Pyconstruct. Check out the <a class="reference external" href="reference/index.html">reference
+manual</a> to learn more about all the components and the
+ways you can tweak Pyconstruct to solve your structured prediction problem.</p>
 </div>
 </div>
 
