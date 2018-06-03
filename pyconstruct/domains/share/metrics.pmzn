@@ -14,7 +14,7 @@
         The name of the true sequence.
     #}
 
-    sum(e in {{ indexset }})({{ sequence }}[e] != {{ true_sequence }}[e])
+    sum(e in {{ sequence_set }})({{ sequence }}[e] != {{ true_sequence }}[e])
 
 {% endmacro %}
 
