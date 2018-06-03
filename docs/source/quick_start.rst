@@ -7,7 +7,7 @@ problem is a machine learning task in which we want to predict some *structured*
 object, e.g. a sequence, a tree or a graph. Structured prediction problems arise
 often when dealing with images, text and other types of structured data. If you
 have at least some idea of what structured prediction is go ahead reading,
-otherwise check out our `introduction <structured.htm>`_ first.
+otherwise check out our `introduction <structured.html>`_ first.
 
 Using Pyconstruct we can represent
 arbitrary structured objects as key-value assignments (i.e. dictionaries) with
@@ -653,7 +653,7 @@ We can now compute the losses on the training batches and print the average::
         print('Loss {}'.format(avg_loss))
         ssg.partial_fit(X_b, Y_b)
 
-This covers the basics of out to use Pyconstruct. Check out the reference manual
-to learn more about all the components and the ways you can tweak Pyconstruct to
-solve your structured prediction problem.
+This covers the basics of out to use Pyconstruct. Check out the `reference
+manual <reference/index.html>`_ to learn more about all the components and the
+ways you can tweak Pyconstruct to solve your structured prediction problem.
 
