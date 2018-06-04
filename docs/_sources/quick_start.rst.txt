@@ -651,12 +651,14 @@ learner::
 
 Another common strategy is to use approximate inference. A very simple way to
 have approximate inference is to set a timeout to the solver and get the
-best-so-far solution. This can be done by setting the timeout in the PyMzn
-configs::
+best-so-far solution. This can be done by setting the timeout in the domain
+constructor::
 
-    pymzn.config.set('timeout', 10)    # timeout 10 seconds
+    eq_dom = Domain('equations.pmzn', n_jobs=4, timeout=5)   # timeout 5 seconds
 
-Now the training should be smoother even on low-end machines.
+Pyconstruct will automatically increase the timeout until a solution is found
+for each inference problem.  Now the training should be smoother even on low-end
+machines.
 
 While the above code should cover many of the typical cases, Pyconstruct also
 let's you have more control over the learning process. First of all, you would

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Start &mdash; Pyconstruct 0.2.0 documentation</title>
+  <title>Quick Start &mdash; Pyconstruct 0.2.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Pyconstruct 0.2.0 documentation" href="index.html"/>
+    <link rel="top" title="Pyconstruct 0.2.1 documentation" href="index.html"/>
         <link rel="next" title="Structured prediction" href="structured.html"/>
         <link rel="prev" title="Install" href="install.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
             
           
@@ -748,12 +748,14 @@ learner:</p>
 </div>
 <p>Another common strategy is to use approximate inference. A very simple way to
 have approximate inference is to set a timeout to the solver and get the
-best-so-far solution. This can be done by setting the timeout in the PyMzn
-configs:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymzn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>    <span class="c1"># timeout 10 seconds</span>
+best-so-far solution. This can be done by setting the timeout in the domain
+constructor:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eq_dom</span> <span class="o">=</span> <span class="n">Domain</span><span class="p">(</span><span class="s1">&#39;equations.pmzn&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>   <span class="c1"># timeout 5 seconds</span>
 </pre></div>
 </div>
-<p>Now the training should be smoother even on low-end machines.</p>
+<p>Pyconstruct will automatically increase the timeout until a solution is found
+for each inference problem.  Now the training should be smoother even on low-end
+machines.</p>
 <p>While the above code should cover many of the typical cases, Pyconstruct also
 let’s you have more control over the learning process. First of all, you would
 probably want to test the model after it is trained. Therefore we probably want
@@ -850,7 +852,7 @@ ways you can tweak Pyconstruct to solve your structured prediction problem.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

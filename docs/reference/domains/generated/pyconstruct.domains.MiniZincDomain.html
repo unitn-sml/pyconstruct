@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.2.0 documentation</title>
+  <title>pyconstruct.domains.MiniZincDomain &mdash; Pyconstruct 0.2.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Pyconstruct 0.2.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="Pyconstruct 0.2.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Domains" href="../index.html"/>
         <link rel="next" title="pyconstruct.domains.MiniZincDomain.infer" href="pyconstruct.domains.MiniZincDomain.infer.html"/>
         <link rel="prev" title="pyconstruct.domains.BaseDomain.n_features" href="pyconstruct.domains.BaseDomain.n_features.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
             
           
@@ -186,7 +186,7 @@
 <h1>pyconstruct.domains.MiniZincDomain<a class="headerlink" href="#pyconstruct-domains-minizincdomain" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyconstruct.domains.MiniZincDomain">
-<em class="property">class </em><code class="descclassname">pyconstruct.domains.</code><code class="descname">MiniZincDomain</code><span class="sig-paren">(</span><em>domain_file</em>, <em>feature_var='phi'</em>, <em>n_features_var='N_FEATURES'</em>, <em>cache=None</em>, <em>n_jobs=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.domains.MiniZincDomain" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyconstruct.domains.</code><code class="descname">MiniZincDomain</code><span class="sig-paren">(</span><em>domain_file</em>, <em>feature_var='phi'</em>, <em>n_features_var='N_FEATURES'</em>, <em>cache=None</em>, <em>n_jobs=1</em>, <em>timeout=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyconstruct.domains.MiniZincDomain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for domains encoded in minizinc.</p>
 <p>This is the default method for encoding a domain in Pyconstruct. When using
 MiniZinc to encode a domain, objects are represented in terms of their
@@ -258,6 +258,8 @@ linear model.</li>
 <li><strong>n_feature_var</strong> (<em>str</em>) – The name of the MiniZinc variable containing the number of features.
 Used for getting the number of features when the domain encodes
 inference over a linear model.</li>
+<li><strong>timeout</strong> (<em>None</em><em> or </em><em>int</em>) – The timeout to give to the solver (in seconds). None (default) means no
+timeout.</li>
 <li><strong>kwargs</strong> – Any other argument needed by the template engine. These are passed to
 all inference problems solved by the domain.</li>
 </ul>
@@ -328,7 +330,7 @@ all inference problems solved by the domain.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.2.0',
+            VERSION:'0.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
