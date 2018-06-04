@@ -537,7 +537,6 @@ the digits into a matrix of three zero-padded vectors of length ``MAX_DIGITS``:
     array[1 .. 4] of var 0 .. length+1: ext = [0, opr[1], opr[2], length+1];
 
     constraint forall(i in 1 .. 3)(ext[i+1] - ext[i] <= MAX_DIGITS + 1);
-    constraint forall(i in 1 .. 3)(sequence[ext[i] + 1] != 0);
 
     array[1 .. 3, 1 .. MAX_DIGITS] of var 0 .. 9: num_matrix = array2d(1 .. 3, 1 .. MAX_DIGITS, [
         if ext[i] + MAX_DIGITS - k < ext[i+1] then
@@ -550,11 +549,10 @@ the digits into a matrix of three zero-padded vectors of length ``MAX_DIGITS``:
 
 In the above code we declared an array ``ext`` of the extremes of each number.
 The two following constraints enforce the length of each number to be lower than
-``MAX_DIGITS`` and the first digit of each number to be different from zero.
-Then, for each two consecutive extremes we extracted one vector containing the
-zero-padded numbers, iterating over ``k``. The conditional statement makes sure
-the arrays are populated as we expect. For instance, for the sequence ``34 + 56
-= 90`` we get:
+``MAX_DIGITS``.  Then, for each two consecutive extremes we extracted one vector
+containing the zero-padded numbers, iterating over ``k``. The conditional
+statement makes sure the arrays are populated as we expect. For instance, for
+the sequence ``34 + 56 = 90`` we get:
 
 .. code-block:: none
 
@@ -656,7 +654,7 @@ have approximate inference is to set a timeout to the solver and get the
 best-so-far solution. This can be done by setting the timeout in the PyMzn
 configs::
 
-    pymzn.config.set('timeout', 5)    # timeout 5 seconds
+    pymzn.config.set('timeout', 10)    # timeout 10 seconds
 
 Now the training should be smoother even on low-end machines.
 
@@ -678,7 +676,7 @@ batches and iterate over them, we can use the ``batches`` Pyconstruct utility::
 
     from pyconstruct.utils import batches
 
-    for X_b, Y_b in batches(X_train, Y_train, batch_size=10):
+    for X_b, Y_b in batches(X_train, Y_train, batch_size=8):
         ssg.partial_fit(X_b, Y_b)
 
 We can now evaluate our model on the training set right before making a learning
