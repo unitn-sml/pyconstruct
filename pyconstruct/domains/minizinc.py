@@ -126,13 +126,16 @@ class MiniZincDomain(BaseDomain):
         The name of the MiniZinc variable containing the number of features.
         Used for getting the number of features when the domain encodes
         inference over a linear model.
+    timeout : None or int
+        The timeout to give to the solver (in seconds). None (default) means no
+        timeout.
     kwargs
         Any other argument needed by the template engine. These are passed to
         all inference problems solved by the domain.
     """
     def __init__(
         self, domain_file, feature_var='phi', n_features_var='N_FEATURES',
-        cache=None, n_jobs=1, **kwargs
+        cache=None, n_jobs=1, timeout=None, **kwargs
     ):
         super().__init__(cache=cache, n_jobs=n_jobs)
 
@@ -143,6 +146,7 @@ class MiniZincDomain(BaseDomain):
 
         self.feature_var = feature_var
         self.n_features_var = n_features_var
+        self.timeout = timeout
         self.args = kwargs
         self._x_vars = None
         self._y_vars = None
@@ -213,9 +217,18 @@ class MiniZincDomain(BaseDomain):
         if y_true is not None:
             args['y_true'] = y_true
 
-        stream = pymzn.minizinc(
-            self.domain_file, data=x, args=args, output_vars=output_vars
-        )
+        _timeout = self.timeout
+        stream = None
+        while not stream:
+            try:
+                stream = pymzn.minizinc(
+                    self.domain_file, data=x, args=args, output_vars=output_vars
+                )
+            except pymzn.MiniZincUnknownError:
+                if _timeout is not None:
+                    _timeout *= 2
+                else:
+                    raise
 
         if len(stream) == 0:
             raise InferenceError('Inference returned no solution.')
