@@ -73,12 +73,10 @@ loss_augmented_map
 
     {% if problem in ('phi', 'n_features') %}
         solve satisfy;
-    {% else %}
-        {% if problem == 'map' %}
-            solve maximize {{ score }};
-        {% elif problem == 'loss_augmented_map' %}
-            solve maximize {{ loss }} + {{ score }};
-        {% endif %}
+    {% elif problem == 'map' %}
+        solve maximize {{ score }};
+    {% elif problem == 'loss_augmented_map' %}
+        solve maximize {{ loss }} + {{ score }};
     {% endif %}
 
 {% endmacro %}
