@@ -49,7 +49,7 @@ SOURCES = {
     },
     'equations': {
         'urls': [
-            'http://sml.disi.unitn.it/datasets/equations/equations.tar.gz'
+            'http://sml.disi.unitn.it/software/equations/equations.tar.gz'
         ],
         'raw_names': ['equations.tar.gz'],
         'names': ['equations.pickle'],
