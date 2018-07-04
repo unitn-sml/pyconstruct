@@ -99,5 +99,7 @@ class LinearModel(BaseModel):
 
     def decision_function(self, X, Y, **kwargs):
         self._validate_params()
+        if self.w is None:
+            return 0.0
         return np.inner(self.w, self.phi(X, Y))
 
