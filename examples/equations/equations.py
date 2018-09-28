@@ -30,7 +30,7 @@ def train(args):
     )
 
     data = load_equations()
-    X, Y = data.X, data.Y
+    X, Y = data.data, data.target
     X, Y = X[:args.n_samples], Y[:args.n_samples]
     X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, test_size=0.2, random_state=42
