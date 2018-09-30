@@ -4,7 +4,7 @@ Example of code for training an SSG learner over the equations data.
 """
 
 import pymzn
-pymzn.config.set('solver', pymzn.gurobi)
+pymzn.config.set('solver', pymzn.Gurobi(dll='gurobi80'))
 pymzn.config.set('no_output_annotations', True)
 
 from time import time
@@ -29,8 +29,8 @@ def train(args):
         no_constraints=args.no_constraints
     )
 
-    data = load_equations()
-    X, Y = data.data, data.target
+    eq_data = load_equations()
+    X, Y = eq_data.data, eq_data.target
     X, Y = X[:args.n_samples], Y[:args.n_samples]
     X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, test_size=0.2, random_state=42
