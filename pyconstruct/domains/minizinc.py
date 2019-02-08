@@ -222,7 +222,8 @@ class MiniZincDomain(BaseDomain):
         while not stream:
             try:
                 stream = pymzn.minizinc(
-                    self.domain_file, data=x, args=args, output_vars=output_vars
+                    self.domain_file, data=x, args=args,
+                    output_vars=output_vars, timeout=_timeout
                 )
             except pymzn.MiniZincUnknownError:
                 if _timeout is not None:
