@@ -43,10 +43,11 @@ guide](https://unitn-sml.github.io/pyconstruct/install.html) for more details.
 
 Authors
 -------
-This project is developed at the [SML research group](http://sml.disi.unitn.it/)
-at the University of Trento (Italy). Main developers and maintainers:
+This project is developed at
+the [SML research group](http://sml.disi.unitn.it/) at the University of Trento, Italy and
+[DTAI](https://dtai.cs.kuleuven.be/) at KU Leuven, Belgium.
+The main developers and maintainers are:
 
-* [Paolo Dragone](http://paolodragone.com)
-* [Stefano Teso](http://disi.unitn.it/~teso/) (now at KU Leuven)
-* [Andrea Passerini](http://disi.unitn.it/~passerini/)
-
+* [Paolo Dragone](http://paolodragone.com) (SML)
+* [Stefano Teso](https://people.cs.kuleuven.be/~stefano.teso/) (DTAI)
+* [Andrea Passerini](http://disi.unitn.it/~passerini/) (SML)
