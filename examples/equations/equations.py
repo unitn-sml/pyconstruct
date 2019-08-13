@@ -4,8 +4,7 @@ Example of code for training an SSG learner over the equations data.
 """
 
 import pymzn
-pymzn.config.set('solver', pymzn.Gurobi(dll='gurobi80'))
-pymzn.config.set('no_output_annotations', True)
+pymzn.config.no_output_annotations = True
 
 from time import time
 from pyconstruct import Domain, SSG
@@ -16,7 +15,7 @@ from pyconstruct.utils import batches, load, save
 from sklearn.model_selection import train_test_split
 
 
-def loss(Y_pred, Y_true, n_jobs=4):
+def loss(Y_pred, Y_true, n_jobs=1):
     return hamming(
         Y_pred, Y_true, key='sequence', n_jobs=n_jobs
     )
@@ -26,7 +25,8 @@ def train(args):
 
     dom = Domain(
         args.domain_file, n_jobs=args.parallel,
-        no_constraints=args.no_constraints
+        no_constraints=args.no_constraints,
+        timeout=1
     )
 
     eq_data = load_equations()
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', '--domain-file', default='equations.pmzn')
     parser.add_argument('-n', '--n_samples', type=int, default=1000)
-    parser.add_argument('-p', '--parallel', type=int, default=4)
+    parser.add_argument('-p', '--parallel', type=int, default=1)
     parser.add_argument('-N', '--no-constraints', action='store_true')
     parser.add_argument('-O', '--output', default='results.pickle')
     args = parser.parse_args()
