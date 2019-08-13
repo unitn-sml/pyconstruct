@@ -1,6 +1,7 @@
 
 import os
 import pymzn
+import pymzn.templates
 pymzn.templates.add_package('pyconstruct.domains', 'share')
 
 import numpy as np
@@ -225,7 +226,7 @@ class MiniZincDomain(BaseDomain):
                     self.domain_file, data=x, args=args,
                     output_vars=output_vars, timeout=_timeout
                 )
-            except pymzn.MiniZincUnknownError:
+            except pymzn.MiniZincError:
                 if _timeout is not None:
                     _timeout *= 2
                 else:
