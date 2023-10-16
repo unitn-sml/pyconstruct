@@ -56,7 +56,7 @@ setup(
     include_package_data=True,
     package_data={'': '*.pmzn'},
     install_requires = [
-        'numpy', 'scipy', 'sklearn', 'pymzn', 'appdirs', 'jinja2', 'cachetools'
+        'numpy', 'scipy', 'scikit-learn', 'pymzn', 'appdirs', 'jinja2', 'cachetools'
     ],
     platforms = 'any',
     classifiers = [
