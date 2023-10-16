@@ -54,7 +54,7 @@ setup(
     packages = find_packages(exclude=['*tests*']),
     test_suite = "pyconstruct.tests",
     include_package_data=True,
-    package_data={'': '*.pmzn'},
+    package_data={'': ['*.pmzn']},
     install_requires = [
         'numpy', 'scipy', 'scikit-learn', 'pymzn', 'appdirs', 'jinja2', 'cachetools'
     ],
